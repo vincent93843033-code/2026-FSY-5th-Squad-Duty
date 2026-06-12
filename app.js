@@ -5,8 +5,8 @@
   var ZHIZE_SHEET = '職責';
   var XILIU_ID = '12CTMEcUgrVAelFydZUAtMC0_2B46c-nAXX7mhTkdO_Y';
   var XILIU_SHEET = '中文細流';
-  var REFRESH_INTERVAL_MS = 5 * 60 * 1000;
   var STORAGE_KEY = 'fsy5_my_name';
+  var CACHE_KEY = 'fsy5_cache_v1';
 
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
@@ -21,7 +21,10 @@
     selectedDay: null,
     lastUpdated: null,
     collapsedDays: {},
+    offline: false,
   };
+
+  var didInitialScroll = false;
 
   function buildCsvUrl(sheetId, sheetName) {
     return (
@@ -180,12 +183,10 @@
     return result;
   }
 
-  function fetchCsvRows(url) {
+  function fetchCsvText(url) {
     return fetch(url, { cache: 'no-store' }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.text();
-    }).then(function (text) {
-      return Papa.parse(text, { skipEmptyLines: true }).data;
     });
   }
 
@@ -202,52 +203,85 @@
     return null;
   }
 
+  function applyData(zhizeRows, xiliuRows, updatedDate, offline) {
+    var zhize = parseZhize(zhizeRows);
+    var xiliu = parseXiliu(xiliuRows);
+    state.people = zhize.people;
+    state.days = buildJoinedDays(zhize, xiliu);
+    if (state.selectedDay === null) {
+      state.selectedDay = detectTodayDayIndex() || 1;
+      state.days.forEach(function (day) {
+        state.collapsedDays[day.index] = day.index !== state.selectedDay;
+      });
+    }
+    state.lastUpdated = updatedDate;
+    state.offline = !!offline;
+    populatePersonSelect();
+    renderDayPills();
+    renderMeTab();
+    renderOverviewTab();
+    updateStatus();
+    if (!didInitialScroll) {
+      didInitialScroll = true;
+      scrollToCurrent(document.querySelector('.tab-panel.active'));
+    }
+  }
+
+  function loadFromCache() {
+    try {
+      var raw = localStorage.getItem(CACHE_KEY);
+      if (!raw) return false;
+      var obj = JSON.parse(raw);
+      if (!obj || !obj.zhize || !obj.xiliu) return false;
+      var zhizeRows = Papa.parse(obj.zhize, { skipEmptyLines: true }).data;
+      var xiliuRows = Papa.parse(obj.xiliu, { skipEmptyLines: true }).data;
+      applyData(zhizeRows, xiliuRows, obj.ts ? new Date(obj.ts) : null, true);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function loadData(isManual) {
     if (isManual) refreshBtnEl.classList.add('spinning');
-    statusTextEl.textContent = '資料更新中…';
-    var isFirstLoad = state.lastUpdated === null;
+    if (!state.lastUpdated) statusTextEl.textContent = '資料載入中…';
     return Promise.all([
-      fetchCsvRows(buildCsvUrl(ZHIZE_ID, ZHIZE_SHEET)),
-      fetchCsvRows(buildCsvUrl(XILIU_ID, XILIU_SHEET)),
-    ]).then(function (results) {
-      var zhize = parseZhize(results[0]);
-      var xiliu = parseXiliu(results[1]);
-      state.people = zhize.people;
-      state.days = buildJoinedDays(zhize, xiliu);
-      if (state.selectedDay === null) {
-        state.selectedDay = detectTodayDayIndex() || 1;
-        state.days.forEach(function (day) {
-          state.collapsedDays[day.index] = day.index !== state.selectedDay;
-        });
-      }
-      state.lastUpdated = new Date();
-      populatePersonSelect();
-      renderDayPills();
-      renderMeTab();
-      renderOverviewTab();
-      updateStatus(null);
-      if (isFirstLoad) scrollToCurrent(document.querySelector('.tab-panel.active'));
+      fetchCsvText(buildCsvUrl(ZHIZE_ID, ZHIZE_SHEET)),
+      fetchCsvText(buildCsvUrl(XILIU_ID, XILIU_SHEET)),
+    ]).then(function (texts) {
+      var zhizeRows = Papa.parse(texts[0], { skipEmptyLines: true }).data;
+      var xiliuRows = Papa.parse(texts[1], { skipEmptyLines: true }).data;
+      var now = new Date();
+      applyData(zhizeRows, xiliuRows, now, false);
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: now.getTime(), zhize: texts[0], xiliu: texts[1] }));
+      } catch (e) { /* storage unavailable or full */ }
     }).catch(function (err) {
       console.error(err);
       if (state.days.length === 0) {
-        var banner = '<div class="error-banner">資料載入失敗，請檢查網路連線後按右上角「重新整理」。</div>';
+        var banner = '<div class="error-banner">資料載入失敗，且沒有可用的離線資料。請連上網路後按右上角「重新整理」。</div>';
         meContentEl.innerHTML = banner;
         overviewContentEl.innerHTML = banner;
+        statusTextEl.textContent = '載入失敗';
+      } else {
+        state.offline = true;
+        updateStatus();
       }
-      updateStatus(err);
     }).finally(function () {
       refreshBtnEl.classList.remove('spinning');
     });
   }
 
-  function updateStatus(err) {
-    var timeStr = state.lastUpdated
-      ? state.lastUpdated.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      : '尚未成功';
-    if (err) {
-      statusTextEl.textContent = '更新失敗，顯示上次資料（' + timeStr + '）';
+  function updateStatus() {
+    if (!state.lastUpdated) {
+      statusTextEl.textContent = '資料載入中…';
+      return;
+    }
+    var timeStr = state.lastUpdated.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    if (state.offline) {
+      statusTextEl.textContent = '⚠ 目前離線，顯示 ' + timeStr + ' 的資料';
     } else {
-      statusTextEl.textContent = '資料更新時間：' + timeStr + '（每5分鐘自動同步）';
+      statusTextEl.textContent = '資料更新時間：' + timeStr + '（切回畫面時自動更新）';
     }
   }
 
@@ -464,7 +498,6 @@
     if (!document.hidden) loadData(false);
   });
 
-  setInterval(function () { loadData(false); }, REFRESH_INTERVAL_MS);
-
+  loadFromCache();
   loadData(false);
 })();
