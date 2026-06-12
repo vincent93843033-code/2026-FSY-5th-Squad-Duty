@@ -1,9 +1,9 @@
 :root {
-  --color-bg: #f3f5f8;
+  --color-bg: #eaf4f6;
   --color-card: #ffffff;
   --color-primary: #2f6f4f;
-  --color-primary-light: #e6f2ec;
-  --color-accent: #d97a3f;
+  --color-primary-light: #e3f0ec;
+  --color-accent: #e2923f;
   --color-text: #2b2d31;
   --color-muted: #8a8f98;
   --color-border: #e1e4e9;
@@ -45,13 +45,28 @@ body {
 
 /* Header */
 .header {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, #4e71a5 0%, #2f6f4f 100%);
   color: #fff;
   padding: 14px 16px 12px;
 }
 
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.header-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: block;
+  flex-shrink: 0;
+}
+
 .header h1 {
-  margin: 0 0 6px;
+  margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.02em;

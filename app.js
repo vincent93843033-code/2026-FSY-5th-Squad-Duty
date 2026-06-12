@@ -204,7 +204,7 @@
     if (err) {
       statusTextEl.textContent = '更新失敗，顯示上次資料（' + timeStr + '）';
     } else {
-      statusTextEl.textContent = '資料更新時間：' + timeStr;
+      statusTextEl.textContent = '資料更新時間：' + timeStr + '・每5分鐘自動同步';
     }
   }
 
