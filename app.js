@@ -422,7 +422,7 @@
     return span;
   }
 
-  function buildDetailSection(row) {
+  function buildDetailBody(row) {
     var fields = [];
     if (row.leader) fields.push(['主要負責', buildTextValue(row.leader)]);
 
@@ -447,18 +447,6 @@
 
     if (fields.length === 0) return null;
 
-    var wrap = document.createElement('div');
-    wrap.className = 'card-detail-wrap';
-
-    var toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.className = 'card-detail-toggle';
-    toggle.appendChild(document.createTextNode('詳情 '));
-    var caret = document.createElement('span');
-    caret.className = 'caret';
-    caret.textContent = '▾';
-    toggle.appendChild(caret);
-
     var body = document.createElement('div');
     body.className = 'card-detail';
     fields.forEach(function (f) {
@@ -471,16 +459,7 @@
       rowEl.appendChild(f[1]);
       body.appendChild(rowEl);
     });
-
-    toggle.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = wrap.classList.toggle('open');
-      caret.textContent = open ? '▴' : '▾';
-    });
-
-    wrap.appendChild(toggle);
-    wrap.appendChild(body);
-    return wrap;
+    return body;
   }
 
   function buildActivityCard(row, highlightPerson, dayLabel, now) {
@@ -528,8 +507,34 @@
       card.appendChild(buildPersonChips(row.people, null, personSelectEl.value));
     }
 
-    var detail = buildDetailSection(row);
-    if (detail) card.appendChild(detail);
+    var detailBody = buildDetailBody(row);
+    if (detailBody) {
+      var detailWrap = document.createElement('div');
+      detailWrap.className = 'card-detail-wrap';
+      detailWrap.appendChild(detailBody);
+      card.appendChild(detailWrap);
+
+      var expandBar = document.createElement('div');
+      expandBar.className = 'card-expand-bar';
+      var expandLabel = document.createElement('span');
+      expandLabel.textContent = '詳情';
+      expandBar.appendChild(expandLabel);
+      var expandCaret = document.createElement('span');
+      expandCaret.className = 'card-expand-caret';
+      expandCaret.textContent = '▾';
+      expandBar.appendChild(expandCaret);
+      card.appendChild(expandBar);
+
+      card.classList.add('expandable');
+      card.addEventListener('click', function () {
+        var open = card.classList.toggle('open');
+        if (open) {
+          detailWrap.style.maxHeight = detailBody.scrollHeight + 'px';
+        } else {
+          detailWrap.style.maxHeight = '0px';
+        }
+      });
+    }
 
     return card;
   }

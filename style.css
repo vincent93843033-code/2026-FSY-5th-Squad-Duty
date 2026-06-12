@@ -378,37 +378,42 @@ body {
 }
 
 /* Activity detail (expandable) */
-.card-detail-wrap {
-  margin-top: 8px;
-  border-top: 1px dashed var(--color-border);
-  padding-top: 6px;
-}
-
-.card-detail-toggle {
-  appearance: none;
-  border: none;
-  background: none;
-  padding: 2px 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--color-primary);
+.activity-card.expandable {
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
 }
 
-.card-detail-toggle .caret {
-  font-size: 0.7rem;
+.card-detail-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
 }
 
 .card-detail {
-  display: none;
-  margin-top: 6px;
+  padding-top: 8px;
 }
 
-.card-detail-wrap.open .card-detail {
-  display: block;
+/* Expand affordance bar (replaces old "詳情" button) */
+.card-expand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--color-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.card-expand-caret {
+  font-size: 0.7rem;
+  line-height: 1;
+  transition: transform 0.28s ease;
+}
+
+.activity-card.open .card-expand-caret {
+  transform: rotate(180deg);
 }
 
 .detail-row {
