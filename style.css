@@ -576,6 +576,10 @@ body {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.search-fab[hidden] {
+  display: none;
+}
+
 .search-fab:active {
   transform: scale(0.92);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
@@ -615,15 +619,16 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--kb-inset, 0px);
-  max-height: min(75vh, calc(var(--vvh, 100vh) - 16px));
+  top: 0;
+  /* 由上而下展開：輸入列固定在頂端，結果向下延伸，鍵盤彈出也不會擋住搜尋框與結果 */
+  max-height: calc(var(--vvh, 100vh) - 8px);
   display: flex;
   flex-direction: column;
   background: var(--color-card);
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
-  transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.15s ease;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+  transform: translateY(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .search-overlay.open .search-panel {
@@ -738,6 +743,396 @@ body {
 
 .activity-card.search-highlight {
   animation: highlightPulse 1.4s ease-out;
+}
+
+/* ===== Tab 3: 小工具 ===== */
+.tool-section {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.tool-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tool-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.tool-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+.tool-hint {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+/* Roster search */
+.roster-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin-bottom: 10px;
+}
+
+.roster-search-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+#roster-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.98rem;
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.roster-clear {
+  appearance: none;
+  border: none;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.roster-search.has-text .roster-clear {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.roster-clear:active {
+  transform: scale(0.88);
+}
+
+/* Filter chips */
+.roster-filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.roster-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.roster-chip {
+  flex-shrink: 0;
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.roster-chip.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  animation: pillPop 0.25s ease;
+}
+
+.roster-chip:active {
+  transform: scale(0.94);
+}
+
+.roster-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.roster-toggle {
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-muted);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.roster-toggle.active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  animation: pillPop 0.25s ease;
+}
+
+.roster-toggle-early.active {
+  background: #fff3e0;
+  border-color: var(--color-accent);
+  color: #b9701f;
+}
+
+.roster-toggle:active {
+  transform: scale(0.94);
+}
+
+/* Roster list + member cards */
+.roster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--mc, var(--color-border));
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--color-card);
+  cursor: pointer;
+  transition: opacity 0.1s ease, box-shadow 0.15s ease;
+  animation: memberIn 0.28s ease both;
+}
+
+@keyframes memberIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.member-card:active {
+  opacity: 0.7;
+}
+
+.member-card.male {
+  --mc: #3b78c2;
+}
+
+.member-card.female {
+  --mc: #d36a93;
+}
+
+.member-avatar {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--mc, var(--color-muted));
+}
+
+.member-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.member-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.member-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 1px 7px;
+  line-height: 1.5;
+}
+
+.member-tag.tag-nonmember {
+  background: #efe6fa;
+  color: #6b4ea8;
+}
+
+.member-tag.tag-veg {
+  background: #e6f4e6;
+  color: #3f8c4f;
+}
+
+.member-tag.tag-early {
+  background: #fff3e0;
+  color: #b9701f;
+}
+
+.member-meta {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.member-meta .dot {
+  margin: 0 5px;
+  opacity: 0.5;
+}
+
+/* expandable detail */
+.member-detail-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0, 0, 0.2, 1);
+  width: 100%;
+}
+
+.member-detail {
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px dashed var(--color-border);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.member-card.open .member-detail {
+  opacity: 1;
+  transition: opacity 0.25s ease 0.05s;
+}
+
+.member-detail-row {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.member-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.member-detail-label {
+  font-weight: 700;
+  color: var(--color-muted);
+  margin-right: 6px;
+}
+
+.roster-empty {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  padding: 28px 12px;
+}
+
+/* Random picker */
+.random-btn {
+  appearance: none;
+  border: none;
+  width: 100%;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.random-btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.random-dice {
+  display: inline-block;
+}
+
+.random-btn.rolling .random-dice {
+  animation: diceRoll 0.5s ease;
+}
+
+@keyframes diceRoll {
+  0% { transform: rotate(0) scale(1); }
+  50% { transform: rotate(360deg) scale(1.3); }
+  100% { transform: rotate(720deg) scale(1); }
+}
+
+.random-result {
+  margin-top: 12px;
+}
+
+.random-result:empty {
+  margin-top: 0;
+}
+
+.random-pick-card {
+  text-align: center;
+  border: 2px solid var(--mc, var(--color-primary));
+  border-radius: var(--radius);
+  padding: 16px;
+  animation: pickPop 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+
+@keyframes pickPop {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.random-pick-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--mc, var(--color-primary));
+}
+
+.random-pick-meta {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 4px;
 }
 
 /* Error banner */
