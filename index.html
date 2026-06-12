@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>第五中隊職責查詢</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="top-bar">
+    <header class="header">
+      <h1>第五中隊職責查詢</h1>
+      <div class="status-row">
+        <span id="status-text" class="status-text">資料載入中…</span>
+        <button id="refresh-btn" class="refresh-btn" title="重新整理">⟳</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="me">我的職責</button>
+      <button class="tab-btn" data-tab="overview">時段總覽</button>
+    </nav>
+  </div>
+
+  <main class="content">
+
+    <!-- Tab 1: 我的職責 -->
+    <section id="tab-me" class="tab-panel active">
+      <div class="picker-row">
+        <label for="person-select">選擇人員：</label>
+        <select id="person-select"></select>
+      </div>
+      <div id="me-content" class="day-list"></div>
+    </section>
+
+    <!-- Tab 2: 時段總覽 -->
+    <section id="tab-overview" class="tab-panel">
+      <div class="day-pills" id="day-pills"></div>
+      <div id="overview-content" class="day-list"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    資料來源：2026 FSY 第五中隊「職責」與「2026 細流」Google 試算表（即時同步）
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
