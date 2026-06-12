@@ -216,6 +216,9 @@
       state.days = buildJoinedDays(zhize, xiliu);
       if (state.selectedDay === null) {
         state.selectedDay = detectTodayDayIndex() || 1;
+        state.days.forEach(function (day) {
+          state.collapsedDays[day.index] = day.index !== state.selectedDay;
+        });
       }
       state.lastUpdated = new Date();
       populatePersonSelect();
@@ -385,15 +388,15 @@
       });
       section.appendChild(header);
 
+      var body = document.createElement('div');
+      body.className = 'day-section-body';
+
       if (day.note) {
         var noteEl = document.createElement('div');
         noteEl.className = 'day-section-note';
         noteEl.textContent = day.note;
-        section.appendChild(noteEl);
+        body.appendChild(noteEl);
       }
-
-      var body = document.createElement('div');
-      body.className = 'day-section-body';
 
       var items = day.rows.filter(function (r) { return r.people[person]; });
       if (items.length === 0) {
