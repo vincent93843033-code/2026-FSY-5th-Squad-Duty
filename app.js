@@ -239,7 +239,7 @@
     if (state.selectedDay === null) {
       state.selectedDay = detectTodayDayIndex() || 1;
       state.days.forEach(function (day) {
-        state.collapsedDays[day.index] = day.index !== state.selectedDay;
+        state.collapsedDays[day.index] = true;
       });
     }
     state.lastUpdated = updatedDate;
@@ -383,6 +383,13 @@
     return XILIU_LINKS[key] || null;
   }
 
+  function splitActivityTitle(activity) {
+    var text = (activity || '').replace(/\s*[\r\n]+\s*/g, ' ').trim();
+    var idx = text.search(/[(（]/);
+    if (idx <= 0) return { main: text, sub: null };
+    return { main: text.slice(0, idx).trim(), sub: text.slice(idx).trim() };
+  }
+
   function buildTextValue(text) {
     var span = document.createElement('span');
     span.className = 'detail-value';
@@ -477,12 +484,21 @@
     time.textContent = row.time;
     header.appendChild(time);
 
+    var parsedTitle = splitActivityTitle(row.activity);
+
     var title = document.createElement('div');
     title.className = 'activity-title';
-    title.textContent = row.activity;
+    title.textContent = parsedTitle.main;
     header.appendChild(title);
 
     card.appendChild(header);
+
+    if (parsedTitle.sub) {
+      var subtitle = document.createElement('div');
+      subtitle.className = 'activity-subtitle';
+      subtitle.textContent = parsedTitle.sub;
+      card.appendChild(subtitle);
+    }
 
     if (row.location) {
       var loc = document.createElement('div');
