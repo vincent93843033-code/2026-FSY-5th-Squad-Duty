@@ -345,11 +345,28 @@
     });
   }
 
+  function extractStartMinutes(note) {
+    var m = (note || '').match(/(早上|上午|中午|下午|晚上)?\s*(\d{1,2}):(\d{2})/);
+    if (!m) return null;
+    var hour = parseInt(m[2], 10);
+    var minute = parseInt(m[3], 10);
+    if ((m[1] === '下午' || m[1] === '晚上') && hour < 12) hour += 12;
+    return hour * 60 + minute;
+  }
+
   function buildPersonChips(people, excludePerson, currentPerson) {
     var chipRow = document.createElement('div');
     chipRow.className = 'chip-row';
-    Object.keys(people).forEach(function (name) {
-      if (name === excludePerson) return;
+    var names = Object.keys(people).filter(function (name) { return name !== excludePerson; });
+    names.sort(function (a, b) {
+      var ta = extractStartMinutes(people[a]);
+      var tb = extractStartMinutes(people[b]);
+      if (ta === null && tb === null) return 0;
+      if (ta === null) return 1;
+      if (tb === null) return -1;
+      return ta - tb;
+    });
+    names.forEach(function (name) {
       var chip = document.createElement('span');
       var isMe = name === currentPerson;
       chip.className = 'chip' + (isMe ? ' chip-me' : '');
