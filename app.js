@@ -466,7 +466,6 @@
     var card = document.createElement('div');
     var hasAssignments = Object.keys(row.people).length > 0;
     var classes = ['activity-card'];
-    if (!hasAssignments) classes.push('muted');
     if (now && isRowCurrent(dayLabel, row, now)) classes.push('current');
     card.className = classes.join(' ');
 
@@ -567,10 +566,6 @@
       toggle.textContent = '▾';
       header.appendChild(toggle);
 
-      header.addEventListener('click', function () {
-        var collapsed = section.classList.toggle('collapsed');
-        state.collapsedDays[day.index] = collapsed;
-      });
       section.appendChild(header);
 
       var body = document.createElement('div');
@@ -596,6 +591,29 @@
       }
       section.appendChild(body);
       meContentEl.appendChild(section);
+
+      if (state.collapsedDays[day.index]) {
+        body.style.maxHeight = '0px';
+      }
+
+      body.addEventListener('transitionend', function (e) {
+        if (e.propertyName === 'max-height' && !section.classList.contains('collapsed')) {
+          body.style.maxHeight = 'none';
+        }
+      });
+
+      header.addEventListener('click', function () {
+        var collapsed = section.classList.toggle('collapsed');
+        state.collapsedDays[day.index] = collapsed;
+        if (collapsed) {
+          body.style.maxHeight = body.scrollHeight + 'px';
+          requestAnimationFrame(function () {
+            body.style.maxHeight = '0px';
+          });
+        } else {
+          body.style.maxHeight = body.scrollHeight + 'px';
+        }
+      });
     });
   }
 
@@ -613,6 +631,14 @@
     day.rows.forEach(function (row) {
       overviewContentEl.appendChild(buildActivityCard(row, null, day.label, now));
     });
+
+    playFadeIn(overviewContentEl);
+  }
+
+  function playFadeIn(el) {
+    el.classList.remove('fade-in');
+    void el.offsetWidth;
+    el.classList.add('fade-in');
   }
 
   function scrollToCurrent(container) {
@@ -629,6 +655,7 @@
       btn.classList.add('active');
       var panel = document.getElementById('tab-' + btn.dataset.tab);
       panel.classList.add('active');
+      playFadeIn(panel);
       scrollToCurrent(panel);
     });
   });
