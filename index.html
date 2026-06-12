@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
 <div class="app">
@@ -61,46 +61,137 @@
     <!-- Tab 3: 小工具 -->
     <section id="tab-tools" class="tab-panel">
 
-      <!-- 工具一：小隊員一覽 -->
-      <div class="tool-section">
-        <div class="tool-head">
-          <h2 class="tool-title">小隊員一覽</h2>
-          <span class="tool-count" id="roster-count">載入中…</span>
-        </div>
-
-        <div class="roster-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="roster-search-icon" aria-hidden="true">
-            <circle cx="11" cy="11" r="7"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input id="roster-input" type="text" placeholder="搜尋姓名、支會、小隊、特殊狀況…" autocomplete="off">
-          <button id="roster-clear" class="roster-clear" aria-label="清除">✕</button>
-        </div>
-
-        <div class="roster-filters" id="roster-team-filters"></div>
-
-        <div class="roster-toggles">
-          <button class="roster-toggle" data-gender="all">全部</button>
-          <button class="roster-toggle" data-gender="男">男</button>
-          <button class="roster-toggle" data-gender="女">女</button>
-          <button class="roster-toggle roster-toggle-early" id="roster-early-toggle">🕑 只看早退</button>
-        </div>
-
-        <div id="roster-list" class="roster-list"></div>
-      </div>
-
-      <!-- 工具二：隨機抽籤 -->
-      <div class="tool-section">
-        <div class="tool-head">
-          <h2 class="tool-title">隨機抽籤</h2>
-        </div>
-        <p class="tool-hint">依目前「小隊員一覽」的篩選範圍，隨機抽一位（適合遊戲、點名、分組）。</p>
-        <button id="random-pick-btn" class="random-btn">
-          <span class="random-dice">🎲</span> 隨機抽一位
+      <!-- 工具選單 -->
+      <div id="tools-menu" class="tools-menu">
+        <button class="tool-menu-card" data-tool="roster">
+          <span class="tool-menu-icon">👥</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">小隊員一覽</span>
+            <span class="tool-menu-desc">全 FSY 小隊員名單、資料與聰明搜尋</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
         </button>
-        <div id="random-result" class="random-result"></div>
+        <button class="tool-menu-card" data-tool="draw">
+          <span class="tool-menu-icon">🎲</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">隨機抽籤</span>
+            <span class="tool-menu-desc">設定小隊範圍與男女人數隨機抽出</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="advisors">
+          <span class="tool-menu-icon">🧑‍🏫</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">小隊輔一覽</span>
+            <span class="tool-menu-desc">各中隊、小隊的隊輔名單與搜尋</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="contacts">
+          <span class="tool-menu-icon">📞</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">領袖聯絡方式</span>
+            <span class="tool-menu-desc">各 FSY 領袖的聯絡資訊</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
       </div>
 
+      <!-- 工具內容（點選後顯示，可返回選單） -->
+      <div id="tool-view" class="tool-view" hidden>
+        <button id="tool-back" class="tool-back">‹ 返回小工具</button>
+
+        <!-- 小隊員一覽 -->
+        <div id="pane-roster" class="tool-pane" hidden>
+          <div class="tool-head">
+            <h2 class="tool-title">小隊員一覽</h2>
+            <span class="tool-count" id="roster-count">載入中…</span>
+          </div>
+          <div class="roster-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="roster-search-icon" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="roster-input" type="text" placeholder="搜尋姓名、支會、小隊、隊輔…" autocomplete="off">
+            <button id="roster-clear" class="roster-clear" aria-label="清除">✕</button>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">中隊<span class="filter-hint">可複選</span></div>
+            <div class="roster-filters" id="roster-team-filters"></div>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">小隊<span class="filter-hint">可複選</span></div>
+            <div class="roster-filters" id="roster-squad-filters"></div>
+          </div>
+          <div class="roster-toggles">
+            <button class="roster-toggle" data-gender="all">全部</button>
+            <button class="roster-toggle" data-gender="男">男</button>
+            <button class="roster-toggle" data-gender="女">女</button>
+            <button class="roster-toggle roster-toggle-early" id="roster-early-toggle">🕑 早退</button>
+          </div>
+          <div id="roster-list" class="roster-list"></div>
+        </div>
+
+        <!-- 隨機抽籤 -->
+        <div id="pane-draw" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">隨機抽籤</h2></div>
+          <p class="tool-hint">設定小隊範圍與男女人數，從第五中隊小隊員中隨機抽出（適合遊戲、點名、分組）。</p>
+          <div class="filter-group">
+            <div class="filter-label">範圍（小隊）<span class="filter-hint">可複選</span></div>
+            <div class="roster-filters" id="draw-squad-filters"></div>
+          </div>
+          <div class="draw-counts">
+            <div class="stepper-row">
+              <span class="stepper-label male">男生</span>
+              <div class="stepper" data-draw="male">
+                <button class="stepper-btn" data-delta="-1" aria-label="減少">−</button>
+                <span class="stepper-val" id="draw-male-val">1</span>
+                <button class="stepper-btn" data-delta="1" aria-label="增加">＋</button>
+              </div>
+            </div>
+            <div class="stepper-row">
+              <span class="stepper-label female">女生</span>
+              <div class="stepper" data-draw="female">
+                <button class="stepper-btn" data-delta="-1" aria-label="減少">−</button>
+                <span class="stepper-val" id="draw-female-val">0</span>
+                <button class="stepper-btn" data-delta="1" aria-label="增加">＋</button>
+              </div>
+            </div>
+          </div>
+          <button id="random-pick-btn" class="random-btn">
+            <span class="random-dice">🎲</span> 開始抽籤
+          </button>
+          <div id="random-result" class="random-result"></div>
+        </div>
+
+        <!-- 小隊輔一覽 -->
+        <div id="pane-advisors" class="tool-pane" hidden>
+          <div class="tool-head">
+            <h2 class="tool-title">小隊輔一覽</h2>
+            <span class="tool-count" id="advisor-count"></span>
+          </div>
+          <div class="roster-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="roster-search-icon" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="advisor-input" type="text" placeholder="搜尋隊輔姓名、中隊、小隊…" autocomplete="off">
+            <button id="advisor-clear" class="roster-clear" aria-label="清除">✕</button>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">中隊<span class="filter-hint">可複選</span></div>
+            <div class="roster-filters" id="advisor-team-filters"></div>
+          </div>
+          <div id="advisor-list" class="roster-list"></div>
+        </div>
+
+        <!-- 領袖聯絡方式 -->
+        <div id="pane-contacts" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">領袖聯絡方式</h2></div>
+          <div id="contacts-body" class="contacts-body"></div>
+        </div>
+
+      </div>
     </section>
 
   </main>
@@ -135,6 +226,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=17"></script>
+<script src="app.js?v=18"></script>
 </body>
 </html>
