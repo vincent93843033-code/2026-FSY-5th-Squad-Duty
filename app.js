@@ -46,6 +46,40 @@
     return m ? parseInt(m[1], 10) : null;
   }
 
+  function getNow() {
+    var params = new URLSearchParams(location.search);
+    var demo = params.get('demo_time');
+    if (demo) {
+      var d = new Date(demo);
+      if (!isNaN(d.getTime())) return d;
+    }
+    return new Date();
+  }
+
+  function parseHM(s) {
+    var m = (s || '').trim().match(/^(\d{1,2}):(\d{2})/);
+    if (!m) return null;
+    return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  }
+
+  function parseTimeRange(timeStr) {
+    var parts = (timeStr || '').split('-');
+    return {
+      start: parseHM(parts[0]),
+      end: parts.length > 1 ? parseHM(parts[1]) : null,
+    };
+  }
+
+  function isRowCurrent(dayLabel, row, now) {
+    var m = (dayLabel || '').match(/^(\d{1,2})\/(\d{1,2})/);
+    if (!m) return false;
+    if (now.getMonth() + 1 !== parseInt(m[1], 10) || now.getDate() !== parseInt(m[2], 10)) return false;
+    var range = parseTimeRange(row.time);
+    if (range.start === null || range.end === null) return false;
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    return nowMin >= range.start && nowMin < range.end;
+  }
+
   function addOccurrenceIndex(rows) {
     var counts = {};
     return rows.map(function (r) {
@@ -152,7 +186,7 @@
   }
 
   function detectTodayDayIndex() {
-    var now = new Date();
+    var now = getNow();
     var month = now.getMonth() + 1;
     var date = now.getDate();
     for (var i = 0; i < state.days.length; i++) {
@@ -167,6 +201,7 @@
   function loadData(isManual) {
     if (isManual) refreshBtnEl.classList.add('spinning');
     statusTextEl.textContent = '資料更新中…';
+    var isFirstLoad = state.lastUpdated === null;
     return Promise.all([
       fetchCsvRows(buildCsvUrl(ZHIZE_ID, ZHIZE_SHEET)),
       fetchCsvRows(buildCsvUrl(XILIU_ID, XILIU_SHEET)),
@@ -184,6 +219,7 @@
       renderMeTab();
       renderOverviewTab();
       updateStatus(null);
+      if (isFirstLoad) scrollToCurrent(document.querySelector('.tab-panel.active'));
     }).catch(function (err) {
       console.error(err);
       if (state.days.length === 0) {
@@ -204,7 +240,7 @@
     if (err) {
       statusTextEl.textContent = '更新失敗，顯示上次資料（' + timeStr + '）';
     } else {
-      statusTextEl.textContent = '資料更新時間：' + timeStr + '・每5分鐘自動同步';
+      statusTextEl.textContent = '資料更新時間：' + timeStr + '（每5分鐘自動同步）';
     }
   }
 
@@ -240,10 +276,36 @@
     });
   }
 
-  function buildActivityCard(row, highlightPerson) {
+  function buildPersonChips(people, excludePerson, currentPerson) {
+    var chipRow = document.createElement('div');
+    chipRow.className = 'chip-row';
+    Object.keys(people).forEach(function (name) {
+      if (name === excludePerson) return;
+      var chip = document.createElement('span');
+      var isMe = name === currentPerson;
+      chip.className = 'chip' + (isMe ? ' chip-me' : '');
+      var personNote = people[name];
+      if (personNote && personNote !== '✔️') {
+        chip.textContent = name + ' ';
+        var noteSpan = document.createElement('span');
+        noteSpan.className = 'chip-note';
+        noteSpan.textContent = personNote;
+        chip.appendChild(noteSpan);
+      } else {
+        chip.textContent = name;
+      }
+      chipRow.appendChild(chip);
+    });
+    return chipRow;
+  }
+
+  function buildActivityCard(row, highlightPerson, dayLabel, now) {
     var card = document.createElement('div');
     var hasAssignments = Object.keys(row.people).length > 0;
-    card.className = 'activity-card' + (hasAssignments ? '' : ' muted');
+    var classes = ['activity-card'];
+    if (!hasAssignments) classes.push('muted');
+    if (now && isRowCurrent(dayLabel, row, now)) classes.push('current');
+    card.className = classes.join(' ');
 
     var time = document.createElement('div');
     time.className = 'activity-time';
@@ -270,26 +332,16 @@
         noteEl.textContent = note;
         card.appendChild(noteEl);
       }
+      var companionKeys = Object.keys(row.people).filter(function (n) { return n !== highlightPerson; });
+      if (companionKeys.length > 0) {
+        var label = document.createElement('div');
+        label.className = 'chip-label';
+        label.textContent = '同行：';
+        card.appendChild(label);
+        card.appendChild(buildPersonChips(row.people, highlightPerson, personSelectEl.value));
+      }
     } else if (hasAssignments) {
-      var chipRow = document.createElement('div');
-      chipRow.className = 'chip-row';
-      Object.keys(row.people).forEach(function (name) {
-        var chip = document.createElement('span');
-        var isMe = name === personSelectEl.value;
-        chip.className = 'chip' + (isMe ? ' chip-me' : '');
-        var personNote = row.people[name];
-        if (personNote && personNote !== '✔️') {
-          chip.textContent = name + ' ';
-          var noteSpan = document.createElement('span');
-          noteSpan.className = 'chip-note';
-          noteSpan.textContent = personNote;
-          chip.appendChild(noteSpan);
-        } else {
-          chip.textContent = name;
-        }
-        chipRow.appendChild(chip);
-      });
-      card.appendChild(chipRow);
+      card.appendChild(buildPersonChips(row.people, null, personSelectEl.value));
     }
 
     return card;
@@ -297,6 +349,7 @@
 
   function renderMeTab() {
     var person = personSelectEl.value;
+    var now = getNow();
     meContentEl.innerHTML = '';
     if (!person) {
       var note = document.createElement('div');
@@ -321,7 +374,7 @@
         section.appendChild(empty);
       } else {
         items.forEach(function (r) {
-          section.appendChild(buildActivityCard(r, person));
+          section.appendChild(buildActivityCard(r, person, day.label, now));
         });
       }
       meContentEl.appendChild(section);
@@ -332,6 +385,7 @@
     overviewContentEl.innerHTML = '';
     var day = state.days.filter(function (d) { return d.index === state.selectedDay; })[0];
     if (!day) return;
+    var now = getNow();
 
     var title = document.createElement('div');
     title.className = 'day-section-title';
@@ -339,8 +393,14 @@
     overviewContentEl.appendChild(title);
 
     day.rows.forEach(function (row) {
-      overviewContentEl.appendChild(buildActivityCard(row, null));
+      overviewContentEl.appendChild(buildActivityCard(row, null, day.label, now));
     });
+  }
+
+  function scrollToCurrent(container) {
+    if (!container) return;
+    var el = container.querySelector('.activity-card.current');
+    if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
   // Tab switching
@@ -349,7 +409,9 @@
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
       document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
       btn.classList.add('active');
-      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      var panel = document.getElementById('tab-' + btn.dataset.tab);
+      panel.classList.add('active');
+      scrollToCurrent(panel);
     });
   });
 
