@@ -130,7 +130,7 @@
       var col0 = (row[0] || '').trim();
       if (isDayHeader(col0)) {
         var idx = parseDayIndex(col0);
-        current = idx ? { label: col0, rows: [] } : null;
+        current = idx ? { label: col0, rows: [], note: '' } : null;
         if (idx) days[idx] = current;
         continue;
       }
@@ -141,6 +141,8 @@
           activity: (row[1] || '').trim(),
           location: (row[5] || '').trim(),
         });
+      } else if (!current.note && current.rows.length === 0 && col0) {
+        current.note = col0;
       }
     }
     return { days: days };
@@ -171,7 +173,8 @@
         (xiliu.days[d] && xiliu.days[d].label) ||
         (zhize.days[d] && zhize.days[d].label) ||
         ('D-' + d);
-      result.push({ index: d, label: label, rows: joined });
+      var note = (xiliu.days[d] && xiliu.days[d].note) || '';
+      result.push({ index: d, label: label, note: note, rows: joined });
     }
     return result;
   }
@@ -365,6 +368,13 @@
       title.className = 'day-section-title';
       title.textContent = day.label;
       section.appendChild(title);
+
+      if (day.note) {
+        var noteEl = document.createElement('div');
+        noteEl.className = 'day-section-note';
+        noteEl.textContent = day.note;
+        section.appendChild(noteEl);
+      }
 
       var items = day.rows.filter(function (r) { return r.people[person]; });
       if (items.length === 0) {

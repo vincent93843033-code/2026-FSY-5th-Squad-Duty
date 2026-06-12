@@ -224,12 +224,20 @@ body {
 }
 
 .day-section-title {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
   margin: 4px 2px 10px;
   padding-bottom: 4px;
   border-bottom: 2px solid var(--color-primary-light);
+}
+
+.day-section-note {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  white-space: pre-line;
+  line-height: 1.5;
+  margin: -4px 2px 10px;
 }
 
 .empty-note {
