@@ -716,6 +716,14 @@
     document.documentElement.style.setProperty('--topbar-h', topBar.getBoundingClientRect().height + 'px');
   }
 
+  function syncSearchViewport() {
+    var vv = window.visualViewport;
+    if (!vv) return;
+    var root = document.documentElement.style;
+    root.setProperty('--kb-inset', Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + 'px');
+    root.setProperty('--vvh', vv.height + 'px');
+  }
+
   // ---- Search (Tab 2) ----
   function normalizeForSearch(s) {
     return (s || '').toString().toLowerCase().replace(/\s+/g, '');
@@ -825,6 +833,7 @@
   function openSearch() {
     searchOverlayEl.classList.add('open');
     runSearch(searchInputEl.value);
+    syncSearchViewport();
     setTimeout(function () { searchInputEl.focus(); }, 250);
   }
 
@@ -869,6 +878,11 @@
 
   updateTopbarHeight();
   window.addEventListener('resize', updateTopbarHeight);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', syncSearchViewport);
+    window.visualViewport.addEventListener('scroll', syncSearchViewport);
+  }
 
   loadFromCache();
   loadData(false);
