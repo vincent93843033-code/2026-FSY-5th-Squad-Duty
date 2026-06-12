@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <div class="app">
@@ -36,7 +36,8 @@
 
     <nav class="tabs">
       <button class="tab-btn active" data-tab="me">我的職責</button>
-      <button class="tab-btn" data-tab="overview">時段總覽</button>
+      <button class="tab-btn" data-tab="overview">行程總覽</button>
+      <button class="tab-btn" data-tab="tools">小工具</button>
     </nav>
   </div>
 
@@ -55,31 +56,77 @@
     <section id="tab-overview" class="tab-panel">
       <div class="day-pills" id="day-pills"></div>
       <div id="overview-content" class="day-list"></div>
+    </section>
 
-      <button id="search-fab" class="search-fab" title="搜尋行程" aria-label="搜尋行程">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-fab-icon" aria-hidden="true">
-          <circle cx="11" cy="11" r="7"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </button>
+    <!-- Tab 3: 小工具 -->
+    <section id="tab-tools" class="tab-panel">
 
-      <div id="search-overlay" class="search-overlay">
-        <div class="search-backdrop"></div>
-        <div class="search-panel">
-          <div class="search-bar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-bar-icon" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input id="search-input" type="text" placeholder="搜尋行程、地點…" autocomplete="off">
-            <button id="search-close" class="search-close" aria-label="關閉搜尋">✕</button>
-          </div>
-          <div id="search-results" class="search-results"></div>
+      <!-- 工具一：小隊員一覽 -->
+      <div class="tool-section">
+        <div class="tool-head">
+          <h2 class="tool-title">小隊員一覽</h2>
+          <span class="tool-count" id="roster-count">載入中…</span>
         </div>
+
+        <div class="roster-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="roster-search-icon" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input id="roster-input" type="text" placeholder="搜尋姓名、支會、小隊、特殊狀況…" autocomplete="off">
+          <button id="roster-clear" class="roster-clear" aria-label="清除">✕</button>
+        </div>
+
+        <div class="roster-filters" id="roster-team-filters"></div>
+
+        <div class="roster-toggles">
+          <button class="roster-toggle" data-gender="all">全部</button>
+          <button class="roster-toggle" data-gender="男">男</button>
+          <button class="roster-toggle" data-gender="女">女</button>
+          <button class="roster-toggle roster-toggle-early" id="roster-early-toggle">🕑 只看早退</button>
+        </div>
+
+        <div id="roster-list" class="roster-list"></div>
       </div>
+
+      <!-- 工具二：隨機抽籤 -->
+      <div class="tool-section">
+        <div class="tool-head">
+          <h2 class="tool-title">隨機抽籤</h2>
+        </div>
+        <p class="tool-hint">依目前「小隊員一覽」的篩選範圍，隨機抽一位（適合遊戲、點名、分組）。</p>
+        <button id="random-pick-btn" class="random-btn">
+          <span class="random-dice">🎲</span> 隨機抽一位
+        </button>
+        <div id="random-result" class="random-result"></div>
+      </div>
+
     </section>
 
   </main>
+
+  <!-- 搜尋（行程總覽）：置於 .app 之下、各分頁之外，避免分頁切換動畫的 transform 影響 fixed 定位 -->
+  <button id="search-fab" class="search-fab" title="搜尋行程" aria-label="搜尋行程" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-fab-icon" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </button>
+
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-bar-icon" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="search-input" type="text" placeholder="搜尋行程、地點…" autocomplete="off">
+        <button id="search-close" class="search-close" aria-label="關閉搜尋">✕</button>
+      </div>
+      <div id="search-results" class="search-results"></div>
+    </div>
+  </div>
 
   <footer class="footer">
     資料來源：2026 FSY 第五中隊「職責」與「2026 細流」Google 試算表（即時同步）
@@ -88,6 +135,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=16"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>

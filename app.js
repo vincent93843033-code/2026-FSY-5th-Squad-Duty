@@ -36,6 +36,14 @@
   var searchInputEl = document.getElementById('search-input');
   var searchCloseEl = document.getElementById('search-close');
   var searchResultsEl = document.getElementById('search-results');
+  var rosterCountEl = document.getElementById('roster-count');
+  var rosterInputEl = document.getElementById('roster-input');
+  var rosterClearEl = document.getElementById('roster-clear');
+  var rosterTeamFiltersEl = document.getElementById('roster-team-filters');
+  var rosterListEl = document.getElementById('roster-list');
+  var rosterEarlyToggleEl = document.getElementById('roster-early-toggle');
+  var randomPickBtnEl = document.getElementById('random-pick-btn');
+  var randomResultEl = document.getElementById('random-result');
 
   var state = {
     days: [],
@@ -44,6 +52,12 @@
     lastUpdated: null,
     collapsedDays: {},
     offline: false,
+    members: [],
+    membersLoaded: false,
+    rosterTeam: 5,        // 預設聚焦第五中隊
+    rosterGender: 'all',
+    rosterEarlyOnly: false,
+    rosterQuery: '',
   };
 
   var didInitialScroll = false;
@@ -842,6 +856,273 @@
     searchInputEl.blur();
   }
 
+  // ---- Tab 3: 小工具 / 小隊員一覽 ----
+  function loadMembers() {
+    fetch('members.json?_t=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.members) return;
+        state.members = data.members;
+        state.membersMeta = data.meta || {};
+        state.membersLoaded = true;
+        if (document.getElementById('tab-tools').classList.contains('active')) {
+          renderRosterFilters();
+          renderRoster();
+        }
+      })
+      .catch(function () {});
+  }
+
+  var TEAM_CN = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  function teamLabel(t) { return '第' + (TEAM_CN[t] || t) + '中隊'; }
+
+  function renderRosterFilters() {
+    if (rosterTeamFiltersEl.childElementCount) return; // build once
+    var teams = [];
+    state.members.forEach(function (m) { if (teams.indexOf(m.t) === -1) teams.push(m.t); });
+    teams.sort(function (a, b) { return a - b; });
+
+    var allChip = document.createElement('button');
+    allChip.className = 'roster-chip';
+    allChip.textContent = '全部';
+    allChip.dataset.team = 'all';
+    rosterTeamFiltersEl.appendChild(allChip);
+
+    teams.forEach(function (t) {
+      var chip = document.createElement('button');
+      chip.className = 'roster-chip';
+      chip.textContent = teamLabel(t);
+      chip.dataset.team = String(t);
+      rosterTeamFiltersEl.appendChild(chip);
+    });
+
+    rosterTeamFiltersEl.addEventListener('click', function (e) {
+      var chip = e.target.closest('.roster-chip');
+      if (!chip) return;
+      state.rosterTeam = chip.dataset.team === 'all' ? 'all' : parseInt(chip.dataset.team, 10);
+      syncRosterChips();
+      renderRoster();
+    });
+    syncRosterChips();
+  }
+
+  function syncRosterChips() {
+    rosterTeamFiltersEl.querySelectorAll('.roster-chip').forEach(function (chip) {
+      var val = chip.dataset.team === 'all' ? 'all' : parseInt(chip.dataset.team, 10);
+      chip.classList.toggle('active', val === state.rosterTeam);
+    });
+    document.querySelectorAll('.roster-toggle[data-gender]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.gender === state.rosterGender);
+    });
+    rosterEarlyToggleEl.classList.toggle('active', state.rosterEarlyOnly);
+  }
+
+  function memberSearchText(m) {
+    return [m.n, teamLabel(m.t), m.s + '小隊', m.a, m.w, m.m ? '成員' : '非成員', m.g,
+      m.veg ? '素食' : '', m.early ? '早退' : '', m.r1, m.r2].filter(Boolean).join(' ');
+  }
+
+  function filteredMembers() {
+    var q = state.rosterQuery.trim();
+    var list = state.members.filter(function (m) {
+      if (state.rosterTeam !== 'all' && m.t !== state.rosterTeam) return false;
+      if (state.rosterGender !== 'all' && m.g !== state.rosterGender) return false;
+      if (state.rosterEarlyOnly && !m.early) return false;
+      return true;
+    });
+    if (q) {
+      list = list
+        .map(function (m) { return { m: m, score: fuzzyScore(q, memberSearchText(m)) }; })
+        .filter(function (x) { return x.score > -1; })
+        .sort(function (a, b) { return b.score - a.score; })
+        .map(function (x) { return x.m; });
+    } else {
+      list.sort(function (a, b) {
+        if (a.t !== b.t) return a.t - b.t;
+        if (a.s !== b.s) return (a.s || 0) - (b.s || 0);
+        if (a.g !== b.g) return a.g === '男' ? -1 : 1;
+        return 0;
+      });
+    }
+    return list;
+  }
+
+  function renderRoster() {
+    if (!state.membersLoaded) { rosterCountEl.textContent = '載入中…'; return; }
+    var list = filteredMembers();
+    var scope = state.rosterTeam === 'all' ? '全FSY' : teamLabel(state.rosterTeam);
+    rosterCountEl.textContent = scope + ' · ' + list.length + ' 人';
+
+    rosterListEl.innerHTML = '';
+    if (!list.length) {
+      var empty = document.createElement('div');
+      empty.className = 'roster-empty';
+      empty.textContent = '找不到符合的小隊員';
+      rosterListEl.appendChild(empty);
+      return;
+    }
+    list.forEach(function (m, i) {
+      var card = buildMemberCard(m);
+      card.style.animationDelay = Math.min(i, 12) * 0.02 + 's';
+      rosterListEl.appendChild(card);
+    });
+  }
+
+  function buildMemberCard(m) {
+    var card = document.createElement('div');
+    card.className = 'member-card ' + (m.g === '男' ? 'male' : 'female');
+
+    var avatar = document.createElement('div');
+    avatar.className = 'member-avatar';
+    avatar.textContent = m.n ? m.n.charAt(0) : '?';
+    card.appendChild(avatar);
+
+    var main = document.createElement('div');
+    main.className = 'member-main';
+
+    var nameRow = document.createElement('div');
+    nameRow.className = 'member-name-row';
+    var name = document.createElement('span');
+    name.className = 'member-name';
+    name.textContent = m.n;
+    nameRow.appendChild(name);
+    if (!m.m) nameRow.appendChild(makeTag('tag-nonmember', '非成員'));
+    if (m.veg) nameRow.appendChild(makeTag('tag-veg', '素'));
+    if (m.early) nameRow.appendChild(makeTag('tag-early', '早退'));
+    main.appendChild(nameRow);
+
+    var meta = document.createElement('div');
+    meta.className = 'member-meta';
+    var bits = [teamLabel(m.t) + ' ' + m.s + '小隊', '隊輔 ' + m.a, m.w];
+    if (m.age) bits.push(m.age + '歲');
+    meta.innerHTML = bits.map(function (b) { return escapeHtml(b); }).join('<span class="dot">·</span>');
+    main.appendChild(meta);
+
+    // expandable detail
+    var wrap = document.createElement('div');
+    wrap.className = 'member-detail-wrap';
+    var detail = document.createElement('div');
+    detail.className = 'member-detail';
+
+    var roomTxt = [];
+    if (m.r1) roomTxt.push('課程1 ' + m.r1);
+    if (m.r2) roomTxt.push('課程2 ' + m.r2);
+    detail.appendChild(makeDetailRow('Day3 課程教室', roomTxt.length ? roomTxt.join('、') : '未公布'));
+    detail.appendChild(makeDetailRow('身分', m.m ? '成員' : '非成員（朋友）'));
+    detail.appendChild(makeDetailRow('支會', m.w || '—'));
+    if (m.age) detail.appendChild(makeDetailRow('年齡', m.age + ' 歲'));
+    if (m.veg) detail.appendChild(makeDetailRow('飲食', '素食'));
+    if (m.early) detail.appendChild(makeDetailRow('提醒', '需提早離營'));
+    wrap.appendChild(detail);
+    main.appendChild(wrap);
+
+    card.appendChild(main);
+
+    card.addEventListener('click', function () {
+      var isOpen = card.classList.contains('open');
+      if (isOpen) {
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        void wrap.offsetWidth;
+        wrap.style.maxHeight = '0px';
+        card.classList.remove('open');
+      } else {
+        card.classList.add('open');
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        wrap.addEventListener('transitionend', function te(e) {
+          if (e.propertyName === 'max-height' && card.classList.contains('open')) {
+            wrap.style.maxHeight = 'none';
+          }
+          wrap.removeEventListener('transitionend', te);
+        });
+      }
+    });
+
+    return card;
+  }
+
+  function makeTag(cls, text) {
+    var t = document.createElement('span');
+    t.className = 'member-tag ' + cls;
+    t.textContent = text;
+    return t;
+  }
+
+  function makeDetailRow(label, value) {
+    var row = document.createElement('div');
+    row.className = 'member-detail-row';
+    var l = document.createElement('span');
+    l.className = 'member-detail-label';
+    l.textContent = label + '：';
+    row.appendChild(l);
+    row.appendChild(document.createTextNode(value));
+    return row;
+  }
+
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function pickRandomMember() {
+    if (!state.membersLoaded) return;
+    var pool = filteredMembers();
+    randomResultEl.innerHTML = '';
+    if (!pool.length) {
+      var e = document.createElement('div');
+      e.className = 'roster-empty';
+      e.textContent = '目前篩選範圍沒有人可抽';
+      randomResultEl.appendChild(e);
+      return;
+    }
+    var m = pool[Math.floor(Math.random() * pool.length)];
+    var card = document.createElement('div');
+    card.className = 'random-pick-card ' + (m.g === '男' ? 'male' : 'female');
+    card.classList.add(m.g === '男' ? 'male' : 'female');
+    card.style.setProperty('--mc', m.g === '男' ? '#3b78c2' : '#d36a93');
+    var name = document.createElement('div');
+    name.className = 'random-pick-name';
+    name.textContent = m.n;
+    var meta = document.createElement('div');
+    meta.className = 'random-pick-meta';
+    meta.textContent = teamLabel(m.t) + ' · ' + m.s + '小隊 · 隊輔' + m.a;
+    card.appendChild(name);
+    card.appendChild(meta);
+    randomResultEl.appendChild(card);
+  }
+
+  // roster events
+  rosterInputEl.addEventListener('input', function () {
+    state.rosterQuery = rosterInputEl.value;
+    rosterInputEl.closest('.roster-search').classList.toggle('has-text', !!rosterInputEl.value);
+    renderRoster();
+  });
+  rosterClearEl.addEventListener('click', function () {
+    rosterInputEl.value = '';
+    state.rosterQuery = '';
+    rosterInputEl.closest('.roster-search').classList.remove('has-text');
+    renderRoster();
+    rosterInputEl.focus();
+  });
+  document.querySelectorAll('.roster-toggle[data-gender]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.rosterGender = b.dataset.gender;
+      syncRosterChips();
+      renderRoster();
+    });
+  });
+  rosterEarlyToggleEl.addEventListener('click', function () {
+    state.rosterEarlyOnly = !state.rosterEarlyOnly;
+    syncRosterChips();
+    renderRoster();
+  });
+  randomPickBtnEl.addEventListener('click', function () {
+    randomPickBtnEl.classList.remove('rolling');
+    void randomPickBtnEl.offsetWidth;
+    randomPickBtnEl.classList.add('rolling');
+    setTimeout(pickRandomMember, 250);
+  });
+
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -851,7 +1132,13 @@
       var panel = document.getElementById('tab-' + btn.dataset.tab);
       panel.classList.add('active');
       playFadeIn(panel);
-      scrollToCurrent(panel);
+      searchFabEl.hidden = btn.dataset.tab !== 'overview';
+      closeSearch();
+      if (btn.dataset.tab === 'tools') {
+        if (state.membersLoaded) { renderRosterFilters(); renderRoster(); }
+      } else {
+        scrollToCurrent(panel);
+      }
     });
   });
 
@@ -886,4 +1173,5 @@
 
   loadFromCache();
   loadData(false);
+  loadMembers();
 })();
