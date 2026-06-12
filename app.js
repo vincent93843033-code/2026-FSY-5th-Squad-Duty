@@ -20,6 +20,7 @@
     people: [],
     selectedDay: null,
     lastUpdated: null,
+    collapsedDays: {},
   };
 
   function buildCsvUrl(sheetId, sheetName) {
@@ -363,11 +364,26 @@
     }
     state.days.forEach(function (day) {
       var section = document.createElement('div');
-      section.className = 'day-section';
+      section.className = 'day-section' + (state.collapsedDays[day.index] ? ' collapsed' : '');
+
+      var header = document.createElement('div');
+      header.className = 'day-section-header';
+
       var title = document.createElement('div');
       title.className = 'day-section-title';
       title.textContent = day.label;
-      section.appendChild(title);
+      header.appendChild(title);
+
+      var toggle = document.createElement('span');
+      toggle.className = 'day-section-toggle';
+      toggle.textContent = '▾';
+      header.appendChild(toggle);
+
+      header.addEventListener('click', function () {
+        var collapsed = section.classList.toggle('collapsed');
+        state.collapsedDays[day.index] = collapsed;
+      });
+      section.appendChild(header);
 
       if (day.note) {
         var noteEl = document.createElement('div');
@@ -376,17 +392,21 @@
         section.appendChild(noteEl);
       }
 
+      var body = document.createElement('div');
+      body.className = 'day-section-body';
+
       var items = day.rows.filter(function (r) { return r.people[person]; });
       if (items.length === 0) {
         var empty = document.createElement('div');
         empty.className = 'empty-note';
         empty.textContent = '本日沒有特別職責';
-        section.appendChild(empty);
+        body.appendChild(empty);
       } else {
         items.forEach(function (r) {
-          section.appendChild(buildActivityCard(r, person, day.label, now));
+          body.appendChild(buildActivityCard(r, person, day.label, now));
         });
       }
+      section.appendChild(body);
       meContentEl.appendChild(section);
     });
   }

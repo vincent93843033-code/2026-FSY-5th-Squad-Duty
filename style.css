@@ -240,6 +240,40 @@ body {
   margin: -4px 2px 10px;
 }
 
+/* Collapsible day sections (Tab 1) */
+.day-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 4px 2px 10px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--color-primary-light);
+  cursor: pointer;
+  user-select: none;
+}
+
+.day-section-header .day-section-title {
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.day-section-toggle {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.day-section.collapsed .day-section-toggle {
+  transform: rotate(-90deg);
+}
+
+.day-section.collapsed .day-section-body {
+  display: none;
+}
+
 .empty-note {
   font-size: 0.85rem;
   color: var(--color-muted);
