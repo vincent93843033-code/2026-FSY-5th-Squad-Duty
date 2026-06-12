@@ -8,6 +8,22 @@
   var STORAGE_KEY = 'fsy5_my_name';
   var CACHE_KEY = 'fsy5_cache_v1';
 
+  // 細流「說明」欄常是試算表內的超連結文字，CSV 匯出只帶文字、不帶網址，
+  // 這裡用顯示文字補回實際網址。
+  var XILIU_LINKS = {
+    '課程&見證聚會總表': 'https://docs.google.com/spreadsheets/d/1nLQgjyNKCW_J-S9AyOZ9bualG_Nohi95qWM8_3SBUQg/edit',
+  };
+  // 膳食組細流（用餐時段自動附上連結）
+  var MEAL_LINK_URL = 'https://docs.google.com/spreadsheets/d/1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE/edit';
+  // 第五中隊「男女青年活動」證據分配（隊內資料，不在共用試算表內）
+  var YM_EVIDENCE = [
+    '陳亞聖・劉宜昕 → 證據 1、8',
+    '徐虹承・劉家均 → 證據 5、6',
+    '徐唯哲・邢曜瑄 → 證據 2、5',
+    '賴亞各・林昉靚 → 證據 3、8',
+    '蘇敏恩・薛羽庭 → 證據 3、7',
+  ];
+
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
   var overviewContentEl = document.getElementById('overview-content');
@@ -352,36 +368,71 @@
     return chipRow;
   }
 
-  function buildDetailValue(text, isLink) {
+  function isMealActivity(act) {
+    return /餐|膳食|宵夜/.test(act || '');
+  }
+
+  function isYmActivity(act) {
+    return /(男青年|女青年)/.test(act || '');
+  }
+
+  function resolveLink(text) {
+    var m = (text || '').match(/https?:\/\/\S+/);
+    if (m) return m[0];
+    var key = (text || '').trim();
+    return XILIU_LINKS[key] || null;
+  }
+
+  function buildTextValue(text) {
     var span = document.createElement('span');
     span.className = 'detail-value';
-    if (isLink) {
-      var urls = text.match(/https?:\/\/\S+/g);
-      if (urls) {
-        var rest = text.replace(/https?:\/\/\S+/g, '').trim();
-        if (rest) span.appendChild(document.createTextNode(rest + ' '));
-        urls.forEach(function (u, i) {
-          var a = document.createElement('a');
-          a.href = u;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          a.className = 'detail-link';
-          a.textContent = '🔗 開啟細流' + (urls.length > 1 ? ' ' + (i + 1) : '');
-          span.appendChild(a);
-        });
-        return span;
-      }
-    }
     span.textContent = text;
+    return span;
+  }
+
+  function buildLinkValue(label, url) {
+    var span = document.createElement('span');
+    span.className = 'detail-value';
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.className = 'detail-link';
+    a.textContent = '🔗 ' + label;
+    a.addEventListener('click', function (e) {
+      // iOS 主畫面（standalone）模式下 target=_blank 會失效，改用程式開啟並保底導向
+      e.preventDefault();
+      e.stopPropagation();
+      var opened = window.open(url, '_blank');
+      if (!opened) window.location.href = url;
+    });
+    span.appendChild(a);
     return span;
   }
 
   function buildDetailSection(row) {
     var fields = [];
-    if (row.leader) fields.push(['主要負責', buildDetailValue(row.leader, false)]);
-    if (row.detailLink) fields.push(['細流連結', buildDetailValue(row.detailLink, true)]);
-    if (row.leaderGuide) fields.push(['小隊輔指引', buildDetailValue(row.leaderGuide, false)]);
-    if (row.acGuide) fields.push(['助理協調員指引', buildDetailValue(row.acGuide, false)]);
+    if (row.leader) fields.push(['主要負責', buildTextValue(row.leader)]);
+
+    if (row.detailLink) {
+      var url = resolveLink(row.detailLink);
+      if (url) {
+        var label = /https?:\/\//.test(row.detailLink) ? '開啟細流' : row.detailLink;
+        fields.push(['細流連結', buildLinkValue(label, url)]);
+      } else {
+        fields.push(['細流連結', buildTextValue(row.detailLink)]);
+      }
+    } else if (isMealActivity(row.activity)) {
+      fields.push(['膳食組細流', buildLinkValue('開啟膳食組細流', MEAL_LINK_URL)]);
+    }
+
+    if (row.leaderGuide) fields.push(['小隊輔指引', buildTextValue(row.leaderGuide)]);
+    if (row.acGuide) fields.push(['助理協調員指引', buildTextValue(row.acGuide)]);
+
+    if (isYmActivity(row.activity)) {
+      fields.push(['小隊證據分配', buildTextValue(YM_EVIDENCE.join('\n'))]);
+    }
+
     if (fields.length === 0) return null;
 
     var wrap = document.createElement('div');
