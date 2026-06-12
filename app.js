@@ -144,6 +144,10 @@
           time: col0,
           activity: (row[1] || '').trim(),
           location: (row[5] || '').trim(),
+          leader: (row[3] || '').trim(),
+          detailLink: (row[7] || '').trim(),
+          leaderGuide: (row[8] || '').trim(),
+          acGuide: (row[9] || '').trim(),
         });
       } else if (!current.note && current.rows.length === 0 && col0) {
         current.note = col0;
@@ -167,11 +171,19 @@
           time: xr.time,
           activity: xr.activity || (zr ? zr.activity : ''),
           location: xr.location,
+          leader: xr.leader,
+          detailLink: xr.detailLink,
+          leaderGuide: xr.leaderGuide,
+          acGuide: xr.acGuide,
           people: zr ? zr.people : {},
         };
       });
       zMap.forEach(function (zr) {
-        joined.push({ time: zr.time, activity: zr.activity, location: '', people: zr.people });
+        joined.push({
+          time: zr.time, activity: zr.activity, location: '',
+          leader: '', detailLink: '', leaderGuide: '', acGuide: '',
+          people: zr.people,
+        });
       });
       var label =
         (xiliu.days[d] && xiliu.days[d].label) ||
@@ -340,6 +352,74 @@
     return chipRow;
   }
 
+  function buildDetailValue(text, isLink) {
+    var span = document.createElement('span');
+    span.className = 'detail-value';
+    if (isLink) {
+      var urls = text.match(/https?:\/\/\S+/g);
+      if (urls) {
+        var rest = text.replace(/https?:\/\/\S+/g, '').trim();
+        if (rest) span.appendChild(document.createTextNode(rest + ' '));
+        urls.forEach(function (u, i) {
+          var a = document.createElement('a');
+          a.href = u;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.className = 'detail-link';
+          a.textContent = '🔗 開啟細流' + (urls.length > 1 ? ' ' + (i + 1) : '');
+          span.appendChild(a);
+        });
+        return span;
+      }
+    }
+    span.textContent = text;
+    return span;
+  }
+
+  function buildDetailSection(row) {
+    var fields = [];
+    if (row.leader) fields.push(['主要負責', buildDetailValue(row.leader, false)]);
+    if (row.detailLink) fields.push(['細流連結', buildDetailValue(row.detailLink, true)]);
+    if (row.leaderGuide) fields.push(['小隊輔指引', buildDetailValue(row.leaderGuide, false)]);
+    if (row.acGuide) fields.push(['助理協調員指引', buildDetailValue(row.acGuide, false)]);
+    if (fields.length === 0) return null;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'card-detail-wrap';
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'card-detail-toggle';
+    toggle.appendChild(document.createTextNode('詳情 '));
+    var caret = document.createElement('span');
+    caret.className = 'caret';
+    caret.textContent = '▾';
+    toggle.appendChild(caret);
+
+    var body = document.createElement('div');
+    body.className = 'card-detail';
+    fields.forEach(function (f) {
+      var rowEl = document.createElement('div');
+      rowEl.className = 'detail-row';
+      var lab = document.createElement('span');
+      lab.className = 'detail-label';
+      lab.textContent = f[0];
+      rowEl.appendChild(lab);
+      rowEl.appendChild(f[1]);
+      body.appendChild(rowEl);
+    });
+
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = wrap.classList.toggle('open');
+      caret.textContent = open ? '▴' : '▾';
+    });
+
+    wrap.appendChild(toggle);
+    wrap.appendChild(body);
+    return wrap;
+  }
+
   function buildActivityCard(row, highlightPerson, dayLabel, now) {
     var card = document.createElement('div');
     var hasAssignments = Object.keys(row.people).length > 0;
@@ -384,6 +464,9 @@
     } else if (hasAssignments) {
       card.appendChild(buildPersonChips(row.people, null, personSelectEl.value));
     }
+
+    var detail = buildDetailSection(row);
+    if (detail) card.appendChild(detail);
 
     return card;
   }
