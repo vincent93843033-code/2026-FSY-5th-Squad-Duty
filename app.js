@@ -17,11 +17,11 @@
   var MEAL_LINK_URL = 'https://docs.google.com/spreadsheets/d/1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE/edit';
   // 第五中隊「男女青年活動」證據分配（隊內資料，不在共用試算表內）
   var YM_EVIDENCE = [
-    '陳亞聖・劉宜昕 → 證據 1、8',
-    '徐虹承・劉家均 → 證據 5、6',
-    '徐唯哲・邢曜瑄 → 證據 2、5',
-    '賴亞各・林昉靚 → 證據 3、8',
-    '蘇敏恩・薛羽庭 → 證據 3、7',
+    '亞聖・宜昕 → 證據 1、8',
+    '虹承・家均 → 證據 5、6',
+    '唯哲・曜瑄 → 證據 2、5',
+    '亞各・昉靚 → 證據 3、8',
+    '敏恩・羽庭 → 證據 3、7',
   ];
 
   var dayPillsEl = document.getElementById('day-pills');
@@ -390,6 +390,18 @@
     return span;
   }
 
+  function buildEvidenceList(items) {
+    var box = document.createElement('div');
+    box.className = 'detail-value evidence-list';
+    items.forEach(function (line) {
+      var d = document.createElement('div');
+      d.className = 'evidence-line';
+      d.textContent = line;
+      box.appendChild(d);
+    });
+    return box;
+  }
+
   function buildLinkValue(label, url) {
     var span = document.createElement('span');
     span.className = 'detail-value';
@@ -430,7 +442,7 @@
     if (row.acGuide) fields.push(['助理協調員指引', buildTextValue(row.acGuide)]);
 
     if (isYmActivity(row.activity)) {
-      fields.push(['小隊證據分配', buildTextValue(YM_EVIDENCE.join('\n'))]);
+      fields.push(['小隊證據分配', buildEvidenceList(YM_EVIDENCE), true]);
     }
 
     if (fields.length === 0) return null;
@@ -451,7 +463,7 @@
     body.className = 'card-detail';
     fields.forEach(function (f) {
       var rowEl = document.createElement('div');
-      rowEl.className = 'detail-row';
+      rowEl.className = 'detail-row' + (f[2] ? ' detail-row-block' : '');
       var lab = document.createElement('span');
       lab.className = 'detail-label';
       lab.textContent = f[0];

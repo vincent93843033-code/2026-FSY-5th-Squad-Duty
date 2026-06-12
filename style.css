@@ -432,6 +432,21 @@ body {
   white-space: pre-line;
 }
 
+.detail-row-block .detail-label {
+  display: block;
+  margin-right: 0;
+  margin-bottom: 4px;
+}
+
+.evidence-list {
+  white-space: normal;
+}
+
+.evidence-line {
+  line-height: 1.6;
+  padding-left: 2px;
+}
+
 .detail-link {
   display: inline-block;
   color: var(--color-accent);
