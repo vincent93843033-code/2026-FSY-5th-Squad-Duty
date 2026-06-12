@@ -1135,6 +1135,199 @@ body {
   margin-top: 4px;
 }
 
+/* Tools menu (Tab 3 landing) */
+.tools-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tool-menu-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  animation: memberIn 0.3s ease both;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.tool-menu-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.tool-menu-icon {
+  font-size: 1.55rem;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: 12px;
+}
+
+.tool-menu-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tool-menu-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.tool-menu-desc {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
+.tool-menu-arrow {
+  font-size: 1.5rem;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+/* Tool view + back */
+.tool-back {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 2px 0 12px;
+  cursor: pointer;
+}
+
+.tool-back:active {
+  opacity: 0.55;
+}
+
+/* Filter groups */
+.filter-group {
+  margin-bottom: 10px;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-hint {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+
+/* Draw steppers */
+.draw-counts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepper-label {
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.stepper-label.male { color: #3b78c2; }
+.stepper-label.female { color: #d36a93; }
+
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.stepper-btn {
+  appearance: none;
+  border: none;
+  background: var(--color-card);
+  color: var(--color-primary);
+  width: 44px;
+  height: 40px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.stepper-btn:active {
+  background: var(--color-primary-light);
+}
+
+.stepper-val {
+  min-width: 42px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.random-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* advisor side tags */
+.member-tag.tag-male { background: #e4eefb; color: #3b78c2; }
+.member-tag.tag-female { background: #fbe7ef; color: #c05680; }
+
+/* contacts empty state */
+.contacts-empty {
+  text-align: center;
+  padding: 28px 16px;
+}
+
+.contacts-empty-icon {
+  font-size: 2.4rem;
+  margin-bottom: 10px;
+}
+
+.contacts-empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.contacts-empty-text {
+  font-size: 0.86rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
 /* Error banner */
 .error-banner {
   background: #fdecea;

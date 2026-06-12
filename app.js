@@ -36,14 +36,25 @@
   var searchInputEl = document.getElementById('search-input');
   var searchCloseEl = document.getElementById('search-close');
   var searchResultsEl = document.getElementById('search-results');
+  var toolsMenuEl = document.getElementById('tools-menu');
+  var toolViewEl = document.getElementById('tool-view');
+  var toolBackEl = document.getElementById('tool-back');
   var rosterCountEl = document.getElementById('roster-count');
   var rosterInputEl = document.getElementById('roster-input');
   var rosterClearEl = document.getElementById('roster-clear');
   var rosterTeamFiltersEl = document.getElementById('roster-team-filters');
+  var rosterSquadFiltersEl = document.getElementById('roster-squad-filters');
   var rosterListEl = document.getElementById('roster-list');
   var rosterEarlyToggleEl = document.getElementById('roster-early-toggle');
   var randomPickBtnEl = document.getElementById('random-pick-btn');
   var randomResultEl = document.getElementById('random-result');
+  var drawSquadFiltersEl = document.getElementById('draw-squad-filters');
+  var advisorInputEl = document.getElementById('advisor-input');
+  var advisorClearEl = document.getElementById('advisor-clear');
+  var advisorTeamFiltersEl = document.getElementById('advisor-team-filters');
+  var advisorListEl = document.getElementById('advisor-list');
+  var advisorCountEl = document.getElementById('advisor-count');
+  var contactsBodyEl = document.getElementById('contacts-body');
 
   var state = {
     days: [],
@@ -54,10 +65,17 @@
     offline: false,
     members: [],
     membersLoaded: false,
-    rosterTeam: 5,        // 預設聚焦第五中隊
+    rosterTeams: [5],     // 預設聚焦第五中隊（多選；空 = 全部）
+    rosterSquads: [],     // 多選；空 = 該中隊全部小隊
     rosterGender: 'all',
     rosterEarlyOnly: false,
     rosterQuery: '',
+    advisorTeams: [],
+    advisorQuery: '',
+    drawSquads: [],       // 抽籤範圍（第五中隊小隊；空 = 全部）
+    drawMale: 1,
+    drawFemale: 0,
+    currentTool: null,
   };
 
   var didInitialScroll = false;
@@ -856,7 +874,7 @@
     searchInputEl.blur();
   }
 
-  // ---- Tab 3: 小工具 / 小隊員一覽 ----
+  // ---- Tab 3: 小工具 ----
   function loadMembers() {
     fetch('members.json?_t=' + Date.now())
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -865,10 +883,9 @@
         state.members = data.members;
         state.membersMeta = data.meta || {};
         state.membersLoaded = true;
-        if (document.getElementById('tab-tools').classList.contains('active')) {
-          renderRosterFilters();
-          renderRoster();
-        }
+        if (state.currentTool === 'roster') { renderRosterFilters(); renderRoster(); }
+        if (state.currentTool === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
+        if (state.currentTool === 'draw') renderDrawFilters();
       })
       .catch(function () {});
   }
@@ -876,42 +893,112 @@
   var TEAM_CN = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
   function teamLabel(t) { return '第' + (TEAM_CN[t] || t) + '中隊'; }
 
-  function renderRosterFilters() {
-    if (rosterTeamFiltersEl.childElementCount) return; // build once
-    var teams = [];
-    state.members.forEach(function (m) { if (teams.indexOf(m.t) === -1) teams.push(m.t); });
-    teams.sort(function (a, b) { return a - b; });
+  // ---- tool navigation ----
+  function openTool(name) {
+    state.currentTool = name;
+    toolsMenuEl.hidden = true;
+    toolViewEl.hidden = false;
+    var panes = toolViewEl.querySelectorAll('.tool-pane');
+    panes.forEach(function (p) { p.hidden = ('pane-' + name) !== p.id; });
+    var pane = document.getElementById('pane-' + name);
+    if (pane) playFadeIn(pane);
+    if (name === 'roster') { renderRosterFilters(); renderRoster(); }
+    if (name === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
+    if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
+    if (name === 'contacts') renderContacts();
+    window.scrollTo(0, 0);
+  }
 
+  function backToToolsMenu() {
+    state.currentTool = null;
+    toolViewEl.hidden = true;
+    toolsMenuEl.hidden = false;
+    playFadeIn(toolsMenuEl);
+    window.scrollTo(0, 0);
+  }
+
+  // ---- multi-select chip helpers ----
+  function toggleInArray(arr, val) {
+    var i = arr.indexOf(val);
+    if (i === -1) arr.push(val); else arr.splice(i, 1);
+  }
+
+  // build a "全部 + items" multi-select chip row
+  function buildChipRow(container, items, getSelected, onToggle, onAll) {
+    container.innerHTML = '';
     var allChip = document.createElement('button');
     allChip.className = 'roster-chip';
     allChip.textContent = '全部';
-    allChip.dataset.team = 'all';
-    rosterTeamFiltersEl.appendChild(allChip);
-
-    teams.forEach(function (t) {
+    allChip.dataset.val = 'all';
+    container.appendChild(allChip);
+    items.forEach(function (it) {
       var chip = document.createElement('button');
       chip.className = 'roster-chip';
-      chip.textContent = teamLabel(t);
-      chip.dataset.team = String(t);
-      rosterTeamFiltersEl.appendChild(chip);
+      chip.textContent = it.label;
+      chip.dataset.val = String(it.val);
+      container.appendChild(chip);
     });
-
-    rosterTeamFiltersEl.addEventListener('click', function (e) {
+    container.onclick = function (e) {
       var chip = e.target.closest('.roster-chip');
       if (!chip) return;
-      state.rosterTeam = chip.dataset.team === 'all' ? 'all' : parseInt(chip.dataset.team, 10);
-      syncRosterChips();
-      renderRoster();
+      if (chip.dataset.val === 'all') onAll(); else onToggle(parseInt(chip.dataset.val, 10));
+    };
+  }
+
+  function syncChipRow(container, selectedArr) {
+    container.querySelectorAll('.roster-chip').forEach(function (chip) {
+      if (chip.dataset.val === 'all') chip.classList.toggle('active', selectedArr.length === 0);
+      else chip.classList.toggle('active', selectedArr.indexOf(parseInt(chip.dataset.val, 10)) !== -1);
     });
+  }
+
+  function distinctTeams() {
+    var teams = [];
+    state.members.forEach(function (m) { if (teams.indexOf(m.t) === -1) teams.push(m.t); });
+    return teams.sort(function (a, b) { return a - b; });
+  }
+
+  function squadsForTeams(teamArr) {
+    var squads = [];
+    state.members.forEach(function (m) {
+      if (teamArr.length && teamArr.indexOf(m.t) === -1) return;
+      if (squads.indexOf(m.s) === -1) squads.push(m.s);
+    });
+    return squads.sort(function (a, b) { return a - b; });
+  }
+
+  // ---- 小隊員一覽 ----
+  function renderRosterFilters() {
+    buildChipRow(rosterTeamFiltersEl,
+      distinctTeams().map(function (t) { return { val: t, label: teamLabel(t) }; }),
+      null,
+      function (t) {
+        toggleInArray(state.rosterTeams, t);
+        state.rosterSquads = state.rosterSquads.filter(function (s) {
+          return squadsForTeams(state.rosterTeams).indexOf(s) !== -1;
+        });
+        renderRosterSquadChips();
+        syncRosterChips();
+        renderRoster();
+      },
+      function () { state.rosterTeams = []; state.rosterSquads = []; renderRosterSquadChips(); syncRosterChips(); renderRoster(); });
+    renderRosterSquadChips();
     syncRosterChips();
   }
 
+  function renderRosterSquadChips() {
+    var squads = squadsForTeams(state.rosterTeams);
+    buildChipRow(rosterSquadFiltersEl,
+      squads.map(function (s) { return { val: s, label: s + '小隊' }; }),
+      null,
+      function (s) { toggleInArray(state.rosterSquads, s); syncRosterChips(); renderRoster(); },
+      function () { state.rosterSquads = []; syncRosterChips(); renderRoster(); });
+  }
+
   function syncRosterChips() {
-    rosterTeamFiltersEl.querySelectorAll('.roster-chip').forEach(function (chip) {
-      var val = chip.dataset.team === 'all' ? 'all' : parseInt(chip.dataset.team, 10);
-      chip.classList.toggle('active', val === state.rosterTeam);
-    });
-    document.querySelectorAll('.roster-toggle[data-gender]').forEach(function (b) {
+    syncChipRow(rosterTeamFiltersEl, state.rosterTeams);
+    syncChipRow(rosterSquadFiltersEl, state.rosterSquads);
+    document.querySelectorAll('#pane-roster .roster-toggle[data-gender]').forEach(function (b) {
       b.classList.toggle('active', b.dataset.gender === state.rosterGender);
     });
     rosterEarlyToggleEl.classList.toggle('active', state.rosterEarlyOnly);
@@ -925,7 +1012,8 @@
   function filteredMembers() {
     var q = state.rosterQuery.trim();
     var list = state.members.filter(function (m) {
-      if (state.rosterTeam !== 'all' && m.t !== state.rosterTeam) return false;
+      if (state.rosterTeams.length && state.rosterTeams.indexOf(m.t) === -1) return false;
+      if (state.rosterSquads.length && state.rosterSquads.indexOf(m.s) === -1) return false;
       if (state.rosterGender !== 'all' && m.g !== state.rosterGender) return false;
       if (state.rosterEarlyOnly && !m.early) return false;
       return true;
@@ -947,11 +1035,16 @@
     return list;
   }
 
+  function scopeLabel(teamArr, squadArr) {
+    if (squadArr.length) return squadArr.slice().sort(function (a, b) { return a - b; }).map(function (s) { return s + '小隊'; }).join('、');
+    if (teamArr.length) return teamArr.slice().sort(function (a, b) { return a - b; }).map(teamLabel).join('、');
+    return '全FSY';
+  }
+
   function renderRoster() {
     if (!state.membersLoaded) { rosterCountEl.textContent = '載入中…'; return; }
     var list = filteredMembers();
-    var scope = state.rosterTeam === 'all' ? '全FSY' : teamLabel(state.rosterTeam);
-    rosterCountEl.textContent = scope + ' · ' + list.length + ' 人';
+    rosterCountEl.textContent = scopeLabel(state.rosterTeams, state.rosterSquads) + ' · ' + list.length + ' 人';
 
     rosterListEl.innerHTML = '';
     if (!list.length) {
@@ -1064,32 +1157,166 @@
     });
   }
 
-  function pickRandomMember() {
+  // ---- 隨機抽籤 ----
+  var FIFTH = 5;
+  function renderDrawFilters() {
+    var squads = squadsForTeams([FIFTH]);   // 第五中隊的小隊
+    buildChipRow(drawSquadFiltersEl,
+      squads.map(function (s) { return { val: s, label: s + '小隊' }; }),
+      null,
+      function (s) { toggleInArray(state.drawSquads, s); syncChipRow(drawSquadFiltersEl, state.drawSquads); },
+      function () { state.drawSquads = []; syncChipRow(drawSquadFiltersEl, state.drawSquads); });
+    syncChipRow(drawSquadFiltersEl, state.drawSquads);
+  }
+
+  function syncDrawSteppers() {
+    document.getElementById('draw-male-val').textContent = state.drawMale;
+    document.getElementById('draw-female-val').textContent = state.drawFemale;
+  }
+
+  function drawPool(gender) {
+    return state.members.filter(function (m) {
+      if (m.t !== FIFTH) return false;
+      if (state.drawSquads.length && state.drawSquads.indexOf(m.s) === -1) return false;
+      return m.g === gender;
+    });
+  }
+
+  function sampleN(arr, n) {
+    var a = arr.slice(), out = [];
+    while (a.length && out.length < n) out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]);
+    return out;
+  }
+
+  function runDraw() {
     if (!state.membersLoaded) return;
-    var pool = filteredMembers();
     randomResultEl.innerHTML = '';
-    if (!pool.length) {
-      var e = document.createElement('div');
-      e.className = 'roster-empty';
-      e.textContent = '目前篩選範圍沒有人可抽';
-      randomResultEl.appendChild(e);
+    if (state.drawMale === 0 && state.drawFemale === 0) {
+      randomResultEl.appendChild(emptyNote('請先設定要抽幾位男生或女生'));
       return;
     }
-    var m = pool[Math.floor(Math.random() * pool.length)];
-    var card = document.createElement('div');
-    card.className = 'random-pick-card ' + (m.g === '男' ? 'male' : 'female');
-    card.classList.add(m.g === '男' ? 'male' : 'female');
-    card.style.setProperty('--mc', m.g === '男' ? '#3b78c2' : '#d36a93');
-    var name = document.createElement('div');
-    name.className = 'random-pick-name';
-    name.textContent = m.n;
-    var meta = document.createElement('div');
-    meta.className = 'random-pick-meta';
-    meta.textContent = teamLabel(m.t) + ' · ' + m.s + '小隊 · 隊輔' + m.a;
-    card.appendChild(name);
-    card.appendChild(meta);
-    randomResultEl.appendChild(card);
+    var picks = sampleN(drawPool('男'), state.drawMale).concat(sampleN(drawPool('女'), state.drawFemale));
+    if (!picks.length) { randomResultEl.appendChild(emptyNote('此範圍沒有可抽的人')); return; }
+
+    var shortfall = (state.drawMale > drawPool('男').length) || (state.drawFemale > drawPool('女').length);
+    if (shortfall) randomResultEl.appendChild(emptyNote('人數超過範圍人數，已抽出全部可抽者'));
+
+    picks.forEach(function (m, i) {
+      var card = document.createElement('div');
+      card.className = 'random-pick-card ' + (m.g === '男' ? 'male' : 'female');
+      card.style.setProperty('--mc', m.g === '男' ? '#3b78c2' : '#d36a93');
+      card.style.animationDelay = (i * 0.06) + 's';
+      var name = document.createElement('div');
+      name.className = 'random-pick-name';
+      name.textContent = m.n;
+      var meta = document.createElement('div');
+      meta.className = 'random-pick-meta';
+      meta.textContent = teamLabel(m.t) + ' · ' + m.s + '小隊 · 隊輔' + m.a;
+      card.appendChild(name);
+      card.appendChild(meta);
+      randomResultEl.appendChild(card);
+    });
   }
+
+  function emptyNote(text) {
+    var e = document.createElement('div');
+    e.className = 'roster-empty';
+    e.textContent = text;
+    return e;
+  }
+
+  // ---- 小隊輔一覽 ----
+  function deriveAdvisors() {
+    var seen = {}, list = [];
+    state.members.forEach(function (m) {
+      if (!m.a) return;
+      var key = m.t + '|' + m.s + '|' + m.g + '|' + m.a;
+      if (seen[key]) return;
+      seen[key] = 1;
+      list.push({ t: m.t, s: m.s, g: m.g, a: m.a });
+    });
+    return list;
+  }
+
+  function renderAdvisorFilters() {
+    buildChipRow(advisorTeamFiltersEl,
+      distinctTeams().map(function (t) { return { val: t, label: teamLabel(t) }; }),
+      null,
+      function (t) { toggleInArray(state.advisorTeams, t); syncChipRow(advisorTeamFiltersEl, state.advisorTeams); renderAdvisors(); },
+      function () { state.advisorTeams = []; syncChipRow(advisorTeamFiltersEl, state.advisorTeams); renderAdvisors(); });
+    syncChipRow(advisorTeamFiltersEl, state.advisorTeams);
+  }
+
+  function renderAdvisors() {
+    if (!state.membersLoaded) { advisorCountEl.textContent = '載入中…'; return; }
+    var q = state.advisorQuery.trim();
+    var list = deriveAdvisors().filter(function (a) {
+      if (state.advisorTeams.length && state.advisorTeams.indexOf(a.t) === -1) return false;
+      return true;
+    });
+    if (q) {
+      list = list
+        .map(function (a) { return { a: a, score: fuzzyScore(q, a.a + ' ' + teamLabel(a.t) + ' ' + a.s + '小隊 ' + a.g) }; })
+        .filter(function (x) { return x.score > -1; })
+        .sort(function (a, b) { return b.score - a.score; })
+        .map(function (x) { return x.a; });
+    } else {
+      list.sort(function (a, b) { return a.t - b.t || a.s - b.s || (a.g === '男' ? -1 : 1); });
+    }
+    advisorCountEl.textContent = (state.advisorTeams.length ? scopeLabel(state.advisorTeams, []) : '全FSY') + ' · ' + list.length + ' 位';
+
+    advisorListEl.innerHTML = '';
+    if (!list.length) { advisorListEl.appendChild(emptyNote('找不到符合的隊輔')); return; }
+    list.forEach(function (a, i) {
+      var card = document.createElement('div');
+      card.className = 'member-card ' + (a.g === '男' ? 'male' : 'female');
+      card.style.animationDelay = Math.min(i, 12) * 0.02 + 's';
+      var avatar = document.createElement('div');
+      avatar.className = 'member-avatar';
+      avatar.textContent = a.a ? a.a.charAt(0) : '?';
+      card.appendChild(avatar);
+      var main = document.createElement('div');
+      main.className = 'member-main';
+      var nameRow = document.createElement('div');
+      nameRow.className = 'member-name-row';
+      var name = document.createElement('span');
+      name.className = 'member-name';
+      name.textContent = a.a;
+      nameRow.appendChild(name);
+      nameRow.appendChild(makeTag(a.g === '男' ? 'tag-male' : 'tag-female', a.g === '男' ? '男隊' : '女隊'));
+      main.appendChild(nameRow);
+      var meta = document.createElement('div');
+      meta.className = 'member-meta';
+      meta.textContent = teamLabel(a.t) + ' · ' + a.s + '小隊';
+      main.appendChild(meta);
+      card.appendChild(main);
+      advisorListEl.appendChild(card);
+    });
+  }
+
+  // ---- 領袖聯絡方式 ----
+  function renderContacts() {
+    if (state.contacts && state.contacts.length) {
+      // 預留：若日後提供 leaders.json，可在此渲染
+      return;
+    }
+    contactsBodyEl.innerHTML = '';
+    var note = document.createElement('div');
+    note.className = 'contacts-empty';
+    note.innerHTML = '<div class="contacts-empty-icon">📞</div>' +
+      '<div class="contacts-empty-title">尚未提供聯絡資料</div>' +
+      '<div class="contacts-empty-text">請把助理協調員群組的「領袖聯絡清單」提供給管理者，' +
+      '即可在此查看各 FSY 領袖的聯絡方式。<br><br>' +
+      '⚠ 提醒：本 App 為公開網址，建議聯絡資訊以加密或非公開方式管理，避免個資外流。</div>';
+    contactsBodyEl.appendChild(note);
+  }
+
+  // tool menu navigation
+  toolsMenuEl.addEventListener('click', function (e) {
+    var card = e.target.closest('.tool-menu-card');
+    if (card) openTool(card.dataset.tool);
+  });
+  toolBackEl.addEventListener('click', backToToolsMenu);
 
   // roster events
   rosterInputEl.addEventListener('input', function () {
@@ -1104,7 +1331,7 @@
     renderRoster();
     rosterInputEl.focus();
   });
-  document.querySelectorAll('.roster-toggle[data-gender]').forEach(function (b) {
+  document.querySelectorAll('#pane-roster .roster-toggle[data-gender]').forEach(function (b) {
     b.addEventListener('click', function () {
       state.rosterGender = b.dataset.gender;
       syncRosterChips();
@@ -1116,11 +1343,37 @@
     syncRosterChips();
     renderRoster();
   });
+
+  // advisor events
+  advisorInputEl.addEventListener('input', function () {
+    state.advisorQuery = advisorInputEl.value;
+    advisorInputEl.closest('.roster-search').classList.toggle('has-text', !!advisorInputEl.value);
+    renderAdvisors();
+  });
+  advisorClearEl.addEventListener('click', function () {
+    advisorInputEl.value = '';
+    state.advisorQuery = '';
+    advisorInputEl.closest('.roster-search').classList.remove('has-text');
+    renderAdvisors();
+    advisorInputEl.focus();
+  });
+
+  // draw events
+  document.querySelectorAll('.stepper').forEach(function (st) {
+    st.addEventListener('click', function (e) {
+      var btn = e.target.closest('.stepper-btn');
+      if (!btn) return;
+      var delta = parseInt(btn.dataset.delta, 10);
+      var key = st.dataset.draw === 'male' ? 'drawMale' : 'drawFemale';
+      state[key] = Math.max(0, Math.min(50, state[key] + delta));
+      syncDrawSteppers();
+    });
+  });
   randomPickBtnEl.addEventListener('click', function () {
     randomPickBtnEl.classList.remove('rolling');
     void randomPickBtnEl.offsetWidth;
     randomPickBtnEl.classList.add('rolling');
-    setTimeout(pickRandomMember, 250);
+    setTimeout(runDraw, 250);
   });
 
   // Tab switching
@@ -1135,7 +1388,7 @@
       searchFabEl.hidden = btn.dataset.tab !== 'overview';
       closeSearch();
       if (btn.dataset.tab === 'tools') {
-        if (state.membersLoaded) { renderRosterFilters(); renderRoster(); }
+        backToToolsMenu();
       } else {
         scrollToCurrent(panel);
       }
