@@ -469,15 +469,20 @@
     if (now && isRowCurrent(dayLabel, row, now)) classes.push('current');
     card.className = classes.join(' ');
 
+    var header = document.createElement('div');
+    header.className = 'activity-header';
+
     var time = document.createElement('div');
     time.className = 'activity-time';
     time.textContent = row.time;
-    card.appendChild(time);
+    header.appendChild(time);
 
     var title = document.createElement('div');
     title.className = 'activity-title';
     title.textContent = row.activity;
-    card.appendChild(title);
+    header.appendChild(title);
+
+    card.appendChild(header);
 
     if (row.location) {
       var loc = document.createElement('div');
@@ -615,6 +620,8 @@
         }
       });
     });
+
+    fitCardText(meContentEl);
   }
 
   function renderOverviewTab() {
@@ -633,12 +640,26 @@
     });
 
     playFadeIn(overviewContentEl);
+    fitCardText(overviewContentEl);
   }
 
   function playFadeIn(el) {
     el.classList.remove('fade-in');
     void el.offsetWidth;
     el.classList.add('fade-in');
+  }
+
+  function shrinkToFit(el, minPx) {
+    var size = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth + 1 && size > minPx) {
+      size -= 1;
+      el.style.fontSize = size + 'px';
+    }
+  }
+
+  function fitCardText(container) {
+    container.querySelectorAll('.activity-title').forEach(function (el) { shrinkToFit(el, 13); });
+    container.querySelectorAll('.self-note').forEach(function (el) { shrinkToFit(el, 11); });
   }
 
   function scrollToCurrent(container) {
