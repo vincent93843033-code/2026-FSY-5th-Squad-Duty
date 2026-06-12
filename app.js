@@ -30,6 +30,12 @@
   var personSelectEl = document.getElementById('person-select');
   var statusTextEl = document.getElementById('status-text');
   var refreshBtnEl = document.getElementById('refresh-btn');
+  var searchFabEl = document.getElementById('search-fab');
+  var searchOverlayEl = document.getElementById('search-overlay');
+  var searchBackdropEl = document.querySelector('.search-backdrop');
+  var searchInputEl = document.getElementById('search-input');
+  var searchCloseEl = document.getElementById('search-close');
+  var searchResultsEl = document.getElementById('search-results');
 
   var state = {
     days: [],
@@ -311,6 +317,7 @@
     } else {
       statusTextEl.textContent = '資料更新時間：' + timeStr + '（切回畫面時自動更新）';
     }
+    updateTopbarHeight();
   }
 
   function populatePersonSelect() {
@@ -664,12 +671,14 @@
     var now = getNow();
 
     var title = document.createElement('div');
-    title.className = 'day-section-title';
+    title.className = 'day-section-title overview-day-title';
     title.textContent = day.label;
     overviewContentEl.appendChild(title);
 
-    day.rows.forEach(function (row) {
-      overviewContentEl.appendChild(buildActivityCard(row, null, day.label, now));
+    day.rows.forEach(function (row, idx) {
+      var card = buildActivityCard(row, null, day.label, now);
+      card.dataset.key = day.index + '-' + idx;
+      overviewContentEl.appendChild(card);
     });
 
     playFadeIn(overviewContentEl);
@@ -701,6 +710,129 @@
     if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
+  function updateTopbarHeight() {
+    var topBar = document.querySelector('.top-bar');
+    if (!topBar) return;
+    document.documentElement.style.setProperty('--topbar-h', topBar.getBoundingClientRect().height + 'px');
+  }
+
+  // ---- Search (Tab 2) ----
+  function normalizeForSearch(s) {
+    return (s || '').toString().toLowerCase().replace(/\s+/g, '');
+  }
+
+  function fuzzyScore(query, target) {
+    var q = normalizeForSearch(query);
+    var t = normalizeForSearch(target);
+    if (!q || !t) return -1;
+    var idx = t.indexOf(q);
+    if (idx !== -1) return 1000 - idx;
+    var ti = 0, gaps = 0;
+    for (var qi = 0; qi < q.length; qi++) {
+      var found = t.indexOf(q[qi], ti);
+      if (found === -1) return -1;
+      gaps += found - ti;
+      ti = found + 1;
+    }
+    return 500 - gaps;
+  }
+
+  function buildSearchIndex() {
+    var index = [];
+    state.days.forEach(function (day) {
+      day.rows.forEach(function (row, idx) {
+        var parsed = splitActivityTitle(row.activity);
+        var text = [parsed.main, parsed.sub, row.location, row.leader]
+          .concat(Object.keys(row.people || {}))
+          .filter(Boolean)
+          .join(' ');
+        index.push({
+          dayIndex: day.index,
+          rowIndex: idx,
+          time: row.time,
+          title: parsed.main,
+          location: row.location,
+          text: text
+        });
+      });
+    });
+    return index;
+  }
+
+  function runSearch(query) {
+    searchResultsEl.innerHTML = '';
+    if (!query.trim()) {
+      var hint = document.createElement('div');
+      hint.className = 'search-empty';
+      hint.textContent = '輸入關鍵字搜尋行程或地點';
+      searchResultsEl.appendChild(hint);
+      return;
+    }
+
+    var scored = buildSearchIndex()
+      .map(function (entry) { return { entry: entry, score: fuzzyScore(query, entry.text) }; })
+      .filter(function (s) { return s.score > -1; });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    scored = scored.slice(0, 30);
+
+    if (scored.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'search-empty';
+      empty.textContent = '找不到符合的行程';
+      searchResultsEl.appendChild(empty);
+      return;
+    }
+
+    scored.forEach(function (s) {
+      var entry = s.entry;
+      var item = document.createElement('div');
+      item.className = 'search-result-item';
+
+      var dayBadge = document.createElement('span');
+      dayBadge.className = 'search-result-day';
+      dayBadge.textContent = 'D-' + entry.dayIndex;
+
+      var time = document.createElement('span');
+      time.className = 'search-result-time';
+      time.textContent = entry.time;
+
+      var title = document.createElement('span');
+      title.className = 'search-result-title';
+      title.textContent = entry.title + (entry.location ? '・' + entry.location : '');
+
+      item.appendChild(dayBadge);
+      item.appendChild(time);
+      item.appendChild(title);
+      item.addEventListener('click', function () { jumpToResult(entry); });
+      searchResultsEl.appendChild(item);
+    });
+  }
+
+  function jumpToResult(entry) {
+    closeSearch();
+    state.selectedDay = entry.dayIndex;
+    renderDayPills();
+    renderOverviewTab();
+
+    var card = overviewContentEl.querySelector('[data-key="' + entry.dayIndex + '-' + entry.rowIndex + '"]');
+    if (!card) return;
+    card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    card.classList.remove('search-highlight');
+    void card.offsetWidth;
+    card.classList.add('search-highlight');
+  }
+
+  function openSearch() {
+    searchOverlayEl.classList.add('open');
+    runSearch(searchInputEl.value);
+    setTimeout(function () { searchInputEl.focus(); }, 250);
+  }
+
+  function closeSearch() {
+    searchOverlayEl.classList.remove('open');
+    searchInputEl.blur();
+  }
+
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -729,6 +861,14 @@
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) loadData(false);
   });
+
+  searchFabEl.addEventListener('click', openSearch);
+  searchCloseEl.addEventListener('click', closeSearch);
+  searchBackdropEl.addEventListener('click', closeSearch);
+  searchInputEl.addEventListener('input', function () { runSearch(searchInputEl.value); });
+
+  updateTopbarHeight();
+  window.addEventListener('resize', updateTopbarHeight);
 
   loadFromCache();
   loadData(false);
