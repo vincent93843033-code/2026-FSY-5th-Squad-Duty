@@ -48,7 +48,13 @@
   var rosterEarlyToggleEl = document.getElementById('roster-early-toggle');
   var randomPickBtnEl = document.getElementById('random-pick-btn');
   var randomResultEl = document.getElementById('random-result');
+  var drawTeamFiltersEl = document.getElementById('draw-team-filters');
   var drawSquadFiltersEl = document.getElementById('draw-squad-filters');
+  var rollcallSquadFiltersEl = document.getElementById('rollcall-squad-filters');
+  var rollcallBoardEl = document.getElementById('rollcall-board');
+  var rollcallCountEl = document.getElementById('rollcall-count');
+  var rollcallAllEl = document.getElementById('rollcall-all');
+  var rollcallNoneEl = document.getElementById('rollcall-none');
   var advisorInputEl = document.getElementById('advisor-input');
   var advisorClearEl = document.getElementById('advisor-clear');
   var advisorTeamFiltersEl = document.getElementById('advisor-team-filters');
@@ -72,9 +78,13 @@
     rosterQuery: '',
     advisorTeams: [],
     advisorQuery: '',
-    drawSquads: [],       // 抽籤範圍（第五中隊小隊；空 = 全部）
+    drawTeams: [],        // 抽籤範圍（中隊；空 = 全FSY）
+    drawSquads: [],       // 抽籤範圍（小隊；空 = 所選中隊全部）
     drawMale: 1,
     drawFemale: 0,
+    rollcallSquad: 18,    // 點名小隊（第五中隊 18-22）
+    rollcallPresent: {},  // { squad: { memberKey: true } }
+    squadAdvisors: {},    // "t|s" -> { 男: name, 女: name }
     currentTool: null,
   };
 
@@ -883,11 +893,29 @@
         state.members = data.members;
         state.membersMeta = data.meta || {};
         state.membersLoaded = true;
-        if (state.currentTool === 'roster') { renderRosterFilters(); renderRoster(); }
-        if (state.currentTool === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
-        if (state.currentTool === 'draw') renderDrawFilters();
+        buildSquadAdvisors();
+        if (state.currentTool) openTool(state.currentTool);
       })
       .catch(function () {});
+  }
+
+  function buildSquadAdvisors() {
+    var map = {};
+    state.members.forEach(function (m) {
+      if (!m.a) return;
+      var key = m.t + '|' + m.s;
+      if (!map[key]) map[key] = {};
+      map[key][m.g] = m.a;
+    });
+    state.squadAdvisors = map;
+  }
+
+  function advisorsForSquad(t, s) {
+    var info = state.squadAdvisors[t + '|' + s] || {};
+    var list = [];
+    if (info['男']) list.push(info['男']);
+    if (info['女']) list.push(info['女']);
+    return list;
   }
 
   var TEAM_CN = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -906,6 +934,7 @@
     if (name === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
     if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
     if (name === 'contacts') renderContacts();
+    if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
     window.scrollTo(0, 0);
   }
 
@@ -1084,9 +1113,10 @@
     if (m.early) nameRow.appendChild(makeTag('tag-early', '早退'));
     main.appendChild(nameRow);
 
+    var advisors = advisorsForSquad(m.t, m.s);
     var meta = document.createElement('div');
     meta.className = 'member-meta';
-    var bits = [teamLabel(m.t) + ' ' + m.s + '小隊', '隊輔 ' + m.a, m.w];
+    var bits = [teamLabel(m.t) + ' ' + m.s + '小隊', '隊輔 ' + (advisors.join('、') || m.a), m.w];
     if (m.age) bits.push(m.age + '歲');
     meta.innerHTML = bits.map(function (b) { return escapeHtml(b); }).join('<span class="dot">·</span>');
     main.appendChild(meta);
@@ -1097,10 +1127,10 @@
     var detail = document.createElement('div');
     detail.className = 'member-detail';
 
-    var roomTxt = [];
-    if (m.r1) roomTxt.push('課程1 ' + m.r1);
-    if (m.r2) roomTxt.push('課程2 ' + m.r2);
-    detail.appendChild(makeDetailRow('Day3 課程教室', roomTxt.length ? roomTxt.join('、') : '未公布'));
+    detail.appendChild(makeDetailRow('小隊輔', advisors.join('、') || m.a));
+    // Day3 課程教室（尚未公布，冒號後留白，待正式資料）
+    detail.appendChild(makeDetailRow('課程1', m.r1 || ''));
+    detail.appendChild(makeDetailRow('課程2', m.r2 || ''));
     detail.appendChild(makeDetailRow('身分', m.m ? '成員' : '非成員（朋友）'));
     detail.appendChild(makeDetailRow('支會', m.w || '—'));
     if (m.age) detail.appendChild(makeDetailRow('年齡', m.age + ' 歲'));
@@ -1160,7 +1190,22 @@
   // ---- 隨機抽籤 ----
   var FIFTH = 5;
   function renderDrawFilters() {
-    var squads = squadsForTeams([FIFTH]);   // 第五中隊的小隊
+    buildChipRow(drawTeamFiltersEl,
+      distinctTeams().map(function (t) { return { val: t, label: teamLabel(t) }; }),
+      null,
+      function (t) {
+        toggleInArray(state.drawTeams, t);
+        state.drawSquads = state.drawSquads.filter(function (s) { return squadsForTeams(state.drawTeams).indexOf(s) !== -1; });
+        renderDrawSquadChips();
+        syncChipRow(drawTeamFiltersEl, state.drawTeams);
+      },
+      function () { state.drawTeams = []; state.drawSquads = []; renderDrawSquadChips(); syncChipRow(drawTeamFiltersEl, state.drawTeams); });
+    renderDrawSquadChips();
+    syncChipRow(drawTeamFiltersEl, state.drawTeams);
+  }
+
+  function renderDrawSquadChips() {
+    var squads = squadsForTeams(state.drawTeams);
     buildChipRow(drawSquadFiltersEl,
       squads.map(function (s) { return { val: s, label: s + '小隊' }; }),
       null,
@@ -1176,7 +1221,7 @@
 
   function drawPool(gender) {
     return state.members.filter(function (m) {
-      if (m.t !== FIFTH) return false;
+      if (state.drawTeams.length && state.drawTeams.indexOf(m.t) === -1) return false;
       if (state.drawSquads.length && state.drawSquads.indexOf(m.s) === -1) return false;
       return m.g === gender;
     });
@@ -1305,10 +1350,104 @@
     note.className = 'contacts-empty';
     note.innerHTML = '<div class="contacts-empty-icon">📞</div>' +
       '<div class="contacts-empty-title">尚未提供聯絡資料</div>' +
-      '<div class="contacts-empty-text">請把助理協調員群組的「領袖聯絡清單」提供給管理者，' +
-      '即可在此查看各 FSY 領袖的聯絡方式。<br><br>' +
+      '<div class="contacts-empty-text">已查過 LINE 對話紀錄，裡面只有遊覽車司機／後勤的電話，' +
+      '沒有完整的 FSY 領袖聯絡清單。請把領袖聯絡名單（姓名／職務／電話或 LINE）提供給管理者即可建立。<br><br>' +
       '⚠ 提醒：本 App 為公開網址，建議聯絡資訊以加密或非公開方式管理，避免個資外流。</div>';
     contactsBodyEl.appendChild(note);
+  }
+
+  // ---- 點名（第五中隊 18-22 小隊）----
+  function renderRollcallFilters() {
+    var squads = squadsForTeams([FIFTH]);
+    rollcallSquadFiltersEl.innerHTML = '';
+    squads.forEach(function (s) {
+      var chip = document.createElement('button');
+      chip.className = 'roster-chip';
+      chip.textContent = s + '小隊';
+      chip.dataset.val = String(s);
+      rollcallSquadFiltersEl.appendChild(chip);
+    });
+    rollcallSquadFiltersEl.onclick = function (e) {
+      var chip = e.target.closest('.roster-chip');
+      if (!chip) return;
+      state.rollcallSquad = parseInt(chip.dataset.val, 10);
+      renderRollcall();
+    };
+  }
+
+  function memberKey(m) { return m.t + '-' + m.s + '-' + m.g + '-' + m.n; }
+
+  function renderRollcall() {
+    if (!state.membersLoaded) { rollcallCountEl.textContent = '載入中…'; return; }
+    var s = state.rollcallSquad;
+    rollcallSquadFiltersEl.querySelectorAll('.roster-chip').forEach(function (chip) {
+      chip.classList.toggle('active', parseInt(chip.dataset.val, 10) === s);
+    });
+    if (!state.rollcallPresent[s]) {
+      // 預設全部到齊，由小隊輔取消缺席者
+      state.rollcallPresent[s] = {};
+      state.members.filter(function (m) { return m.t === FIFTH && m.s === s; })
+        .forEach(function (m) { state.rollcallPresent[s][memberKey(m)] = true; });
+    }
+    var present = state.rollcallPresent[s];
+
+    var boys = state.members.filter(function (m) { return m.t === FIFTH && m.s === s && m.g === '男'; });
+    var girls = state.members.filter(function (m) { return m.t === FIFTH && m.s === s && m.g === '女'; });
+    var total = boys.length + girls.length;
+    var presentCount = Object.keys(present).filter(function (k) { return present[k]; }).length;
+
+    var advisors = state.squadAdvisors[FIFTH + '|' + s] || {};
+    rollcallCountEl.textContent = '到 ' + presentCount + ' / ' + total;
+
+    rollcallBoardEl.innerHTML = '';
+    var header = document.createElement('div');
+    header.className = 'rollcall-header';
+    header.textContent = teamLabel(FIFTH) + ' ' + s + '小隊　點名表';
+    rollcallBoardEl.appendChild(header);
+
+    var grid = document.createElement('div');
+    grid.className = 'rollcall-grid';
+    grid.appendChild(buildRollcallCol('男　隊輔：' + (advisors['男'] || '—'), boys, present, 'male'));
+    grid.appendChild(buildRollcallCol('女　隊輔：' + (advisors['女'] || '—'), girls, present, 'female'));
+    rollcallBoardEl.appendChild(grid);
+  }
+
+  function buildRollcallCol(title, list, present, cls) {
+    var col = document.createElement('div');
+    col.className = 'rollcall-col';
+    var h = document.createElement('div');
+    h.className = 'rollcall-col-title ' + cls;
+    h.textContent = title;
+    col.appendChild(h);
+    list.forEach(function (m) {
+      var key = memberKey(m);
+      var row = document.createElement('div');
+      row.className = 'rollcall-row' + (present[key] ? ' present' : '');
+      var box = document.createElement('span');
+      box.className = 'rollcall-box';
+      box.textContent = present[key] ? '✓' : '';
+      var name = document.createElement('span');
+      name.className = 'rollcall-name';
+      name.textContent = m.n + (m.m ? '' : '＊');
+      row.appendChild(box);
+      row.appendChild(name);
+      row.addEventListener('click', function () {
+        present[key] = !present[key];
+        renderRollcall();
+      });
+      col.appendChild(row);
+    });
+    return col;
+  }
+
+  function setAllRollcall(val) {
+    var s = state.rollcallSquad;
+    state.rollcallPresent[s] = {};
+    if (val) {
+      state.members.filter(function (m) { return m.t === FIFTH && m.s === s; })
+        .forEach(function (m) { state.rollcallPresent[s][memberKey(m)] = true; });
+    }
+    renderRollcall();
   }
 
   // tool menu navigation
@@ -1375,6 +1514,10 @@
     randomPickBtnEl.classList.add('rolling');
     setTimeout(runDraw, 250);
   });
+
+  // rollcall events
+  rollcallAllEl.addEventListener('click', function () { setAllRollcall(true); });
+  rollcallNoneEl.addEventListener('click', function () { setAllRollcall(false); });
 
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function (btn) {

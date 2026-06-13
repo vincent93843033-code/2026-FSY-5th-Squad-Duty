@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=17">
+<link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 <div class="app">
@@ -63,27 +63,19 @@
 
       <!-- 工具選單 -->
       <div id="tools-menu" class="tools-menu">
-        <button class="tool-menu-card" data-tool="roster">
-          <span class="tool-menu-icon">👥</span>
-          <span class="tool-menu-text">
-            <span class="tool-menu-label">小隊員一覽</span>
-            <span class="tool-menu-desc">全 FSY 小隊員名單、資料與聰明搜尋</span>
-          </span>
-          <span class="tool-menu-arrow">›</span>
-        </button>
-        <button class="tool-menu-card" data-tool="draw">
-          <span class="tool-menu-icon">🎲</span>
-          <span class="tool-menu-text">
-            <span class="tool-menu-label">隨機抽籤</span>
-            <span class="tool-menu-desc">設定小隊範圍與男女人數隨機抽出</span>
-          </span>
-          <span class="tool-menu-arrow">›</span>
-        </button>
         <button class="tool-menu-card" data-tool="advisors">
           <span class="tool-menu-icon">🧑‍🏫</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊輔一覽</span>
             <span class="tool-menu-desc">各中隊、小隊的隊輔名單與搜尋</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="roster">
+          <span class="tool-menu-icon">👥</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">小隊員一覽</span>
+            <span class="tool-menu-desc">全 FSY 小隊員名單、資料與聰明搜尋</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -95,11 +87,27 @@
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
+        <button class="tool-menu-card" data-tool="rollcall">
+          <span class="tool-menu-icon">✅</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">點名</span>
+            <span class="tool-menu-desc">第五中隊各小隊勾選點名，可直接截圖回報</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="draw">
+          <span class="tool-menu-icon">🎲</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">隨機抽籤</span>
+            <span class="tool-menu-desc">設定範圍與男女人數，從全 FSY 隨機抽出</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
       </div>
 
       <!-- 工具內容（點選後顯示，可返回選單） -->
       <div id="tool-view" class="tool-view" hidden>
-        <button id="tool-back" class="tool-back">‹ 返回小工具</button>
+        <button id="tool-back" class="tool-back">‹ 返回</button>
 
         <!-- 小隊員一覽 -->
         <div id="pane-roster" class="tool-pane" hidden>
@@ -135,7 +143,11 @@
         <!-- 隨機抽籤 -->
         <div id="pane-draw" class="tool-pane" hidden>
           <div class="tool-head"><h2 class="tool-title">隨機抽籤</h2></div>
-          <p class="tool-hint">設定小隊範圍與男女人數，從第五中隊小隊員中隨機抽出（適合遊戲、點名、分組）。</p>
+          <p class="tool-hint">設定範圍與男女人數，從全 FSY 小隊員中隨機抽出（適合遊戲、點名、分組）。</p>
+          <div class="filter-group">
+            <div class="filter-label">範圍（中隊）<span class="filter-hint">可複選</span></div>
+            <div class="roster-filters" id="draw-team-filters"></div>
+          </div>
           <div class="filter-group">
             <div class="filter-label">範圍（小隊）<span class="filter-hint">可複選</span></div>
             <div class="roster-filters" id="draw-squad-filters"></div>
@@ -191,6 +203,23 @@
           <div id="contacts-body" class="contacts-body"></div>
         </div>
 
+        <!-- 點名 -->
+        <div id="pane-rollcall" class="tool-pane" hidden>
+          <div class="tool-head">
+            <h2 class="tool-title">點名</h2>
+            <span class="tool-count" id="rollcall-count"></span>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">選擇小隊</div>
+            <div class="roster-filters" id="rollcall-squad-filters"></div>
+          </div>
+          <div id="rollcall-board" class="rollcall-board"></div>
+          <div class="rollcall-actions">
+            <button id="rollcall-all" class="rollcall-action-btn">全部到齊</button>
+            <button id="rollcall-none" class="rollcall-action-btn">全部清除</button>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -226,6 +255,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=18"></script>
+<script src="app.js?v=19"></script>
 </body>
 </html>
