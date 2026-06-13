@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=19">
+<link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 <div class="app">
@@ -108,6 +108,14 @@
           <span class="tool-menu-text">
             <span class="tool-menu-label">歌詞</span>
             <span class="tool-menu-desc">FSY 大會歌、前生</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="map">
+          <span class="tool-menu-icon">🗺️</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">校園地圖</span>
+            <span class="tool-menu-desc">亞洲大學校園示意圖，點擊地點看說明</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -217,6 +225,72 @@
           <div id="lyrics-body" class="lyrics-body"></div>
         </div>
 
+        <!-- 校園地圖 -->
+        <div id="pane-map" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">校園地圖</h2></div>
+          <p class="tool-hint">亞洲大學校園示意圖（非實際比例），點擊地點圖示查看名稱與簡介。</p>
+          <svg id="campus-map" class="map-svg" viewBox="0 0 360 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="亞洲大學校園示意地圖">
+            <rect class="map-bg" x="0" y="0" width="360" height="480" rx="16"></rect>
+
+            <circle class="map-tree" cx="50" cy="55" r="10"></circle>
+            <circle class="map-tree" cx="320" cy="160" r="10"></circle>
+            <circle class="map-tree" cx="55" cy="245" r="10"></circle>
+            <circle class="map-tree" cx="320" cy="320" r="10"></circle>
+            <circle class="map-tree" cx="250" cy="460" r="10"></circle>
+
+            <line class="map-road" x1="180" y1="30" x2="180" y2="430"></line>
+            <line class="map-road" x1="180" y1="58" x2="224" y2="58"></line>
+            <line class="map-road" x1="150" y1="145" x2="180" y2="145"></line>
+            <line class="map-road" x1="180" y1="227" x2="210" y2="227"></line>
+            <line class="map-road" x1="150" y1="304" x2="180" y2="304"></line>
+            <line class="map-road" x1="180" y1="379" x2="210" y2="379"></line>
+            <line class="map-road" x1="150" y1="384" x2="180" y2="384"></line>
+
+            <g class="map-location" data-loc="library" tabindex="0" role="button" aria-label="圖書館">
+              <circle class="map-shape" cx="268" cy="58" r="44"></circle>
+              <text class="map-location-icon" x="268" y="65">📚</text>
+              <text class="map-location-label" x="268" y="118">圖書館</text>
+            </g>
+
+            <g class="map-location" data-loc="gym" tabindex="0" role="button" aria-label="體育館">
+              <rect class="map-shape" x="20" y="110" width="130" height="70" rx="10"></rect>
+              <text class="map-location-icon" x="85" y="148">🏀</text>
+              <text class="map-location-label" x="85" y="170">體育館</text>
+            </g>
+
+            <g class="map-location" data-loc="academic" tabindex="0" role="button" aria-label="教學大樓">
+              <rect class="map-shape" x="210" y="192" width="130" height="70" rx="10"></rect>
+              <text class="map-location-icon" x="275" y="230">🏫</text>
+              <text class="map-location-label" x="275" y="252">教學大樓</text>
+            </g>
+
+            <g class="map-location" data-loc="cafeteria" tabindex="0" role="button" aria-label="學生餐廳">
+              <rect class="map-shape" x="20" y="274" width="130" height="60" rx="10"></rect>
+              <text class="map-location-icon" x="85" y="307">🍽️</text>
+              <text class="map-location-label" x="85" y="326">學生餐廳</text>
+            </g>
+
+            <g class="map-location" data-loc="dorm" tabindex="0" role="button" aria-label="學生宿舍區">
+              <rect class="map-shape" x="210" y="344" width="130" height="70" rx="10"></rect>
+              <text class="map-location-icon" x="275" y="382">🛏️</text>
+              <text class="map-location-label" x="275" y="404">學生宿舍區</text>
+            </g>
+
+            <g class="map-location" data-loc="admin" tabindex="0" role="button" aria-label="行政大樓">
+              <rect class="map-shape" x="20" y="354" width="130" height="60" rx="10"></rect>
+              <text class="map-location-icon" x="85" y="387">🏢</text>
+              <text class="map-location-label" x="85" y="406">行政大樓</text>
+            </g>
+
+            <g class="map-location" data-loc="gate" tabindex="0" role="button" aria-label="校門口">
+              <rect class="map-shape" x="140" y="430" width="80" height="28" rx="6"></rect>
+              <text class="map-location-icon" x="180" y="450">🚩</text>
+              <text class="map-location-label" x="180" y="475">校門口</text>
+            </g>
+          </svg>
+          <div id="map-info" class="map-info"></div>
+        </div>
+
         <!-- 點名 -->
         <div id="pane-rollcall" class="tool-pane" hidden>
           <div class="tool-head">
@@ -269,6 +343,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=21"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>
