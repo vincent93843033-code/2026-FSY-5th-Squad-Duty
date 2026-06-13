@@ -1466,17 +1466,29 @@ body {
 }
 
 .map-bg {
-  fill: #dcf0e4;
+  fill: #eef1ec;
 }
 
 .map-tree {
   fill: #9fd4af;
 }
 
-.map-road {
-  stroke: #cfd6da;
-  stroke-width: 12;
-  stroke-linecap: round;
+.map-legend-label {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--color-text);
+}
+
+.map-zone-bg-academic {
+  fill: #d6e6f7;
+}
+
+.map-zone-bg-residential {
+  fill: #dcf0e0;
+}
+
+.map-zone-bg-comprehensive {
+  fill: #fbe4cf;
 }
 
 .map-location {
@@ -1484,25 +1496,52 @@ body {
 }
 
 .map-shape {
-  fill: var(--color-card);
-  stroke: var(--color-primary);
   stroke-width: 2;
   transition: fill 0.15s ease, stroke-width 0.15s ease;
 }
 
+.map-zone-academic .map-shape {
+  fill: #eef5fd;
+  stroke: #4a7fb5;
+}
+
+.map-zone-residential .map-shape {
+  fill: #eefaf0;
+  stroke: var(--color-primary);
+}
+
+.map-zone-comprehensive .map-shape {
+  fill: #fef3e7;
+  stroke: #d4823f;
+}
+
 .map-location:active .map-shape,
 .map-location.active .map-shape {
-  fill: var(--color-primary-light);
   stroke-width: 3;
 }
 
+.map-zone-academic:active .map-shape,
+.map-zone-academic.active .map-shape {
+  fill: #c2dbf2;
+}
+
+.map-zone-residential:active .map-shape,
+.map-zone-residential.active .map-shape {
+  fill: #cdebd3;
+}
+
+.map-zone-comprehensive:active .map-shape,
+.map-zone-comprehensive.active .map-shape {
+  fill: #f8d9bd;
+}
+
 .map-location-icon {
-  font-size: 22px;
+  font-size: 16px;
   text-anchor: middle;
 }
 
 .map-location-label {
-  font-size: 13px;
+  font-size: 9px;
   font-weight: 700;
   fill: var(--color-text);
   text-anchor: middle;
