@@ -111,6 +111,10 @@
   var advisorCountEl = document.getElementById('advisor-count');
   var contactsBodyEl = document.getElementById('contacts-body');
   var lyricsBodyEl = document.getElementById('lyrics-body');
+  var lyricsSongPaneEl = document.getElementById('pane-lyrics-song');
+  var lyricsSongBackEl = document.getElementById('lyrics-song-back');
+  var lyricsSongTitleEl = document.getElementById('lyrics-song-title');
+  var lyricsSongBodyEl = document.getElementById('lyrics-song-body');
   var mapSvgEl = document.getElementById('campus-map');
   var mapInfoEl = document.getElementById('map-info');
 
@@ -978,6 +982,7 @@
     state.currentTool = name;
     toolsMenuEl.hidden = true;
     toolViewEl.hidden = false;
+    toolBackEl.hidden = false;
     var panes = toolViewEl.querySelectorAll('.tool-pane');
     panes.forEach(function (p) { p.hidden = ('pane-' + name) !== p.id; });
     var pane = document.getElementById('pane-' + name);
@@ -1417,21 +1422,67 @@
   // ---- 歌詞 ----
   function renderLyrics() {
     lyricsBodyEl.innerHTML = '';
-    LYRICS.forEach(function (song) {
-      var card = document.createElement('div');
-      card.className = 'lyrics-song';
-      var title = document.createElement('div');
-      title.className = 'lyrics-song-title';
-      title.textContent = song.title;
-      card.appendChild(title);
-      song.sections.forEach(function (section) {
-        var p = document.createElement('div');
-        p.className = 'lyrics-section' + (section === '請填入歌詞' ? ' lyrics-placeholder' : '');
-        p.textContent = section;
-        card.appendChild(p);
-      });
+    LYRICS.forEach(function (song, idx) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'lyrics-song-card';
+      card.dataset.index = idx;
+      var icon = document.createElement('span');
+      icon.className = 'lyrics-song-card-icon';
+      icon.textContent = '🎵';
+      card.appendChild(icon);
+      var label = document.createElement('span');
+      label.className = 'lyrics-song-card-label';
+      label.textContent = song.title;
+      card.appendChild(label);
+      var arrow = document.createElement('span');
+      arrow.className = 'lyrics-song-card-arrow';
+      arrow.textContent = '›';
+      card.appendChild(arrow);
       lyricsBodyEl.appendChild(card);
     });
+  }
+
+  function renderLyricsSong(index) {
+    var song = LYRICS[index];
+    lyricsSongTitleEl.textContent = song.title;
+    lyricsSongBodyEl.innerHTML = '';
+    song.sections.forEach(function (section) {
+      var wrap = document.createElement('div');
+      wrap.className = 'lyrics-section' + (section === '請填入歌詞' ? ' lyrics-placeholder' : '');
+      var lines = section.split('\n');
+      var body = lines;
+      if (lines.length > 1 && /^.+：$/.test(lines[0])) {
+        var label = document.createElement('div');
+        label.className = 'lyrics-section-label';
+        label.textContent = lines[0];
+        wrap.appendChild(label);
+        body = lines.slice(1);
+      }
+      var text = document.createElement('div');
+      text.className = 'lyrics-section-body';
+      text.textContent = body.join('\n');
+      wrap.appendChild(text);
+      lyricsSongBodyEl.appendChild(wrap);
+    });
+  }
+
+  function openLyricsSong(index) {
+    document.getElementById('pane-lyrics').hidden = true;
+    toolBackEl.hidden = true;
+    renderLyricsSong(index);
+    lyricsSongPaneEl.hidden = false;
+    playFadeIn(lyricsSongPaneEl);
+    window.scrollTo(0, 0);
+  }
+
+  function closeLyricsSong() {
+    lyricsSongPaneEl.hidden = true;
+    toolBackEl.hidden = false;
+    var pane = document.getElementById('pane-lyrics');
+    pane.hidden = false;
+    playFadeIn(pane);
+    window.scrollTo(0, 0);
   }
 
   // ---- 校園地圖 ----
@@ -1560,6 +1611,11 @@
     if (card) openTool(card.dataset.tool);
   });
   toolBackEl.addEventListener('click', backToToolsMenu);
+  lyricsBodyEl.addEventListener('click', function (e) {
+    var card = e.target.closest('.lyrics-song-card');
+    if (card) openLyricsSong(parseInt(card.dataset.index, 10));
+  });
+  lyricsSongBackEl.addEventListener('click', closeLyricsSong);
 
   // roster events
   rosterInputEl.addEventListener('input', function () {
