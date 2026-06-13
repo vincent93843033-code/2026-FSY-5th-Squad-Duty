@@ -28,6 +28,16 @@
     { title: 'FSY 大會歌', sections: ['請填入歌詞'] },
     { title: '前生', sections: ['請填入歌詞'] },
   ];
+  // 校園地圖：各地點的名稱與簡介（示範資料）
+  var MAP_LOCATIONS = {
+    library: { name: '圖書館', desc: '校園地標建築，藏書豐富，部分時段開放團體休息與閱覽。' },
+    gym: { name: '體育館', desc: '室內球場與大型活動空間，開幕式、團體活動常在此舉行。' },
+    academic: { name: '教學大樓', desc: '一般教室與小型聚會空間，課程與分組活動使用。' },
+    cafeteria: { name: '學生餐廳', desc: '用餐地點，依梯次分批用餐，請依場控人員指示排隊。' },
+    dorm: { name: '學生宿舍區', desc: '住宿房間所在區域，依宿舍房號分配（詳見小隊員一覽）。' },
+    admin: { name: '行政大樓', desc: '行政辦公室與服務台，遺失物品或緊急事項可洽詢此處。' },
+    gate: { name: '校門口', desc: '校園主要出入口，集合、接送車輛多在此上下車。' },
+  };
 
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
@@ -67,6 +77,8 @@
   var advisorCountEl = document.getElementById('advisor-count');
   var contactsBodyEl = document.getElementById('contacts-body');
   var lyricsBodyEl = document.getElementById('lyrics-body');
+  var mapSvgEl = document.getElementById('campus-map');
+  var mapInfoEl = document.getElementById('map-info');
 
   var state = {
     days: [],
@@ -941,6 +953,10 @@
     if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
     if (name === 'contacts') renderContacts();
     if (name === 'lyrics') renderLyrics();
+    if (name === 'map') {
+      mapSvgEl.querySelectorAll('.map-location.active').forEach(function (el) { el.classList.remove('active'); });
+      renderMapInfo(null);
+    }
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
     window.scrollTo(0, 0);
   }
@@ -1383,6 +1399,32 @@
       lyricsBodyEl.appendChild(card);
     });
   }
+
+  // ---- 校園地圖 ----
+  function renderMapInfo(loc) {
+    if (!loc) {
+      mapInfoEl.innerHTML = '<div class="map-info-empty">點擊地圖上的地點，查看名稱與簡介。</div>';
+      return;
+    }
+    var info = MAP_LOCATIONS[loc];
+    mapInfoEl.innerHTML = '';
+    var title = document.createElement('div');
+    title.className = 'map-info-title';
+    title.textContent = info.name;
+    var desc = document.createElement('div');
+    desc.className = 'map-info-desc';
+    desc.textContent = info.desc;
+    mapInfoEl.appendChild(title);
+    mapInfoEl.appendChild(desc);
+  }
+
+  mapSvgEl.addEventListener('click', function (e) {
+    var g = e.target.closest('.map-location');
+    if (!g) return;
+    mapSvgEl.querySelectorAll('.map-location.active').forEach(function (el) { el.classList.remove('active'); });
+    g.classList.add('active');
+    renderMapInfo(g.dataset.loc);
+  });
 
   // ---- 點名（第五中隊 18-22 小隊）----
   function renderRollcallFilters() {
