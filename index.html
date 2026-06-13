@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=21">
+<link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 <div class="app">
@@ -219,10 +219,17 @@
           <div id="contacts-body" class="contacts-body"></div>
         </div>
 
-        <!-- 歌詞 -->
+        <!-- 歌詞：歌曲列表 -->
         <div id="pane-lyrics" class="tool-pane" hidden>
           <div class="tool-head"><h2 class="tool-title">歌詞</h2></div>
-          <div id="lyrics-body" class="lyrics-body"></div>
+          <div id="lyrics-body" class="lyrics-song-list"></div>
+        </div>
+
+        <!-- 歌詞：單首歌詞 -->
+        <div id="pane-lyrics-song" class="tool-pane" hidden>
+          <button id="lyrics-song-back" class="tool-back">‹ 返回</button>
+          <div class="tool-head"><h2 class="tool-title" id="lyrics-song-title"></h2></div>
+          <div id="lyrics-song-body" class="lyrics-body"></div>
         </div>
 
         <!-- 校園地圖 -->
@@ -441,6 +448,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=26"></script>
+<script src="app.js?v=27"></script>
 </body>
 </html>
