@@ -802,7 +802,7 @@ body {
   flex-shrink: 0;
 }
 
-#roster-input {
+.roster-search input {
   flex: 1;
   min-width: 0;
   border: none;
@@ -811,6 +811,9 @@ body {
   font-size: 0.98rem;
   color: var(--color-text);
   font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
 }
 
 .roster-clear {
@@ -1142,6 +1145,10 @@ body {
   gap: 10px;
 }
 
+.tools-menu[hidden] {
+  display: none;
+}
+
 .tool-menu-card {
   display: flex;
   align-items: center;
@@ -1304,6 +1311,119 @@ body {
 /* advisor side tags */
 .member-tag.tag-male { background: #e4eefb; color: #3b78c2; }
 .member-tag.tag-female { background: #fbe7ef; color: #c05680; }
+
+/* 點名 board */
+.rollcall-board {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px;
+  margin-top: 4px;
+}
+
+.rollcall-header {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--color-primary-light);
+}
+
+.rollcall-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.rollcall-col {
+  min-width: 0;
+}
+
+.rollcall-col-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 3px 0;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.rollcall-col-title.male { background: #e4eefb; color: #3b78c2; }
+.rollcall-col-title.female { background: #fbe7ef; color: #c05680; }
+
+.rollcall-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border-radius: 7px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s ease;
+}
+
+.rollcall-row:active { background: var(--color-primary-light); }
+
+.rollcall-box {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--color-card);
+}
+
+.rollcall-row.present .rollcall-box {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.rollcall-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rollcall-row:not(.present) .rollcall-name {
+  color: var(--color-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(0, 0, 0, 0.25);
+}
+
+.rollcall-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rollcall-action-btn {
+  flex: 1;
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-primary);
+  border-radius: 999px;
+  padding: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+
+.rollcall-action-btn:active {
+  background: var(--color-primary-light);
+  transform: scale(0.97);
+}
 
 /* contacts empty state */
 .contacts-empty {
