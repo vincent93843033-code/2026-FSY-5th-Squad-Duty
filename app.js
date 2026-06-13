@@ -1133,6 +1133,7 @@
     detail.appendChild(makeDetailRow('課程2', m.r2 || ''));
     detail.appendChild(makeDetailRow('身分', m.m ? '成員' : '非成員（朋友）'));
     detail.appendChild(makeDetailRow('支會', m.w || '—'));
+    detail.appendChild(makeDetailRow('宿舍房號', m.dorm || '未分配'));
     if (m.age) detail.appendChild(makeDetailRow('年齡', m.age + ' 歲'));
     if (m.veg) detail.appendChild(makeDetailRow('飲食', '素食'));
     if (m.early) detail.appendChild(makeDetailRow('提醒', '需提早離營'));
