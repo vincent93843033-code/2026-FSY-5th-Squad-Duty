@@ -1425,6 +1425,38 @@ body {
   transform: scale(0.97);
 }
 
+/* Lyrics */
+.lyrics-song {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.lyrics-song-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.lyrics-section {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+}
+
+.lyrics-section:last-child {
+  margin-bottom: 0;
+}
+
+.lyrics-placeholder {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
 /* contacts empty state */
 .contacts-empty {
   text-align: center;

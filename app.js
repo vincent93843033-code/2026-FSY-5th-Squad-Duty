@@ -23,6 +23,11 @@
     '亞各・昉靚 → 證據 3、8',
     '敏恩・羽庭 → 證據 3、7',
   ];
+  // 歌詞：每首歌的 sections 陣列＝段落，待提供歌詞時逐段填入即可
+  var LYRICS = [
+    { title: 'FSY 大會歌', sections: ['請填入歌詞'] },
+    { title: '前生', sections: ['請填入歌詞'] },
+  ];
 
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
@@ -61,6 +66,7 @@
   var advisorListEl = document.getElementById('advisor-list');
   var advisorCountEl = document.getElementById('advisor-count');
   var contactsBodyEl = document.getElementById('contacts-body');
+  var lyricsBodyEl = document.getElementById('lyrics-body');
 
   var state = {
     days: [],
@@ -934,6 +940,7 @@
     if (name === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
     if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
     if (name === 'contacts') renderContacts();
+    if (name === 'lyrics') renderLyrics();
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
     window.scrollTo(0, 0);
   }
@@ -1355,6 +1362,26 @@
       '沒有完整的 FSY 領袖聯絡清單。請把領袖聯絡名單（姓名／職務／電話或 LINE）提供給管理者即可建立。<br><br>' +
       '⚠ 提醒：本 App 為公開網址，建議聯絡資訊以加密或非公開方式管理，避免個資外流。</div>';
     contactsBodyEl.appendChild(note);
+  }
+
+  // ---- 歌詞 ----
+  function renderLyrics() {
+    lyricsBodyEl.innerHTML = '';
+    LYRICS.forEach(function (song) {
+      var card = document.createElement('div');
+      card.className = 'lyrics-song';
+      var title = document.createElement('div');
+      title.className = 'lyrics-song-title';
+      title.textContent = song.title;
+      card.appendChild(title);
+      song.sections.forEach(function (section) {
+        var p = document.createElement('div');
+        p.className = 'lyrics-section' + (section === '請填入歌詞' ? ' lyrics-placeholder' : '');
+        p.textContent = section;
+        card.appendChild(p);
+      });
+      lyricsBodyEl.appendChild(card);
+    });
   }
 
   // ---- 點名（第五中隊 18-22 小隊）----

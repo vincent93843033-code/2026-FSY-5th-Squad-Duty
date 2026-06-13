@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=18">
+<link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
 <div class="app">
@@ -100,6 +100,14 @@
           <span class="tool-menu-text">
             <span class="tool-menu-label">隨機抽籤</span>
             <span class="tool-menu-desc">設定範圍與男女人數，從全 FSY 隨機抽出</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="lyrics">
+          <span class="tool-menu-icon">🎵</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">歌詞</span>
+            <span class="tool-menu-desc">FSY 大會歌、前生</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -203,6 +211,12 @@
           <div id="contacts-body" class="contacts-body"></div>
         </div>
 
+        <!-- 歌詞 -->
+        <div id="pane-lyrics" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">歌詞</h2></div>
+          <div id="lyrics-body" class="lyrics-body"></div>
+        </div>
+
         <!-- 點名 -->
         <div id="pane-rollcall" class="tool-pane" hidden>
           <div class="tool-head">
@@ -255,6 +269,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=20"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>
