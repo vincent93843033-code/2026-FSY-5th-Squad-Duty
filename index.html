@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=25">
+<link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
 <div class="app">
@@ -67,7 +67,6 @@
           <span class="tool-menu-icon">🧑‍🏫</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊輔一覽</span>
-            <span class="tool-menu-desc">各中隊、小隊的隊輔名單與搜尋</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -75,7 +74,6 @@
           <span class="tool-menu-icon">👥</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊員一覽</span>
-            <span class="tool-menu-desc">全 FSY 小隊員名單、資料與聰明搜尋</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -83,7 +81,6 @@
           <span class="tool-menu-icon">📞</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">領袖聯絡方式</span>
-            <span class="tool-menu-desc">各 FSY 領袖的聯絡資訊</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -91,7 +88,6 @@
           <span class="tool-menu-icon">✅</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">點名</span>
-            <span class="tool-menu-desc">第五中隊各小隊勾選點名，可直接截圖回報</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -99,7 +95,6 @@
           <span class="tool-menu-icon">🎲</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">隨機抽籤</span>
-            <span class="tool-menu-desc">設定範圍與男女人數，從全 FSY 隨機抽出</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -107,7 +102,6 @@
           <span class="tool-menu-icon">🎵</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">歌詞</span>
-            <span class="tool-menu-desc">FSY 大會歌、前生</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -115,7 +109,6 @@
           <span class="tool-menu-icon">🗺️</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">校園地圖</span>
-            <span class="tool-menu-desc">亞洲大學校園示意圖，點擊地點看說明</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -123,7 +116,6 @@
           <span class="tool-menu-icon">🩺</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">醫護組資訊</span>
-            <span class="tool-menu-desc">值班表、人員電話、回報格式、車牌</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -448,6 +440,27 @@
             <button id="rollcall-all" class="rollcall-action-btn">全部到齊</button>
             <button id="rollcall-none" class="rollcall-action-btn">全部清除</button>
           </div>
+
+          <div class="rollcall-summary">
+            <div class="rollcall-summary-item">
+              <span class="rollcall-summary-value" id="rollcall-expected">0</span>
+              <span class="rollcall-summary-label">應到</span>
+            </div>
+            <div class="rollcall-summary-item present">
+              <span class="rollcall-summary-value" id="rollcall-present-count">0</span>
+              <span class="rollcall-summary-label">實到</span>
+            </div>
+            <div class="rollcall-summary-item absent">
+              <span class="rollcall-summary-value" id="rollcall-absent-count">0</span>
+              <span class="rollcall-summary-label">未到</span>
+            </div>
+          </div>
+
+          <div class="rollcall-report">
+            <div class="rollcall-report-label">未到原因（點選文字框輸入）</div>
+            <textarea id="rollcall-reason" class="rollcall-reason" rows="3"></textarea>
+            <button id="rollcall-copy" class="rollcall-copy-btn">📋 一鍵複製點名回報</button>
+          </div>
         </div>
 
       </div>
@@ -485,6 +498,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=30"></script>
+<script src="app.js?v=31"></script>
 </body>
 </html>

@@ -1196,12 +1196,6 @@ body {
   color: var(--color-text);
 }
 
-.tool-menu-desc {
-  font-size: 0.8rem;
-  color: var(--color-muted);
-  line-height: 1.4;
-}
-
 .tool-menu-arrow {
   font-size: 1.5rem;
   color: var(--color-muted);
@@ -1423,6 +1417,89 @@ body {
 .rollcall-action-btn:active {
   background: var(--color-primary-light);
   transform: scale(0.97);
+}
+
+/* 點名：應到／實到／未到 */
+.rollcall-summary {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.rollcall-summary-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px 4px;
+  background: var(--color-card);
+}
+
+.rollcall-summary-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.rollcall-summary-item.present .rollcall-summary-value { color: var(--color-primary); }
+.rollcall-summary-item.absent .rollcall-summary-value { color: #c0392b; }
+
+.rollcall-summary-label {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+/* 點名：未到原因回報 */
+.rollcall-report {
+  margin-top: 14px;
+}
+
+.rollcall-report-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.rollcall-reason {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-card);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.rollcall-copy-btn {
+  width: 100%;
+  appearance: none;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 11px;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+
+.rollcall-copy-btn:active {
+  transform: scale(0.98);
+}
+
+.rollcall-copy-btn.copied {
+  background: #2e9e5b;
 }
 
 /* Lyrics: song list */

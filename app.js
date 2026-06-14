@@ -168,6 +168,11 @@
   var rollcallCountEl = document.getElementById('rollcall-count');
   var rollcallAllEl = document.getElementById('rollcall-all');
   var rollcallNoneEl = document.getElementById('rollcall-none');
+  var rollcallExpectedEl = document.getElementById('rollcall-expected');
+  var rollcallPresentCountEl = document.getElementById('rollcall-present-count');
+  var rollcallAbsentCountEl = document.getElementById('rollcall-absent-count');
+  var rollcallReasonEl = document.getElementById('rollcall-reason');
+  var rollcallCopyEl = document.getElementById('rollcall-copy');
   var advisorInputEl = document.getElementById('advisor-input');
   var advisorClearEl = document.getElementById('advisor-clear');
   var advisorTeamFiltersEl = document.getElementById('advisor-team-filters');
@@ -210,6 +215,8 @@
     drawFemale: 0,
     rollcallSquad: 18,    // 點名小隊（第五中隊 18-22）
     rollcallPresent: {},  // { squad: { memberKey: true } }
+    rollcallReasons: {},  // { squad: textarea內容 }
+    rollcallAbsentKey: {}, // { squad: 上次未到名單的key，用於判斷是否需重建文字框 }
     squadAdvisors: {},    // "t|s" -> { 男: name, 女: name }
     currentTool: null,
     medicalDay: 0,        // 醫護組值班表所選日期索引
@@ -1770,6 +1777,70 @@
     grid.appendChild(buildRollcallCol('男　隊輔：' + (advisors['男'] || '—'), boys, present, 'male'));
     grid.appendChild(buildRollcallCol('女　隊輔：' + (advisors['女'] || '—'), girls, present, 'female'));
     rollcallBoardEl.appendChild(grid);
+
+    renderRollcallSummary(s, boys.concat(girls), present, total, presentCount);
+  }
+
+  function renderRollcallSummary(s, all, present, total, presentCount) {
+    var absentCount = total - presentCount;
+    rollcallExpectedEl.textContent = total;
+    rollcallPresentCountEl.textContent = presentCount;
+    rollcallAbsentCountEl.textContent = absentCount;
+
+    var absentList = all.filter(function (m) { return !present[memberKey(m)]; });
+    var absentKey = absentList.map(memberKey).join(',');
+    if (state.rollcallAbsentKey[s] !== absentKey) {
+      state.rollcallReasons[s] = absentList.map(function (m) { return m.n + '：'; }).join('\n');
+      state.rollcallAbsentKey[s] = absentKey;
+    }
+    rollcallReasonEl.value = state.rollcallReasons[s] || '';
+    rollcallReasonEl.placeholder = absentList.length ? '請輸入未到原因…' : '目前全員到齊 🎉';
+  }
+
+  function buildRollcallReport() {
+    var s = state.rollcallSquad;
+    var total = parseInt(rollcallExpectedEl.textContent, 10) || 0;
+    var presentCount = parseInt(rollcallPresentCountEl.textContent, 10) || 0;
+    var absentCount = parseInt(rollcallAbsentCountEl.textContent, 10) || 0;
+
+    var lines = [];
+    lines.push(teamLabel(FIFTH) + ' ' + s + '小隊　點名回報');
+    lines.push('應到 ' + total + '｜實到 ' + presentCount + '｜未到 ' + absentCount);
+    if (absentCount > 0) {
+      lines.push('');
+      lines.push('未到名單：');
+      lines.push(rollcallReasonEl.value.trim());
+    } else {
+      lines.push('');
+      lines.push('全員到齊 🎉');
+    }
+    return lines.join('\n');
+  }
+
+  function copyRollcallReport() {
+    var text = buildRollcallReport();
+    var done = function () {
+      var original = rollcallCopyEl.textContent;
+      rollcallCopyEl.textContent = '已複製 ✓';
+      rollcallCopyEl.classList.add('copied');
+      setTimeout(function () {
+        rollcallCopyEl.textContent = original;
+        rollcallCopyEl.classList.remove('copied');
+      }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, done);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    }
   }
 
   function buildRollcallCol(title, list, present, cls) {
@@ -1891,6 +1962,10 @@
   // rollcall events
   rollcallAllEl.addEventListener('click', function () { setAllRollcall(true); });
   rollcallNoneEl.addEventListener('click', function () { setAllRollcall(false); });
+  rollcallReasonEl.addEventListener('input', function () {
+    state.rollcallReasons[state.rollcallSquad] = rollcallReasonEl.value;
+  });
+  rollcallCopyEl.addEventListener('click', copyRollcallReport);
 
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
