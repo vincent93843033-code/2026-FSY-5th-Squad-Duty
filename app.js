@@ -56,10 +56,20 @@
     { name: '靖琇', tags: [] },
     { name: '連凱', tags: ['組長', '司機'] },
   ];
-  // 醫護組人員電話（待補：填入「姓名: '電話'」即會顯示在醫護組資訊頁）
-  var MEDICAL_PHONES = {};
-  // 醫護組值班表
-  var MEDICAL_SCHEDULE_DAYS = ['7/13', '7/14', '7/15', '7/16', '7/17', '7/18'];
+  // 醫護組人員電話
+  var MEDICAL_PHONES = {
+    '俞采': '',
+    '瑪恩': '',
+    '綉娟': '',
+    '君佩': '',
+    '紫祺': '',
+    '書亞': '',
+    '岱娜': '',
+    '靖琇': '',
+    '連凱': '',
+  };
+  // 醫護組值班表（D-1～D-6 對應 7/13～7/18）
+  var MEDICAL_SCHEDULE_DAYS = ['D-1', 'D-2', 'D-3', 'D-4', 'D-5', 'D-6'];
   var MEDICAL_SCHEDULE = [
     { label: '早', time: '08:00–12:00', duty: [
       ['俞采', '瑪恩', '綉娟'],
@@ -175,7 +185,6 @@
   var medicalScheduleBodyEl = document.getElementById('medical-schedule-body');
   var medicalTeamBodyEl = document.getElementById('medical-team-body');
   var medicalReportTextEl = document.getElementById('medical-report-text');
-  var medicalReportCopyEl = document.getElementById('medical-report-copy');
   var medicalReportNoteEl = document.getElementById('medical-report-note');
   var medicalVehicleBodyEl = document.getElementById('medical-vehicle-body');
 
@@ -1560,7 +1569,7 @@
     medicalDayFiltersEl.innerHTML = '';
     MEDICAL_SCHEDULE_DAYS.forEach(function (day, idx) {
       var chip = document.createElement('button');
-      chip.className = 'roster-chip' + (idx === state.medicalDay ? ' active' : '');
+      chip.className = 'day-pill' + (idx === state.medicalDay ? ' active' : '');
       chip.textContent = day;
       chip.dataset.idx = idx;
       medicalDayFiltersEl.appendChild(chip);
@@ -1810,17 +1819,10 @@
 
   // medical events
   medicalDayFiltersEl.addEventListener('click', function (e) {
-    var chip = e.target.closest('.roster-chip');
+    var chip = e.target.closest('.day-pill');
     if (!chip) return;
     state.medicalDay = parseInt(chip.dataset.idx, 10);
     renderMedicalSchedule();
-  });
-  medicalReportCopyEl.addEventListener('click', function () {
-    if (!navigator.clipboard || !navigator.clipboard.writeText) return;
-    navigator.clipboard.writeText(MEDICAL_REPORT_TEMPLATE).then(function () {
-      medicalReportCopyEl.textContent = '已複製 ✓';
-      setTimeout(function () { medicalReportCopyEl.textContent = '複製文字'; }, 1500);
-    });
   });
 
   // roster events
