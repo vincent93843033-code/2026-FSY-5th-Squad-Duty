@@ -1595,15 +1595,30 @@ body {
   background: var(--color-primary);
 }
 
-.medical-phone-link {
-  color: var(--color-primary);
-  font-weight: 600;
-  text-decoration: none;
-}
-
 .medical-phone-missing {
   color: var(--color-muted);
   font-style: italic;
+}
+
+.medical-call-btn {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.medical-call-btn:active {
+  transform: scale(0.92);
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .member-tag.tag-lead { background: #fff3d6; color: #b8860b; }

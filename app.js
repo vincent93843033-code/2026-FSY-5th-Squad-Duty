@@ -1641,17 +1641,22 @@
       var phoneEl = document.createElement('div');
       phoneEl.className = 'member-meta';
       if (phone) {
-        var link = document.createElement('a');
-        link.className = 'medical-phone-link';
-        link.href = 'tel:' + phone.replace(/[^0-9+]/g, '');
-        link.textContent = '📞 ' + phone;
-        phoneEl.appendChild(link);
+        phoneEl.textContent = phone;
       } else {
         phoneEl.classList.add('medical-phone-missing');
         phoneEl.textContent = '電話尚未提供';
       }
       main.appendChild(phoneEl);
       card.appendChild(main);
+
+      if (phone) {
+        var callBtn = document.createElement('a');
+        callBtn.className = 'medical-call-btn';
+        callBtn.href = 'tel:' + phone.replace(/[^0-9+]/g, '');
+        callBtn.setAttribute('aria-label', '撥打給' + person.name);
+        callBtn.textContent = '📞';
+        card.appendChild(callBtn);
+      }
       medicalTeamBodyEl.appendChild(card);
     });
   }
