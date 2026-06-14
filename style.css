@@ -1505,6 +1505,185 @@ body {
   font-style: italic;
 }
 
+/* 醫護組資訊 */
+.medical-section {
+  margin-bottom: 22px;
+}
+
+.medical-section:last-child {
+  margin-bottom: 0;
+}
+
+.medical-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+/* 值班表 */
+.medical-schedule-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medical-shift-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-card);
+  padding: 10px 12px;
+}
+
+.medical-shift-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.medical-shift-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.medical-shift-time {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.medical-shift-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.medical-name-tag {
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.medical-shift-empty {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+/* 醫護組人員 */
+.medical-team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medical-person-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--color-card);
+}
+
+.medical-avatar {
+  background: var(--color-primary);
+}
+
+.medical-phone-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.medical-phone-missing {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.member-tag.tag-lead { background: #fff3d6; color: #b8860b; }
+.member-tag.tag-driver { background: #e4eefb; color: #3b78c2; }
+
+/* 回報格式 */
+.medical-report-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-card);
+  padding: 14px;
+}
+
+.medical-report-text {
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin: 0 0 10px;
+  color: var(--color-text);
+}
+
+.medical-copy-btn {
+  appearance: none;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.medical-copy-btn:active {
+  transform: scale(0.96);
+}
+
+.medical-report-note {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* 車牌資訊 */
+.medical-vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medical-vehicle-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--color-card);
+}
+
+.medical-vehicle-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.medical-vehicle-driver {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.medical-vehicle-plate {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-family: "Courier New", monospace;
+  color: var(--color-primary);
+}
+
 /* Campus map */
 .map-svg {
   display: block;

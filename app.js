@@ -44,6 +44,60 @@
       '我尋覓你吾友',
     ] },
   ];
+  // 醫護組資訊：團隊成員（標籤：組長／司機）
+  var MEDICAL_TEAM = [
+    { name: '俞采', tags: ['組長'] },
+    { name: '瑪恩', tags: [] },
+    { name: '綉娟', tags: ['司機'] },
+    { name: '君佩', tags: ['司機'] },
+    { name: '紫祺', tags: ['組長'] },
+    { name: '書亞', tags: [] },
+    { name: '岱娜', tags: [] },
+    { name: '靖琇', tags: [] },
+    { name: '連凱', tags: ['組長', '司機'] },
+  ];
+  // 醫護組人員電話（待補：填入「姓名: '電話'」即會顯示在醫護組資訊頁）
+  var MEDICAL_PHONES = {};
+  // 醫護組值班表
+  var MEDICAL_SCHEDULE_DAYS = ['7/13', '7/14', '7/15', '7/16', '7/17', '7/18'];
+  var MEDICAL_SCHEDULE = [
+    { label: '早', time: '08:00–12:00', duty: [
+      ['俞采', '瑪恩', '綉娟'],
+      ['俞采', '瑪恩', '綉娟'],
+      ['俞采', '瑪恩', '紫祺', '綉娟'],
+      ['紫祺', '書亞', '岱娜', '靖琇'],
+      ['書亞', '岱娜', '靖琇', '連凱'],
+      ['書亞', '岱娜', '靖琇', '連凱'],
+    ] },
+    { label: '中', time: '12:00–18:00', duty: [
+      ['俞采', '瑪恩', '綉娟'],
+      ['俞采', '瑪恩', '綉娟', '紫祺'],
+      ['俞采', '瑪恩', '紫祺', '綉娟'],
+      ['書亞', '岱娜', '靖琇', '連凱'],
+      ['書亞', '岱娜', '靖琇', '連凱'],
+      [],
+    ] },
+    { label: '晚', time: '18:00–08:00', duty: [
+      ['俞采', '瑪恩', '君佩'],
+      ['俞采', '瑪恩', '紫祺', '君佩'],
+      ['紫祺', '瑪恩', '君佩'],
+      ['書亞', '岱娜', '靖琇', '連凱'],
+      ['書亞', '岱娜', '靖琇', '連凱'],
+      [],
+    ] },
+  ];
+  // 醫護組回報格式
+  var MEDICAL_REPORT_TEMPLATE =
+    '我是第 ___ 小隊的隊輔 ___\n' +
+    '我的小隊員 ___ 有甚麼症狀：___\n' +
+    '目前可以怎麼做？';
+  var MEDICAL_REPORT_NOTE = '記得留下聯絡方式、交接地點，並記得領回小隊員';
+  // 醫護組接送車輛車牌
+  var MEDICAL_VEHICLES = [
+    { driver: '林綉娟', plate: '' },
+    { driver: '蔡君佩', plate: '' },
+    { driver: '蔡連凱', plate: '' },
+  ];
   // 校園地圖：各地點的名稱與簡介（依教學區／生活區／綜合區分類，簡介為示範說明文字）
   var MAP_LOCATIONS = {
     // 教學區
@@ -117,6 +171,13 @@
   var lyricsSongBodyEl = document.getElementById('lyrics-song-body');
   var mapSvgEl = document.getElementById('campus-map');
   var mapInfoEl = document.getElementById('map-info');
+  var medicalDayFiltersEl = document.getElementById('medical-day-filters');
+  var medicalScheduleBodyEl = document.getElementById('medical-schedule-body');
+  var medicalTeamBodyEl = document.getElementById('medical-team-body');
+  var medicalReportTextEl = document.getElementById('medical-report-text');
+  var medicalReportCopyEl = document.getElementById('medical-report-copy');
+  var medicalReportNoteEl = document.getElementById('medical-report-note');
+  var medicalVehicleBodyEl = document.getElementById('medical-vehicle-body');
 
   var state = {
     days: [],
@@ -127,7 +188,7 @@
     offline: false,
     members: [],
     membersLoaded: false,
-    rosterTeams: [5],     // 預設聚焦第五中隊（多選；空 = 全部）
+    rosterTeams: [],      // 多選；空 = 全部
     rosterSquads: [],     // 多選；空 = 該中隊全部小隊
     rosterGender: 'all',
     rosterEarlyOnly: false,
@@ -142,6 +203,7 @@
     rollcallPresent: {},  // { squad: { memberKey: true } }
     squadAdvisors: {},    // "t|s" -> { 男: name, 女: name }
     currentTool: null,
+    medicalDay: 0,        // 醫護組值班表所選日期索引
   };
 
   var didInitialScroll = false;
@@ -992,6 +1054,7 @@
     if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
     if (name === 'contacts') renderContacts();
     if (name === 'lyrics') renderLyrics();
+    if (name === 'medical') renderMedical();
     if (name === 'map') {
       mapSvgEl.querySelectorAll('.map-location.active').forEach(function (el) { el.classList.remove('active'); });
       renderMapInfo(null);
@@ -1485,6 +1548,134 @@
     window.scrollTo(0, 0);
   }
 
+  // ---- 醫護組資訊 ----
+  function renderMedical() {
+    renderMedicalSchedule();
+    renderMedicalTeam();
+    renderMedicalReport();
+    renderMedicalVehicles();
+  }
+
+  function renderMedicalSchedule() {
+    medicalDayFiltersEl.innerHTML = '';
+    MEDICAL_SCHEDULE_DAYS.forEach(function (day, idx) {
+      var chip = document.createElement('button');
+      chip.className = 'roster-chip' + (idx === state.medicalDay ? ' active' : '');
+      chip.textContent = day;
+      chip.dataset.idx = idx;
+      medicalDayFiltersEl.appendChild(chip);
+    });
+
+    medicalScheduleBodyEl.innerHTML = '';
+    MEDICAL_SCHEDULE.forEach(function (shift) {
+      var card = document.createElement('div');
+      card.className = 'medical-shift-card';
+
+      var head = document.createElement('div');
+      head.className = 'medical-shift-head';
+      var label = document.createElement('span');
+      label.className = 'medical-shift-label';
+      label.textContent = shift.label;
+      head.appendChild(label);
+      var time = document.createElement('span');
+      time.className = 'medical-shift-time';
+      time.textContent = shift.time;
+      head.appendChild(time);
+      card.appendChild(head);
+
+      var names = shift.duty[state.medicalDay] || [];
+      var namesWrap = document.createElement('div');
+      namesWrap.className = 'medical-shift-names';
+      if (names.length) {
+        names.forEach(function (n) {
+          var tag = document.createElement('span');
+          tag.className = 'medical-name-tag';
+          tag.textContent = n;
+          namesWrap.appendChild(tag);
+        });
+      } else {
+        var empty = document.createElement('span');
+        empty.className = 'medical-shift-empty';
+        empty.textContent = '未排班';
+        namesWrap.appendChild(empty);
+      }
+      card.appendChild(namesWrap);
+      medicalScheduleBodyEl.appendChild(card);
+    });
+  }
+
+  function renderMedicalTeam() {
+    medicalTeamBodyEl.innerHTML = '';
+    MEDICAL_TEAM.forEach(function (person) {
+      var card = document.createElement('div');
+      card.className = 'medical-person-card';
+
+      var avatar = document.createElement('div');
+      avatar.className = 'member-avatar medical-avatar';
+      avatar.textContent = person.name.charAt(0);
+      card.appendChild(avatar);
+
+      var main = document.createElement('div');
+      main.className = 'member-main';
+      var nameRow = document.createElement('div');
+      nameRow.className = 'member-name-row';
+      var name = document.createElement('span');
+      name.className = 'member-name';
+      name.textContent = person.name;
+      nameRow.appendChild(name);
+      person.tags.forEach(function (t) {
+        nameRow.appendChild(makeTag(t === '組長' ? 'tag-lead' : 'tag-driver', t));
+      });
+      main.appendChild(nameRow);
+
+      var phone = MEDICAL_PHONES[person.name];
+      var phoneEl = document.createElement('div');
+      phoneEl.className = 'member-meta';
+      if (phone) {
+        var link = document.createElement('a');
+        link.className = 'medical-phone-link';
+        link.href = 'tel:' + phone.replace(/[^0-9+]/g, '');
+        link.textContent = '📞 ' + phone;
+        phoneEl.appendChild(link);
+      } else {
+        phoneEl.classList.add('medical-phone-missing');
+        phoneEl.textContent = '電話尚未提供';
+      }
+      main.appendChild(phoneEl);
+      card.appendChild(main);
+      medicalTeamBodyEl.appendChild(card);
+    });
+  }
+
+  function renderMedicalReport() {
+    medicalReportTextEl.textContent = MEDICAL_REPORT_TEMPLATE;
+    medicalReportNoteEl.textContent = '📌 ' + MEDICAL_REPORT_NOTE;
+  }
+
+  function renderMedicalVehicles() {
+    medicalVehicleBodyEl.innerHTML = '';
+    MEDICAL_VEHICLES.forEach(function (v) {
+      var card = document.createElement('div');
+      card.className = 'medical-vehicle-card';
+      var icon = document.createElement('span');
+      icon.className = 'medical-vehicle-icon';
+      icon.textContent = '🚗';
+      card.appendChild(icon);
+      var main = document.createElement('div');
+      main.className = 'medical-vehicle-main';
+      var driver = document.createElement('div');
+      driver.className = 'medical-vehicle-driver';
+      driver.textContent = v.driver + ' 負責';
+      main.appendChild(driver);
+      var plate = document.createElement('div');
+      plate.className = 'medical-vehicle-plate';
+      plate.textContent = v.plate;
+      main.appendChild(plate);
+      card.appendChild(main);
+      medicalVehicleBodyEl.appendChild(card);
+    });
+  }
+
   // ---- 校園地圖 ----
   function renderMapInfo(loc) {
     if (!loc) {
@@ -1616,6 +1807,21 @@
     if (card) openLyricsSong(parseInt(card.dataset.index, 10));
   });
   lyricsSongBackEl.addEventListener('click', closeLyricsSong);
+
+  // medical events
+  medicalDayFiltersEl.addEventListener('click', function (e) {
+    var chip = e.target.closest('.roster-chip');
+    if (!chip) return;
+    state.medicalDay = parseInt(chip.dataset.idx, 10);
+    renderMedicalSchedule();
+  });
+  medicalReportCopyEl.addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) return;
+    navigator.clipboard.writeText(MEDICAL_REPORT_TEMPLATE).then(function () {
+      medicalReportCopyEl.textContent = '已複製 ✓';
+      setTimeout(function () { medicalReportCopyEl.textContent = '複製文字'; }, 1500);
+    });
+  });
 
   // roster events
   rosterInputEl.addEventListener('input', function () {

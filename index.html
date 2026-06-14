@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=22">
+<link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 <div class="app">
@@ -84,6 +84,14 @@
           <span class="tool-menu-text">
             <span class="tool-menu-label">領袖聯絡方式</span>
             <span class="tool-menu-desc">各 FSY 領袖的聯絡資訊</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="medical">
+          <span class="tool-menu-icon">🩺</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">醫護組資訊</span>
+            <span class="tool-menu-desc">值班表、人員電話、回報格式、車牌</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -217,6 +225,36 @@
         <div id="pane-contacts" class="tool-pane" hidden>
           <div class="tool-head"><h2 class="tool-title">領袖聯絡方式</h2></div>
           <div id="contacts-body" class="contacts-body"></div>
+        </div>
+
+        <!-- 醫護組資訊 -->
+        <div id="pane-medical" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">醫護組資訊</h2></div>
+
+          <section class="medical-section">
+            <h3 class="medical-section-title">🗓️ 值班表</h3>
+            <div class="roster-filters" id="medical-day-filters"></div>
+            <div id="medical-schedule-body" class="medical-schedule-body"></div>
+          </section>
+
+          <section class="medical-section">
+            <h3 class="medical-section-title">📞 醫護組人員</h3>
+            <div id="medical-team-body" class="medical-team-list"></div>
+          </section>
+
+          <section class="medical-section">
+            <h3 class="medical-section-title">📋 回報格式</h3>
+            <div class="medical-report-card">
+              <pre id="medical-report-text" class="medical-report-text"></pre>
+              <button id="medical-report-copy" class="medical-copy-btn">複製文字</button>
+            </div>
+            <p class="tool-hint medical-report-note" id="medical-report-note"></p>
+          </section>
+
+          <section class="medical-section">
+            <h3 class="medical-section-title">🚗 接送車輛車牌</h3>
+            <div id="medical-vehicle-body" class="medical-vehicle-list"></div>
+          </section>
         </div>
 
         <!-- 歌詞：歌曲列表 -->
@@ -448,6 +486,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=27"></script>
+<script src="app.js?v=28"></script>
 </body>
 </html>
