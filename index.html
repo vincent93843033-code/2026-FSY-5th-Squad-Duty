@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=26">
+<link rel="stylesheet" href="style.css?v=27">
 </head>
 <body>
 <div class="app">
@@ -235,164 +235,17 @@
         <!-- 校園地圖 -->
         <div id="pane-map" class="tool-pane" hidden>
           <div class="tool-head"><h2 class="tool-title">校園地圖</h2></div>
-          <p class="tool-hint">亞洲大學校園示意圖（非實際比例），依教學區／生活區／綜合區分區標示，點擊地點圖示查看名稱與簡介。</p>
-          <svg id="campus-map" class="map-svg" viewBox="0 0 400 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="亞洲大學校園示意地圖">
-            <rect class="map-bg" x="0" y="0" width="400" height="620" rx="16"></rect>
-
-            <!-- 圖例 -->
-            <g class="map-legend">
-              <rect class="map-zone-bg-academic" x="20" y="10" width="14" height="14" rx="3"></rect>
-              <text class="map-legend-label" x="38" y="21">教學區</text>
-              <rect class="map-zone-bg-residential" x="150" y="10" width="14" height="14" rx="3"></rect>
-              <text class="map-legend-label" x="168" y="21">生活區</text>
-              <rect class="map-zone-bg-comprehensive" x="270" y="10" width="14" height="14" rx="3"></rect>
-              <text class="map-legend-label" x="288" y="21">綜合區</text>
-            </g>
-
-            <circle class="map-tree" cx="35" cy="100" r="10"></circle>
-            <circle class="map-tree" cx="35" cy="200" r="10"></circle>
-            <circle class="map-tree" cx="35" cy="300" r="10"></circle>
-
-            <!-- 區域背景 -->
-            <rect class="map-zone-bg-academic" x="66" y="44" width="234" height="320" rx="14"></rect>
-            <rect class="map-zone-bg-residential" x="308" y="44" width="84" height="560" rx="14"></rect>
-            <rect class="map-zone-bg-comprehensive" x="8" y="372" width="292" height="224" rx="14"></rect>
-
-            <!-- 教學區 -->
-            <g class="map-location map-zone-academic" data-loc="med" tabindex="0" role="button" aria-label="醫學暨健康學院">
-              <rect class="map-shape" x="74" y="54" width="96" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="122" y="76">🏥</text>
-              <text class="map-location-label" x="122" y="96"><tspan x="122" dy="0">醫學暨健康</tspan><tspan x="122" dy="13">學院</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-academic" data-loc="ice" tabindex="0" role="button" aria-label="資訊電機學院">
-              <rect class="map-shape" x="196" y="54" width="96" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="244" y="76">💻</text>
-              <text class="map-location-label" x="244" y="96"><tspan x="244" dy="0">資訊電機</tspan><tspan x="244" dy="13">學院</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-academic" data-loc="design" tabindex="0" role="button" aria-label="創意設計學院">
-              <rect class="map-shape" x="74" y="130" width="96" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="122" y="152">🎨</text>
-              <text class="map-location-label" x="122" y="172"><tspan x="122" dy="0">創意設計</tspan><tspan x="122" dy="13">學院</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-academic" data-loc="intl" tabindex="0" role="button" aria-label="國際學院">
-              <rect class="map-shape" x="196" y="130" width="96" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="244" y="156">🌐</text>
-              <text class="map-location-label" x="244" y="178">國際學院</text>
-            </g>
-
-            <g class="map-location map-zone-academic" data-loc="management" tabindex="0" role="button" aria-label="管理學院">
-              <rect class="map-shape" x="74" y="206" width="96" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="122" y="232">📊</text>
-              <text class="map-location-label" x="122" y="254">管理學院</text>
-            </g>
-
-            <g class="map-location map-zone-academic" data-loc="law" tabindex="0" role="button" aria-label="法律學院">
-              <rect class="map-shape" x="196" y="206" width="96" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="244" y="232">⚖️</text>
-              <text class="map-location-label" x="244" y="254">法律學院</text>
-            </g>
-
-            <g class="map-location map-zone-academic" data-loc="humanities" tabindex="0" role="button" aria-label="人文社會學院">
-              <rect class="map-shape" x="135" y="286" width="96" height="56" rx="10"></rect>
-              <text class="map-location-icon" x="183" y="304">🏛️</text>
-              <text class="map-location-label" x="183" y="324"><tspan x="183" dy="0">人文社會</tspan><tspan x="183" dy="13">學院</tspan></text>
-            </g>
-
-            <!-- 生活區 -->
-            <g class="map-location map-zone-residential" data-loc="dorm1" tabindex="0" role="button" aria-label="D1 威恩學苑">
-              <rect class="map-shape" x="313" y="48" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="70">🛏️</text>
-              <text class="map-location-label" x="350" y="90"><tspan x="350" dy="0">D1</tspan><tspan x="350" dy="13">威恩學苑</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-residential" data-loc="dorm2" tabindex="0" role="button" aria-label="D2 惟德學苑">
-              <rect class="map-shape" x="313" y="124" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="146">🛏️</text>
-              <text class="map-location-label" x="350" y="166"><tspan x="350" dy="0">D2</tspan><tspan x="350" dy="13">惟德學苑</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-residential" data-loc="dorm3" tabindex="0" role="button" aria-label="D3 登峰學苑">
-              <rect class="map-shape" x="313" y="200" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="222">🛏️</text>
-              <text class="map-location-label" x="350" y="242"><tspan x="350" dy="0">D3</tspan><tspan x="350" dy="13">登峰學苑</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-residential" data-loc="dorm4" tabindex="0" role="button" aria-label="D4 築夢學苑">
-              <rect class="map-shape" x="313" y="276" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="298">🛏️</text>
-              <text class="map-location-label" x="350" y="318"><tspan x="350" dy="0">D4</tspan><tspan x="350" dy="13">築夢學苑</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-residential" data-loc="seven" tabindex="0" role="button" aria-label="7-ELEVEN">
-              <rect class="map-shape" x="313" y="352" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="378">🏪</text>
-              <text class="map-location-label" x="350" y="400">7-ELEVEN</text>
-            </g>
-
-            <g class="map-location map-zone-residential" data-loc="cafeteria" tabindex="0" role="button" aria-label="學生餐廳">
-              <rect class="map-shape" x="313" y="428" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="454">🍽️</text>
-              <text class="map-location-label" x="350" y="476">學生餐廳</text>
-            </g>
-
-            <g class="map-location map-zone-residential" data-loc="yahua" tabindex="0" role="button" aria-label="亞樺菲蘭餐廳">
-              <rect class="map-shape" x="313" y="504" width="74" height="68" rx="10"></rect>
-              <text class="map-location-icon" x="350" y="526">🍜</text>
-              <text class="map-location-label" x="350" y="546"><tspan x="350" dy="0">亞樺菲蘭</tspan><tspan x="350" dy="13">餐廳</tspan></text>
-            </g>
-
-            <!-- 綜合區 -->
-            <g class="map-location map-zone-comprehensive" data-loc="power" tabindex="0" role="button" aria-label="動力中心">
-              <rect class="map-shape" x="11" y="376" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="56" y="402">⚡</text>
-              <text class="map-location-label" x="56" y="424">動力中心</text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="library" tabindex="0" role="button" aria-label="圖書館">
-              <rect class="map-shape" x="109" y="376" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="154" y="402">📖</text>
-              <text class="map-location-label" x="154" y="424">圖書館</text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="taiji" tabindex="0" role="button" aria-label="太極湖（玫瑰花園）">
-              <rect class="map-shape" x="207" y="376" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="252" y="398">🌹</text>
-              <text class="map-location-label" x="252" y="418"><tspan x="252" dy="0">太極湖</tspan><tspan x="252" dy="13">(玫瑰花園)</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="admin" tabindex="0" role="button" aria-label="行政中心">
-              <rect class="map-shape" x="11" y="452" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="56" y="478">🏢</text>
-              <text class="map-location-label" x="56" y="500">行政中心</text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="gym" tabindex="0" role="button" aria-label="體育館">
-              <rect class="map-shape" x="109" y="452" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="154" y="478">🏀</text>
-              <text class="map-location-label" x="154" y="500">體育館</text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="lotus" tabindex="0" role="button" aria-label="荷花池">
-              <rect class="map-shape" x="207" y="452" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="252" y="478">🪷</text>
-              <text class="map-location-label" x="252" y="500">荷花池</text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="museum" tabindex="0" role="button" aria-label="亞洲大學現代美術館">
-              <rect class="map-shape" x="11" y="528" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="56" y="550">🖼️</text>
-              <text class="map-location-label" x="56" y="570"><tspan x="56" dy="0">亞洲大學</tspan><tspan x="56" dy="13">現代美術館</tspan></text>
-            </g>
-
-            <g class="map-location map-zone-comprehensive" data-loc="clubhouse" tabindex="0" role="button" aria-label="休閒會館">
-              <rect class="map-shape" x="109" y="528" width="90" height="64" rx="10"></rect>
-              <text class="map-location-icon" x="154" y="554">☕</text>
-              <text class="map-location-label" x="154" y="576">休閒會館</text>
-            </g>
-          </svg>
+          <p class="tool-hint">亞洲大學官方校園地圖，點擊地圖上的標記查看名稱與簡介。手機可左右滑動瀏覽完整地圖。</p>
+          <div class="map-legend">
+            <span class="map-legend-item"><span class="map-legend-dot map-zone-academic"></span>教學區</span>
+            <span class="map-legend-item"><span class="map-legend-dot map-zone-residential"></span>生活區</span>
+            <span class="map-legend-item"><span class="map-legend-dot map-zone-comprehensive"></span>綜合區</span>
+          </div>
+          <div class="map-scroll">
+            <div id="map-canvas" class="map-canvas">
+              <img class="map-img" src="au_campus_map.jpg?v=1" alt="亞洲大學官方校園地圖" />
+            </div>
+          </div>
           <div id="map-info" class="map-info"></div>
         </div>
 
@@ -498,6 +351,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=31"></script>
+<script src="app.js?v=33"></script>
 </body>
 </html>

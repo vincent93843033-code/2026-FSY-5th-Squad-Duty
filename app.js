@@ -109,32 +109,34 @@
     { driver: '蔡連凱', plate: '' },
   ];
   // 校園地圖：各地點的名稱與簡介（依教學區／生活區／綜合區分類，簡介為示範說明文字）
+  // 校園地圖標記：x/y 為官方底圖（au_campus_map.jpg）上的百分比位置（依官方編號標記校正）
   var MAP_LOCATIONS = {
-    // 教學區
-    med: { name: '醫學暨健康學院', desc: '教學大樓，醫學暨健康相關系所教室與研討空間。' },
-    ice: { name: '資訊電機學院', desc: '教學大樓，資訊與電機相關系所教室。' },
-    design: { name: '創意設計學院', desc: '教學大樓，設計相關系所教室與工作室空間。' },
-    intl: { name: '國際學院', desc: '教學大樓，國際相關學程教室。' },
-    management: { name: '管理學院', desc: '教學大樓，商管相關系所教室。' },
-    law: { name: '法律學院', desc: '教學大樓，法律系所教室與自習空間。' },
-    humanities: { name: '人文社會學院', desc: '教學大樓，人文與社會相關系所教室。' },
-    // 生活區
-    dorm1: { name: 'D1 威恩學苑', desc: '學生宿舍大樓，依宿舍房號分配（詳見小隊員一覽）。' },
-    dorm2: { name: 'D2 惟德學苑', desc: '學生宿舍大樓，依宿舍房號分配（詳見小隊員一覽）。' },
-    dorm3: { name: 'D3 登峰學苑', desc: '學生宿舍大樓，依宿舍房號分配（詳見小隊員一覽）。' },
-    dorm4: { name: 'D4 築夢學苑', desc: '學生宿舍大樓，依宿舍房號分配（詳見小隊員一覽）。' },
-    seven: { name: '7-ELEVEN', desc: '便利商店，可購買日用品與輕食飲料。' },
-    cafeteria: { name: '學生餐廳', desc: '用餐地點，依梯次分批用餐，請依場控人員指示排隊。' },
-    yahua: { name: '亞樺菲蘭餐廳', desc: '校園內另一處用餐選擇。' },
-    // 綜合區
-    power: { name: '動力中心', desc: '校園機電與能源設施所在地，非開放區域。' },
-    library: { name: '圖書館', desc: '校園地標建築，藏書豐富，部分時段開放團體休息與閱覽。' },
-    taiji: { name: '太極湖（玫瑰花園）', desc: '校園景觀水池與花園，適合拍照與短暫休憩。' },
-    admin: { name: '行政中心', desc: '行政辦公室與服務台，遺失物品或緊急事項可洽詢此處。' },
-    gym: { name: '體育館', desc: '室內球場與大型活動空間，開幕式、團體活動常在此舉行。' },
-    lotus: { name: '荷花池', desc: '校園景觀池塘，夏季可賞荷花。' },
-    museum: { name: '亞洲大學現代美術館', desc: '校園藝文展覽空間，部分時段開放參觀。' },
-    clubhouse: { name: '休閒會館', desc: '提供休憩與簡餐輕食的多功能空間。' },
+    // 教學區（藍）
+    ice: { name: '資訊電機學院', zone: 'academic', icon: '💻', x: 65.2, y: 6.2, desc: '教學大樓，資訊與電機相關系所教室。' },
+    med: { name: '醫學暨健康學院', zone: 'academic', icon: '🏥', x: 72.2, y: 10.2, desc: '教學大樓，醫學暨健康相關系所教室與研討空間。' },
+    design: { name: '創意設計學院', zone: 'academic', icon: '🎨', x: 55.7, y: 20.1, desc: '教學大樓，設計相關系所教室與工作室空間。' },
+    intl: { name: '國際學院', zone: 'academic', icon: '🌐', x: 62.5, y: 23, desc: '教學大樓，國際相關學程教室。' },
+    management: { name: '管理學院', zone: 'academic', icon: '📊', x: 68, y: 28.5, desc: '教學大樓，商管相關系所教室。' },
+    law: { name: '法律學院', zone: 'academic', icon: '⚖️', x: 75.1, y: 24.9, desc: '教學大樓，法律系所教室與自習空間。' },
+    humanities: { name: '人文社會學院', zone: 'academic', icon: '🏛️', x: 76.7, y: 30.1, desc: '教學大樓，人文與社會相關系所教室。' },
+    // 生活區（綠）
+    dorm1: { name: 'D1 威恩學苑', zone: 'residential', icon: '🛏️', x: 78.4, y: 2.8, desc: '學生宿舍，依宿舍房號分配（詳見小隊員一覽）。' },
+    dorm2: { name: 'D2 惟德學苑', zone: 'residential', icon: '🛏️', x: 83, y: 6.4, desc: '學生宿舍，依宿舍房號分配（詳見小隊員一覽）。' },
+    dorm3: { name: 'D3 登峰學苑', zone: 'residential', icon: '🛏️', x: 43.6, y: 30.9, desc: '學生宿舍，依宿舍房號分配（詳見小隊員一覽）。' },
+    dorm4: { name: 'D4 築夢學苑', zone: 'residential', icon: '🛏️', x: 49.9, y: 30.4, desc: '學生宿舍，依宿舍房號分配（詳見小隊員一覽）。' },
+    seven: { name: '7-ELEVEN', zone: 'residential', icon: '🏪', x: 69.5, y: 11, desc: '便利商店，可購買日用品與輕食飲料。' },
+    cafeteria: { name: '學生餐廳', zone: 'residential', icon: '🍽️', x: 56, y: 34.5, desc: '用餐地點，依梯次分批用餐，請依場控人員指示排隊。' },
+    yahua: { name: '亞樺菲蘭餐廳', zone: 'residential', icon: '🍜', x: 59.5, y: 35.5, desc: '校園內另一處用餐選擇。' },
+    // 綜合區（橘）
+    taiji: { name: '太極湖（玫瑰花園）', zone: 'comprehensive', icon: '🌹', x: 61.2, y: 11, desc: '校園景觀水池與花園，適合拍照與短暫休憩。' },
+    clubhouse: { name: '休閒會館', zone: 'comprehensive', icon: '☕', x: 57.9, y: 12.4, desc: '提供休憩與簡餐輕食的多功能空間。' },
+    power: { name: '動力中心', zone: 'comprehensive', icon: '⚡', x: 87, y: 13.7, desc: '校園機電與能源設施所在地，非開放區域。' },
+    library: { name: '圖書館', zone: 'comprehensive', icon: '📖', x: 59, y: 16.5, desc: '校園地標建築，藏書豐富，部分時段開放團體休息與閱覽。' },
+    admin: { name: '行政中心', zone: 'comprehensive', icon: '🏢', x: 63.6, y: 26, desc: '行政辦公室與服務台，遺失物品或緊急事項可洽詢此處。' },
+    lotus: { name: '荷花池', zone: 'comprehensive', icon: '🪷', x: 76.3, y: 34.2, desc: '校園景觀池塘，夏季可賞荷花。' },
+    gym: { name: '體育館', zone: 'comprehensive', icon: '🏀', x: 53.3, y: 32.9, desc: '室內球場與大型活動空間，開幕式、團體活動常在此舉行。' },
+    museum: { name: '亞洲大學現代美術館', zone: 'comprehensive', icon: '🖼️', x: 46.6, y: 28.6, desc: '安藤忠雄設計，世界知名清水模建築，校園藝文地標。' },
+    hospital: { name: '亞大附屬醫院', zone: 'comprehensive', icon: '🏥', x: 84, y: 58, desc: '亞洲大學附屬醫院，位於福新路222號，距校區約 1 公里。' },
   };
 
   var dayPillsEl = document.getElementById('day-pills');
@@ -184,7 +186,8 @@
   var lyricsSongBackEl = document.getElementById('lyrics-song-back');
   var lyricsSongTitleEl = document.getElementById('lyrics-song-title');
   var lyricsSongBodyEl = document.getElementById('lyrics-song-body');
-  var mapSvgEl = document.getElementById('campus-map');
+  var mapCanvasEl = document.getElementById('map-canvas');
+  var mapScrollEl = document.querySelector('.map-scroll');
   var mapInfoEl = document.getElementById('map-info');
   var medicalDayFiltersEl = document.getElementById('medical-day-filters');
   var medicalScheduleBodyEl = document.getElementById('medical-schedule-body');
@@ -1072,8 +1075,13 @@
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
     if (name === 'map') {
-      mapSvgEl.querySelectorAll('.map-location.active').forEach(function (el) { el.classList.remove('active'); });
+      renderMapMarkers();
+      mapCanvasEl.querySelectorAll('.map-marker.active').forEach(function (el) { el.classList.remove('active'); });
       renderMapInfo(null);
+      // 預設捲動到建築群（官方底圖左側為圖例文字）
+      requestAnimationFrame(function () {
+        mapScrollEl.scrollLeft = (mapCanvasEl.offsetWidth - mapScrollEl.clientWidth) * 0.55;
+      });
     }
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
     window.scrollTo(0, 0);
@@ -1697,30 +1705,61 @@
     });
   }
 
-  // ---- 校園地圖 ----
+  // ---- 校園地圖（官方底圖 + 定位標記）----
+  var MAP_ZONE_NAMES = { academic: '教學區', residential: '生活區', comprehensive: '綜合區' };
+
+  function renderMapMarkers() {
+    if (mapCanvasEl.dataset.rendered) return;
+    Object.keys(MAP_LOCATIONS).forEach(function (key) {
+      var loc = MAP_LOCATIONS[key];
+      var marker = document.createElement('button');
+      marker.className = 'map-marker map-zone-' + loc.zone;
+      marker.style.left = loc.x + '%';
+      marker.style.top = loc.y + '%';
+      marker.dataset.loc = key;
+      marker.setAttribute('aria-label', loc.name);
+      var dot = document.createElement('span');
+      dot.className = 'map-marker-dot';
+      marker.appendChild(dot);
+      var label = document.createElement('span');
+      label.className = 'map-marker-label';
+      label.textContent = loc.name;
+      marker.appendChild(label);
+      mapCanvasEl.appendChild(marker);
+    });
+    mapCanvasEl.dataset.rendered = '1';
+  }
+
   function renderMapInfo(loc) {
     if (!loc) {
-      mapInfoEl.innerHTML = '<div class="map-info-empty">點擊地圖上的地點，查看名稱與簡介。</div>';
+      mapInfoEl.innerHTML = '<div class="map-info-empty">點擊地圖上的標記，查看名稱與簡介。</div>';
       return;
     }
     var info = MAP_LOCATIONS[loc];
     mapInfoEl.innerHTML = '';
+    var head = document.createElement('div');
+    head.className = 'map-info-head';
     var title = document.createElement('div');
     title.className = 'map-info-title';
-    title.textContent = info.name;
+    title.textContent = (info.icon ? info.icon + ' ' : '') + info.name;
+    head.appendChild(title);
+    var badge = document.createElement('span');
+    badge.className = 'map-info-badge map-zone-' + info.zone;
+    badge.textContent = MAP_ZONE_NAMES[info.zone];
+    head.appendChild(badge);
+    mapInfoEl.appendChild(head);
     var desc = document.createElement('div');
     desc.className = 'map-info-desc';
     desc.textContent = info.desc;
-    mapInfoEl.appendChild(title);
     mapInfoEl.appendChild(desc);
   }
 
-  mapSvgEl.addEventListener('click', function (e) {
-    var g = e.target.closest('.map-location');
-    if (!g) return;
-    mapSvgEl.querySelectorAll('.map-location.active').forEach(function (el) { el.classList.remove('active'); });
-    g.classList.add('active');
-    renderMapInfo(g.dataset.loc);
+  mapCanvasEl.addEventListener('click', function (e) {
+    var marker = e.target.closest('.map-marker');
+    if (!marker) return;
+    mapCanvasEl.querySelectorAll('.map-marker.active').forEach(function (el) { el.classList.remove('active'); });
+    marker.classList.add('active');
+    renderMapInfo(marker.dataset.loc);
   });
 
   // ---- 點名（第五中隊 18-22 小隊）----
