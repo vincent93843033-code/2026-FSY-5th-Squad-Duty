@@ -1759,24 +1759,7 @@ body {
   color: var(--color-primary);
 }
 
-/* Campus map (官方底圖 + FSY 地點標記) */
-.map-now-btn {
-  width: 100%;
-  appearance: none;
-  border: none;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: 999px;
-  padding: 11px;
-  margin-bottom: 12px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.1s ease, background 0.12s ease;
-}
-
-.map-now-btn:active { transform: scale(0.98); }
-
+/* Campus map (校園底圖 + FSY 地點標記) */
 .map-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -1847,59 +1830,32 @@ body {
   }
 }
 
+/* 點擊地點後的建築高亮框 */
+.map-highlight-box {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--color-primary);
+  background: rgba(46, 158, 91, 0.18);
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.map-highlight-box.pulsing {
+  animation: mapHlPulse 0.7s ease-out 2;
+}
+
+@keyframes mapHlPulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 158, 91, 0.55); }
+  100% { box-shadow: 0 0 0 14px rgba(46, 158, 91, 0); }
+}
+
 .map-info {
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 14px;
   min-height: 56px;
-}
-
-/* 「現在在哪」橫幅 */
-.map-now-banner {
-  border-radius: 12px;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-}
-
-.map-now-current { background: #e8f7ee; border: 1px solid #9ed9b4; }
-.map-now-next { background: #fff4e0; border: 1px solid #f0cd8a; }
-.map-now-warn { background: #f1f3f5; border: 1px solid var(--color-border); }
-
-.map-now-head {
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: var(--color-text);
-}
-
-.map-now-body {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-top: 4px;
-  line-height: 1.5;
-}
-
-.map-now-go {
-  margin-top: 9px;
-  appearance: none;
-  border: none;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: 999px;
-  padding: 7px 15px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-.map-now-go:active { transform: scale(0.97); }
-
-.map-now-note {
-  font-size: 0.78rem;
-  color: var(--color-muted);
-  margin-top: 6px;
 }
 
 .map-info-head {
@@ -1914,12 +1870,6 @@ body {
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--color-primary);
-}
-
-.map-info-walk {
-  font-size: 0.82rem;
-  color: var(--color-muted);
-  margin-bottom: 10px;
 }
 
 .map-info-act-label {
