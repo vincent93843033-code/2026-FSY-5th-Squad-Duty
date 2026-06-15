@@ -108,54 +108,6 @@
     { driver: '蔡君佩', plate: '' },
     { driver: '蔡連凱', plate: '' },
   ];
-  // 校園地圖：只保留 FSY 行程會用到的地點。
-  // x/y 為底圖（au_campus_map.jpg，已裁切為校園範圍）上的百分比位置；bw/bh 為點擊高亮框的寬高（%）；
-  // match：比對即時行程 location/activity 文字的關鍵字（用來動態帶出活動）；
-  // highlight：活動名稱關鍵字，用來把活動多的地點（如體育館）篩選成重點活動；
-  // static：固定顯示的說明文字；listSchedule:false 代表不從行程動態帶出（避免洗版，如餐廳）。
-  var MAP_LOCATIONS = {
-    admin: {
-      name: '行政中心', cat: 'admin', icon: '📋', x: 41.3, y: 52.3, bw: 12, bh: 20,
-      match: ['報到', '離場', '賦歸', '行政'],
-      static: ['FSY 報到與離場的集合與服務處'],
-    },
-    management: {
-      name: '管理學院', cat: 'class', icon: '🏫', x: 50.0, y: 57.3, bw: 14, bh: 22,
-      match: ['管理學院', '管理'],
-    },
-    gym: {
-      name: '體育館', cat: 'event', icon: '🏟️', x: 25.8, y: 67.3, bw: 12, bh: 20,
-      match: ['體育'],
-      highlight: ['音樂節目', '七十週年', '舞會', '晚會', '才藝', '見證'],
-    },
-    cafeteria: {
-      name: '學生餐廳', cat: 'meal', icon: '🍽️', x: 33.5, y: 74.5, bw: 11, bh: 18,
-      match: ['餐廳', '用餐'],
-      listSchedule: false,
-      static: ['每日三餐用餐地點（早 / 午 / 晚）', '請依梯次與場控人員指示分批用餐'],
-    },
-    dorm1: {
-      name: 'D1宿舍', cat: 'dorm', icon: '🏠', x: 65.2, y: 5.6, bw: 11, bh: 24,
-      match: ['威恩'],
-      static: ['尚未分配，請待通知'],
-    },
-    dorm2: {
-      name: 'D2宿舍', cat: 'dorm', icon: '🏠', x: 74.2, y: 13.1, bw: 11, bh: 24,
-      match: ['惟德'],
-      static: ['尚未分配，請待通知'],
-    },
-    dorm3: {
-      name: 'D3宿舍', cat: 'dorm', icon: '🏠', x: 9.0, y: 62.1, bw: 11, bh: 24,
-      match: ['登峰'],
-      static: ['尚未分配，請待通知'],
-    },
-    dorm4: {
-      name: 'D4宿舍', cat: 'dorm', icon: '🏠', x: 19.4, y: 61.1, bw: 11, bh: 24,
-      match: ['築夢'],
-      static: ['尚未分配，請待通知'],
-    },
-  };
-
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
   var overviewContentEl = document.getElementById('overview-content');
@@ -203,9 +155,6 @@
   var lyricsSongBackEl = document.getElementById('lyrics-song-back');
   var lyricsSongTitleEl = document.getElementById('lyrics-song-title');
   var lyricsSongBodyEl = document.getElementById('lyrics-song-body');
-  var mapCanvasEl = document.getElementById('map-canvas');
-  var mapScrollEl = document.querySelector('.map-scroll');
-  var mapInfoEl = document.getElementById('map-info');
   var medicalDayFiltersEl = document.getElementById('medical-day-filters');
   var medicalScheduleBodyEl = document.getElementById('medical-schedule-body');
   var medicalTeamBodyEl = document.getElementById('medical-team-body');
@@ -1091,16 +1040,6 @@
     if (name === 'contacts') renderContacts();
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
-    if (name === 'map') {
-      renderMapMarkers();
-      setActiveMarker(null);
-      hideHighlightBox();
-      renderMapInfo(null);
-      // 預設捲動到地圖中段
-      requestAnimationFrame(function () {
-        mapScrollEl.scrollLeft = (mapCanvasEl.offsetWidth - mapScrollEl.clientWidth) * 0.3;
-      });
-    }
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
     window.scrollTo(0, 0);
   }
@@ -1720,174 +1659,6 @@
       main.appendChild(plate);
       card.appendChild(main);
       medicalVehicleBodyEl.appendChild(card);
-    });
-  }
-
-  // ---- 校園地圖（官方底圖 + FSY 地點標記）----
-  var mapHighlightEl = null;
-
-  function renderMapMarkers() {
-    if (mapCanvasEl.dataset.rendered) return;
-    mapHighlightEl = document.createElement('div');
-    mapHighlightEl.className = 'map-highlight-box';
-    mapHighlightEl.style.display = 'none';
-    mapCanvasEl.appendChild(mapHighlightEl);
-    Object.keys(MAP_LOCATIONS).forEach(function (key) {
-      var loc = MAP_LOCATIONS[key];
-      var marker = document.createElement('button');
-      marker.className = 'map-marker map-cat-' + loc.cat;
-      marker.style.left = loc.x + '%';
-      marker.style.top = loc.y + '%';
-      marker.dataset.loc = key;
-      marker.setAttribute('aria-label', loc.name);
-      var icon = document.createElement('span');
-      icon.className = 'map-marker-icon';
-      icon.textContent = loc.icon;
-      marker.appendChild(icon);
-      var label = document.createElement('span');
-      label.className = 'map-marker-label';
-      label.textContent = loc.name;
-      marker.appendChild(label);
-      mapCanvasEl.appendChild(marker);
-    });
-    mapCanvasEl.dataset.rendered = '1';
-  }
-
-  function setActiveMarker(key) {
-    mapCanvasEl.querySelectorAll('.map-marker.active').forEach(function (el) { el.classList.remove('active'); });
-    if (!key) return null;
-    var mk = mapCanvasEl.querySelector('.map-marker[data-loc="' + key + '"]');
-    if (mk) mk.classList.add('active');
-    return mk;
-  }
-
-  // 點擊地點後，在底圖該建築位置疊加半透明高亮框
-  function showHighlightBox(key) {
-    if (!mapHighlightEl) return;
-    var loc = MAP_LOCATIONS[key];
-    if (!loc) { hideHighlightBox(); return; }
-    mapHighlightEl.style.left = loc.x + '%';
-    mapHighlightEl.style.top = loc.y + '%';
-    mapHighlightEl.style.width = (loc.bw || 12) + '%';
-    mapHighlightEl.style.height = (loc.bh || 20) + '%';
-    mapHighlightEl.style.display = 'block';
-    mapHighlightEl.classList.remove('pulsing');
-    void mapHighlightEl.offsetWidth;
-    mapHighlightEl.classList.add('pulsing');
-  }
-
-  function hideHighlightBox() {
-    if (mapHighlightEl) mapHighlightEl.style.display = 'none';
-  }
-
-  function renderMapInfo(loc) {
-    mapInfoEl.innerHTML = '';
-    if (!loc) {
-      var empty = document.createElement('div');
-      empty.className = 'map-info-empty';
-      empty.textContent = '點擊地圖上的地點圖示，查看 FSY 活動並可跳轉行程。';
-      mapInfoEl.appendChild(empty);
-      return;
-    }
-    var info = MAP_LOCATIONS[loc];
-    var head = document.createElement('div');
-    head.className = 'map-info-head';
-    var title = document.createElement('div');
-    title.className = 'map-info-title';
-    title.textContent = info.icon + ' ' + info.name;
-    head.appendChild(title);
-    mapInfoEl.appendChild(head);
-
-    var actLabel = document.createElement('div');
-    actLabel.className = 'map-info-act-label';
-    actLabel.textContent = '本地點的 FSY 活動：';
-    mapInfoEl.appendChild(actLabel);
-
-    var list = document.createElement('div');
-    list.className = 'map-activity-list';
-
-    var hits = scheduleHitsFor(info);
-    hits.forEach(function (h) {
-      var link = document.createElement('button');
-      link.className = 'map-activity-link';
-      var text = document.createElement('span');
-      text.className = 'map-activity-text';
-      text.textContent = 'D-' + h.dayIndex + '　' + h.time + '　' + h.name;
-      var go = document.createElement('span');
-      go.className = 'map-activity-go';
-      go.textContent = '前往 ›';
-      link.appendChild(text);
-      link.appendChild(go);
-      link.addEventListener('click', function () { goToScheduleRow(h.dayIndex, h.rowIdx); });
-      list.appendChild(link);
-    });
-
-    (info.static || []).forEach(function (s) {
-      var staticItem = document.createElement('div');
-      staticItem.className = 'map-activity-static';
-      staticItem.textContent = '・' + s;
-      list.appendChild(staticItem);
-    });
-
-    if (!hits.length && !(info.static || []).length) {
-      var none = document.createElement('div');
-      none.className = 'map-activity-static';
-      none.textContent = '行程中目前沒有此地點的活動。';
-      list.appendChild(none);
-    }
-    mapInfoEl.appendChild(list);
-  }
-
-  // 從即時行程資料中，找出對應此地點的活動（依 location/activity 關鍵字比對）
-  function scheduleHitsFor(info) {
-    if (info.listSchedule === false || !state.days.length) return [];
-    var hits = [];
-    state.days.forEach(function (day) {
-      day.rows.forEach(function (row, idx) {
-        var hay = (row.location || '') + ' ' + (row.activity || '');
-        var matched = (info.match || []).some(function (kw) { return hay.indexOf(kw) !== -1; });
-        if (!matched) return;
-        var parsed = splitActivityTitle(row.activity);
-        var mainTitle = parsed.main || row.activity || '';
-        if (info.highlight && !info.highlight.some(function (kw) { return mainTitle.indexOf(kw) !== -1; })) return;
-        hits.push({ dayIndex: day.index, rowIdx: idx, time: row.time, name: mainTitle });
-      });
-    });
-    return hits;
-  }
-
-  mapCanvasEl.addEventListener('click', function (e) {
-    var marker = e.target.closest('.map-marker');
-    if (!marker) return;
-    setActiveMarker(marker.dataset.loc);
-    showHighlightBox(marker.dataset.loc);
-    renderMapInfo(marker.dataset.loc);
-  });
-
-  // 點地點的活動 → 切到行程總覽並捲動到對應行程（dayIndex + rowIdx 直接對應真實行程列）
-  function goToScheduleRow(dayIndex, rowIdx) {
-    // 切換到「行程總覽」分頁
-    document.querySelectorAll('.tab-btn').forEach(function (b) {
-      b.classList.toggle('active', b.dataset.tab === 'overview');
-    });
-    document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
-    var panel = document.getElementById('tab-overview');
-    panel.classList.add('active');
-    playFadeIn(panel);
-    searchFabEl.hidden = false;
-    closeSearch();
-
-    state.selectedDay = dayIndex;
-    renderDayPills();
-    renderOverviewTab();
-
-    var card = overviewContentEl.querySelector('[data-key="' + dayIndex + '-' + rowIdx + '"]');
-    if (!card) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-    requestAnimationFrame(function () {
-      card.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      card.classList.remove('search-highlight');
-      void card.offsetWidth;
-      card.classList.add('search-highlight');
     });
   }
 

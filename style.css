@@ -1759,172 +1759,21 @@ body {
   color: var(--color-primary);
 }
 
-/* Campus map (校園底圖 + FSY 地點標記) */
+/* Campus map (官方地圖，可橫向捲動) */
 .map-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  margin-bottom: 12px;
   background: #dfe6ea;
-}
-
-.map-canvas {
-  position: relative;
-  width: 1280px;
-  line-height: 0;
 }
 
 .map-img {
   display: block;
-  width: 100%;
+  width: 1400px;
+  max-width: none;
   height: auto;
   user-select: none;
-  pointer-events: none;
-}
-
-/* Emoji 圖示標記（白底常駐標籤） */
-.map-marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  appearance: none;
-  background: #fff;
-  border: 1.5px solid rgba(0, 0, 0, 0.12);
-  border-radius: 999px;
-  padding: 2px 9px 2px 5px;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
-  z-index: 1;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-}
-
-.map-marker-icon {
-  font-size: 21px;
-  line-height: 1;
-}
-
-.map-marker-label {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1;
-}
-
-.map-marker.active,
-.map-marker:active {
-  transform: translate(-50%, -50%) scale(1.12);
-  z-index: 6;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light), 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-
-@media (hover: hover) {
-  .map-marker:hover {
-    z-index: 6;
-    border-color: var(--color-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-}
-
-/* 點擊地點後的建築高亮框 */
-.map-highlight-box {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  border: 3px solid var(--color-primary);
-  background: rgba(46, 158, 91, 0.18);
-  border-radius: 12px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.map-highlight-box.pulsing {
-  animation: mapHlPulse 0.7s ease-out 2;
-}
-
-@keyframes mapHlPulse {
-  0% { box-shadow: 0 0 0 0 rgba(46, 158, 91, 0.55); }
-  100% { box-shadow: 0 0 0 14px rgba(46, 158, 91, 0); }
-}
-
-.map-info {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 14px;
-  min-height: 56px;
-}
-
-.map-info-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
-}
-
-.map-info-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.map-info-act-label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 8px;
-}
-
-.map-activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.map-activity-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  width: 100%;
-  text-align: left;
-  appearance: none;
-  background: var(--color-primary-light);
-  border: none;
-  border-radius: 10px;
-  padding: 10px 12px;
-  cursor: pointer;
-  transition: background 0.12s ease, transform 0.1s ease;
-}
-
-.map-activity-link:active { transform: scale(0.98); }
-
-.map-activity-text {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.map-activity-go {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.map-activity-static {
-  font-size: 0.88rem;
-  color: var(--color-muted);
-  line-height: 1.7;
-}
-
-.map-info-empty {
-  font-size: 0.88rem;
-  color: var(--color-muted);
 }
 
 /* contacts empty state */
