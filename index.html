@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 <div class="app">
@@ -236,8 +236,17 @@
         <div id="pane-map" class="tool-pane" hidden>
           <div class="tool-head"><h2 class="tool-title">校園地圖</h2></div>
           <div class="map-scroll">
-            <img class="map-img" src="au_campus_map.jpg?v=3" alt="亞洲大學官方校園地圖" />
+            <div class="map-canvas">
+              <img class="map-img" src="au_campus_map.jpg?v=3" alt="亞洲大學官方校園地圖" />
+              <span class="map-marker" style="left:63.6%;top:45.03%;">體</span>
+              <span class="map-marker" style="left:69.5%;top:28.44%;">管</span>
+              <span class="map-marker" style="left:65.37%;top:26.79%;">行</span>
+              <span class="map-marker" style="left:81.1%;top:11.61%;">餐</span>
+              <span class="map-marker" style="left:84.33%;top:6.19%;">宿</span>
+              <span class="map-marker" style="left:54.17%;top:40.69%;">宿</span>
+            </div>
           </div>
+          <p class="map-legend-extra">活動地點標示：體＝體育館　管＝管理學院　行＝行政中心　餐＝學生餐廳　宿＝宿舍</p>
         </div>
 
         <!-- 醫護組資訊 -->
