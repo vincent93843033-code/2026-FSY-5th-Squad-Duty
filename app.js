@@ -809,6 +809,15 @@
     title.textContent = day.label;
     overviewContentEl.appendChild(title);
 
+    // 服裝／大會T-shirt 資訊（與 Tab 1 相同，來自「2026 細流」即時資料）
+    // 放在最上面，但不像日期標題那樣 sticky 凍結。
+    if (day.note) {
+      var noteEl = document.createElement('div');
+      noteEl.className = 'day-section-note';
+      noteEl.textContent = day.note;
+      overviewContentEl.appendChild(noteEl);
+    }
+
     day.rows.forEach(function (row, idx) {
       var card = buildActivityCard(row, null, day.label, now);
       card.dataset.key = day.index + '-' + idx;
