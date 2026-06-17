@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=31">
+<link rel="stylesheet" href="style.css?v=32">
 </head>
 <body>
 <div class="app">
@@ -348,9 +348,21 @@
     資料來源：2026 FSY 第五中隊「職責」與「2026 細流」Google 試算表（即時同步）
   </footer>
 
+  <!-- 密碼解鎖（含個資的工具才會跳出） -->
+  <div id="unlock-overlay" class="unlock-overlay">
+    <div class="unlock-panel">
+      <div class="unlock-icon">🔒</div>
+      <h2 class="unlock-title">需要密碼</h2>
+      <p class="unlock-desc">此功能含小隊員／醫護個人資料，請輸入工作人員共用密碼。</p>
+      <input id="unlock-input" class="unlock-input" type="password" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入密碼">
+      <div id="unlock-error" class="unlock-error"></div>
+      <button id="unlock-submit" class="unlock-submit">解鎖</button>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=39"></script>
+<script src="app.js?v=41"></script>
 </body>
 </html>

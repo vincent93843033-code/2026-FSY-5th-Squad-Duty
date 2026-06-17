@@ -56,18 +56,7 @@
     { name: '靖琇', tags: [] },
     { name: '連凱', tags: ['組長', '司機'] },
   ];
-  // 醫護組人員電話
-  var MEDICAL_PHONES = {
-    '俞采': '',
-    '瑪恩': '',
-    '綉娟': '',
-    '君佩': '',
-    '紫祺': '',
-    '書亞': '',
-    '岱娜': '',
-    '靖琇': '',
-    '連凱': '',
-  };
+  // 醫護組人員電話：改由加密檔 data.enc.json 解密後提供（state.medicalPhones），不再寫在公開程式中
   // 醫護組值班表（D-1～D-6 對應 7/13～7/18）
   var MEDICAL_SCHEDULE_DAYS = ['D-1', 'D-2', 'D-3', 'D-4', 'D-5', 'D-6'];
   var MEDICAL_SCHEDULE = [
@@ -102,12 +91,7 @@
     '我的小隊員 ___ 有甚麼症狀：___\n' +
     '目前可以怎麼做？';
   var MEDICAL_REPORT_NOTE = '記得留下聯絡方式、交接地點，並記得領回小隊員';
-  // 醫護組接送車輛車牌
-  var MEDICAL_VEHICLES = [
-    { driver: '林綉娟', plate: '' },
-    { driver: '蔡君佩', plate: '' },
-    { driver: '蔡連凱', plate: '' },
-  ];
+  // 醫護組接送車輛車牌：改由加密檔 data.enc.json 解密後提供（state.medicalVehicles），不再寫在公開程式中
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
   var overviewContentEl = document.getElementById('overview-content');
@@ -189,6 +173,11 @@
     squadAdvisors: {},    // "t|s" -> { 男: name, 女: name }
     currentTool: null,
     medicalDay: 0,        // 醫護組值班表所選日期索引
+    unlocked: false,      // 是否已用密碼解鎖個資
+    medicalPhones: {},    // 解密後的醫護電話
+    medicalVehicles: [],  // 解密後的醫護車牌
+    pendingTool: null,    // 解鎖後要開啟的工具
+    hiddenAt: 0,          // 上次切到背景的時間（判斷閒置重鎖）
   };
 
   var didInitialScroll = false;
@@ -987,19 +976,134 @@
     searchInputEl.blur();
   }
 
-  // ---- Tab 3: 小工具 ----
-  function loadMembers() {
-    fetch('members.json?_t=' + Date.now())
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (data) {
-        if (!data || !data.members) return;
-        state.members = data.members;
-        state.membersMeta = data.meta || {};
-        state.membersLoaded = true;
-        buildSquadAdvisors();
-        if (state.currentTool) openTool(state.currentTool);
-      })
-      .catch(function () {});
+  // ---- Tab 3: 小工具（含個資的工具需密碼解鎖）----
+  var PROTECTED_TOOLS = { roster: 1, advisors: 1, draw: 1, rollcall: 1, medical: 1 };
+  var UNLOCK_KEY = 'fsy5_unlock';
+  var IDLE_MS = 30 * 60 * 1000; // 離開／背景超過 30 分鐘才需重新輸入密碼
+  var encBlobCache = null;
+
+  var unlockOverlayEl = document.getElementById('unlock-overlay');
+  var unlockInputEl = document.getElementById('unlock-input');
+  var unlockSubmitEl = document.getElementById('unlock-submit');
+  var unlockErrorEl = document.getElementById('unlock-error');
+
+  function b64ToBytes(s) {
+    var bin = atob(s);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+  }
+
+  function deriveKey(pass, salt, iter) {
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey'])
+      .then(function (baseKey) {
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: salt, iterations: iter, hash: 'SHA-256' },
+          baseKey, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      });
+  }
+
+  function fetchEncBlob() {
+    if (encBlobCache) return Promise.resolve(encBlobCache);
+    return fetch('data.enc.json?_t=' + Date.now())
+      .then(function (r) { if (!r.ok) throw new Error('blob'); return r.json(); })
+      .then(function (b) { encBlobCache = b; return b; });
+  }
+
+  function decryptWith(pass) {
+    return fetchEncBlob().then(function (b) {
+      return deriveKey(pass, b64ToBytes(b.salt), b.iter)
+        .then(function (key) {
+          return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBytes(b.iv) }, key, b64ToBytes(b.ct));
+        })
+        .then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); });
+    });
+  }
+
+  function applySecret(data) {
+    state.members = data.members || [];
+    state.membersMeta = data.meta || {};
+    state.medicalPhones = data.medicalPhones || {};
+    state.medicalVehicles = data.medicalVehicles || [];
+    state.membersLoaded = true;
+    state.unlocked = true;
+    buildSquadAdvisors();
+  }
+
+  function saveUnlock(pass) {
+    try { sessionStorage.setItem(UNLOCK_KEY, JSON.stringify({ p: pass, t: Date.now() })); } catch (e) {}
+  }
+  function touchUnlock() {
+    try {
+      var raw = sessionStorage.getItem(UNLOCK_KEY);
+      if (!raw) return;
+      var o = JSON.parse(raw); o.t = Date.now();
+      sessionStorage.setItem(UNLOCK_KEY, JSON.stringify(o));
+    } catch (e) {}
+  }
+  function clearUnlock() {
+    try { sessionStorage.removeItem(UNLOCK_KEY); } catch (e) {}
+  }
+
+  function lock() {
+    state.unlocked = false;
+    state.membersLoaded = false;
+    state.members = [];
+    clearUnlock();
+  }
+
+  // 背景回來／重新整理時，用 session 暫存的密碼自動解鎖（未逾時的話）
+  function trySilentUnlock() {
+    var raw;
+    try { raw = sessionStorage.getItem(UNLOCK_KEY); } catch (e) { return; }
+    if (!raw) return;
+    var o;
+    try { o = JSON.parse(raw); } catch (e) { return; }
+    if (!o || !o.p || (Date.now() - o.t) > IDLE_MS) { clearUnlock(); return; }
+    decryptWith(o.p)
+      .then(function (data) { applySecret(data); saveUnlock(o.p); })
+      .catch(function () { clearUnlock(); });
+  }
+
+  function showUnlock() {
+    unlockErrorEl.textContent = '';
+    unlockInputEl.value = '';
+    unlockOverlayEl.classList.add('open');
+    setTimeout(function () { unlockInputEl.focus(); }, 250);
+  }
+  function hideUnlock() {
+    unlockOverlayEl.classList.remove('open');
+    unlockInputEl.blur();
+  }
+  function submitUnlock() {
+    var pass = unlockInputEl.value;
+    if (!pass) return;
+    unlockSubmitEl.disabled = true;
+    unlockErrorEl.textContent = '解鎖中…';
+    decryptWith(pass).then(function (data) {
+      applySecret(data);
+      saveUnlock(pass);
+      unlockSubmitEl.disabled = false;
+      unlockErrorEl.textContent = '';
+      hideUnlock();
+      var pending = state.pendingTool;
+      state.pendingTool = null;
+      if (pending) openTool(pending);
+    }).catch(function () {
+      unlockSubmitEl.disabled = false;
+      unlockErrorEl.textContent = '密碼錯誤，請再試一次';
+      unlockInputEl.select();
+    });
+  }
+
+  // 點工具時的閘門：受保護的工具未解鎖則先要密碼
+  function requestTool(name) {
+    if (PROTECTED_TOOLS[name] && !state.unlocked) {
+      state.pendingTool = name;
+      showUnlock();
+      return;
+    }
+    openTool(name);
   }
 
   function buildSquadAdvisors() {
@@ -1609,7 +1713,7 @@
       });
       main.appendChild(nameRow);
 
-      var phone = MEDICAL_PHONES[person.name];
+      var phone = (state.medicalPhones || {})[person.name];
       var phoneEl = document.createElement('div');
       phoneEl.className = 'member-meta';
       if (phone) {
@@ -1640,7 +1744,7 @@
 
   function renderMedicalVehicles() {
     medicalVehicleBodyEl.innerHTML = '';
-    MEDICAL_VEHICLES.forEach(function (v) {
+    (state.medicalVehicles || []).forEach(function (v) {
       var card = document.createElement('div');
       card.className = 'medical-vehicle-card';
       var icon = document.createElement('span');
@@ -1823,9 +1927,15 @@
   // tool menu navigation
   toolsMenuEl.addEventListener('click', function (e) {
     var card = e.target.closest('.tool-menu-card');
-    if (card) openTool(card.dataset.tool);
+    if (card) requestTool(card.dataset.tool);
   });
   toolBackEl.addEventListener('click', backToToolsMenu);
+
+  // 解鎖視窗事件
+  unlockSubmitEl.addEventListener('click', submitUnlock);
+  unlockInputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); submitUnlock(); }
+  });
   lyricsBodyEl.addEventListener('click', function (e) {
     var card = e.target.closest('.lyrics-song-card');
     if (card) openLyricsSong(parseInt(card.dataset.index, 10));
@@ -1938,7 +2048,23 @@
   refreshBtnEl.addEventListener('click', function () { loadData(true); });
 
   document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) loadData(false);
+    if (document.hidden) {
+      state.hiddenAt = Date.now();
+      if (state.unlocked) touchUnlock();
+      return;
+    }
+    loadData(false);
+    if (state.unlocked && state.hiddenAt && (Date.now() - state.hiddenAt) > IDLE_MS) {
+      // 閒置過久 → 重新上鎖
+      lock();
+      if (state.currentTool && PROTECTED_TOOLS[state.currentTool]) {
+        state.pendingTool = state.currentTool;
+        backToToolsMenu();
+        showUnlock();
+      }
+    } else if (!state.unlocked) {
+      trySilentUnlock();
+    }
   });
 
   searchFabEl.addEventListener('click', openSearch);
@@ -1956,5 +2082,5 @@
 
   loadFromCache();
   loadData(false);
-  loadMembers();
+  trySilentUnlock();
 })();

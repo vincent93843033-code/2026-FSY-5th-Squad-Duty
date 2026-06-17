@@ -7,3 +7,11 @@ sheet.html
 course.html
 xiliu.csv
 zhize.csv
+
+# 個資明文與本機加密工具 — 只留本機，公開的是加密後的 data.enc.json
+members.json
+_encrypt.js
+
+# 本機預覽設定與雜項
+.claude/
+中文介紹.png
