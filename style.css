@@ -918,6 +918,12 @@ body {
   color: #b9701f;
 }
 
+.roster-toggle-nonmember.active {
+  background: #efe6fa;
+  border-color: #6b4ea8;
+  color: #6b4ea8;
+}
+
 .roster-toggle:active {
   transform: scale(0.94);
 }
@@ -1003,11 +1009,6 @@ body {
 .member-tag.tag-nonmember {
   background: #efe6fa;
   color: #6b4ea8;
-}
-
-.member-tag.tag-veg {
-  background: #e6f4e6;
-  color: #3f8c4f;
 }
 
 .member-tag.tag-early {

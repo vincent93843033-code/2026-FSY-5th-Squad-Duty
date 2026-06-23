@@ -114,6 +114,7 @@
   var rosterSquadFiltersEl = document.getElementById('roster-squad-filters');
   var rosterListEl = document.getElementById('roster-list');
   var rosterEarlyToggleEl = document.getElementById('roster-early-toggle');
+  var rosterNonMemberToggleEl = document.getElementById('roster-nonmember-toggle');
   var randomPickBtnEl = document.getElementById('random-pick-btn');
   var randomResultEl = document.getElementById('random-result');
   var drawTeamFiltersEl = document.getElementById('draw-team-filters');
@@ -159,6 +160,7 @@
     rosterSquads: [],     // 多選；空 = 該中隊全部小隊
     rosterGender: 'all',
     rosterEarlyOnly: false,
+    rosterNonMemberOnly: false,
     rosterQuery: '',
     advisorTeams: [],
     advisorQuery: '',
@@ -1250,11 +1252,12 @@
       b.classList.toggle('active', b.dataset.gender === state.rosterGender);
     });
     rosterEarlyToggleEl.classList.toggle('active', state.rosterEarlyOnly);
+    rosterNonMemberToggleEl.classList.toggle('active', state.rosterNonMemberOnly);
   }
 
   function memberSearchText(m) {
     return [m.n, teamLabel(m.t), m.s + '小隊', m.a, m.w, m.m ? '成員' : '非成員', m.g,
-      m.veg ? '素食' : '', m.early ? '早退' : '', m.r1, m.r2].filter(Boolean).join(' ');
+      m.early ? '早退' : '', m.r1, m.r2].filter(Boolean).join(' ');
   }
 
   function filteredMembers() {
@@ -1264,6 +1267,7 @@
       if (state.rosterSquads.length && state.rosterSquads.indexOf(m.s) === -1) return false;
       if (state.rosterGender !== 'all' && m.g !== state.rosterGender) return false;
       if (state.rosterEarlyOnly && !m.early) return false;
+      if (state.rosterNonMemberOnly && m.m) return false;
       return true;
     });
     if (q) {
@@ -1328,7 +1332,6 @@
     name.textContent = m.n;
     nameRow.appendChild(name);
     if (!m.m) nameRow.appendChild(makeTag('tag-nonmember', '非成員'));
-    if (m.veg) nameRow.appendChild(makeTag('tag-veg', '素'));
     if (m.early) nameRow.appendChild(makeTag('tag-early', '早退'));
     main.appendChild(nameRow);
 
@@ -1354,7 +1357,6 @@
     detail.appendChild(makeDetailRow('支會', m.w || '—'));
     detail.appendChild(makeDetailRow('宿舍房號', m.dorm || '未分配'));
     if (m.age) detail.appendChild(makeDetailRow('年齡', m.age + ' 歲'));
-    if (m.veg) detail.appendChild(makeDetailRow('飲食', '素食'));
     if (m.early) detail.appendChild(makeDetailRow('提醒', '需提早離營'));
     wrap.appendChild(detail);
     main.appendChild(wrap);
@@ -1981,6 +1983,11 @@
   });
   rosterEarlyToggleEl.addEventListener('click', function () {
     state.rosterEarlyOnly = !state.rosterEarlyOnly;
+    syncRosterChips();
+    renderRoster();
+  });
+  rosterNonMemberToggleEl.addEventListener('click', function () {
+    state.rosterNonMemberOnly = !state.rosterNonMemberOnly;
     syncRosterChips();
     renderRoster();
   });
