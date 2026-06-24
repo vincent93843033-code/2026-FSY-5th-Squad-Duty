@@ -13,6 +13,11 @@
   var XILIU_LINKS = {
     '課程&見證聚會總表': 'https://docs.google.com/spreadsheets/d/1nLQgjyNKCW_J-S9AyOZ9bualG_Nohi95qWM8_3SBUQg/edit',
     '音樂節目細流': 'https://docs.google.com/spreadsheets/d/1jVM_zlY1UdiE93lWAdk9Pe5bKsvXN4q1cTHEC_Q0hqQ/edit',
+    '隊呼與隊旗細流': 'https://docs.google.com/spreadsheets/d/1RNfCiwYePMPmVvD1ebRU_iAEvQvJKLCoUcJWBbDqlVg/edit',
+    '遊戲之夜與家庭晚會遊戲': 'https://docs.google.com/spreadsheets/d/1WSGDsZg_KE9f9Pj-8Sx3x_XAlUWRIP1Jy4GelxzlQIg/edit',
+    '2026 FSY才藝表演.xlsx」複本': 'https://docs.google.com/spreadsheets/d/1Fsvovrxh9Yn8gRP697UHrsXKpGQmk5D3/edit',
+    '2026 FSY 服務活動企劃書_v3.docx': 'https://docs.google.com/document/d/1TGLKBuK7L2A7UcmvZsJ27ZO-OnSxRHk0/edit',
+    '時間安排與證據分組': 'https://docs.google.com/spreadsheets/d/1hiKERqbLXLUBoSfcUj6A0GCYKVDR1C6vSOkgF5RK4g8/edit?gid=0',
   };
   // 膳食組細流（用餐時段自動附上連結）
   var MEAL_LINK_URL = 'https://docs.google.com/spreadsheets/d/1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE/edit';
@@ -113,7 +118,6 @@
   var rosterTeamFiltersEl = document.getElementById('roster-team-filters');
   var rosterSquadFiltersEl = document.getElementById('roster-squad-filters');
   var rosterListEl = document.getElementById('roster-list');
-  var rosterEarlyToggleEl = document.getElementById('roster-early-toggle');
   var rosterNonMemberToggleEl = document.getElementById('roster-nonmember-toggle');
   var randomPickBtnEl = document.getElementById('random-pick-btn');
   var randomResultEl = document.getElementById('random-result');
@@ -134,7 +138,6 @@
   var advisorTeamFiltersEl = document.getElementById('advisor-team-filters');
   var advisorListEl = document.getElementById('advisor-list');
   var advisorCountEl = document.getElementById('advisor-count');
-  var contactsBodyEl = document.getElementById('contacts-body');
   var lyricsBodyEl = document.getElementById('lyrics-body');
   var lyricsSongPaneEl = document.getElementById('pane-lyrics-song');
   var lyricsSongBackEl = document.getElementById('lyrics-song-back');
@@ -159,10 +162,10 @@
     rosterTeams: [],      // 多選；空 = 全部
     rosterSquads: [],     // 多選；空 = 該中隊全部小隊
     rosterGender: 'all',
-    rosterEarlyOnly: false,
     rosterNonMemberOnly: false,
     rosterQuery: '',
     advisorTeams: [],
+    advisorGender: 'all',
     advisorQuery: '',
     drawTeams: [],        // 抽籤範圍（中隊；空 = 全FSY）
     drawSquads: [],       // 抽籤範圍（小隊；空 = 所選中隊全部）
@@ -284,6 +287,8 @@
     return { people: people, days: days };
   }
 
+  // 「2026 細流」欄位順序（A起算）：0時間 1活動內容 2待修改事項 3說明(細流連結)
+  // 4主要負責的工作人員 5參與的工作人員 6地點 7使用設備 8小隊輔指引 9助理協調員指引
   function parseXiliu(rows) {
     var days = {};
     var current = null;
@@ -301,9 +306,9 @@
         current.rows.push({
           time: col0,
           activity: (row[1] || '').trim(),
-          location: (row[5] || '').trim(),
-          leader: (row[3] || '').trim(),
-          detailLink: (row[7] || '').trim(),
+          location: (row[6] || '').trim(),
+          leader: (row[4] || '').trim(),
+          detailLink: (row[3] || '').trim(),
           leaderGuide: (row[8] || '').trim(),
           acGuide: (row[9] || '').trim(),
         });
@@ -1152,7 +1157,6 @@
     if (name === 'roster') { renderRosterFilters(); renderRoster(); }
     if (name === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
     if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
-    if (name === 'contacts') renderContacts();
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
@@ -1251,7 +1255,6 @@
     document.querySelectorAll('#pane-roster .roster-toggle[data-gender]').forEach(function (b) {
       b.classList.toggle('active', b.dataset.gender === state.rosterGender);
     });
-    rosterEarlyToggleEl.classList.toggle('active', state.rosterEarlyOnly);
     rosterNonMemberToggleEl.classList.toggle('active', state.rosterNonMemberOnly);
   }
 
@@ -1266,7 +1269,6 @@
       if (state.rosterTeams.length && state.rosterTeams.indexOf(m.t) === -1) return false;
       if (state.rosterSquads.length && state.rosterSquads.indexOf(m.s) === -1) return false;
       if (state.rosterGender !== 'all' && m.g !== state.rosterGender) return false;
-      if (state.rosterEarlyOnly && !m.early) return false;
       if (state.rosterNonMemberOnly && m.m) return false;
       return true;
     });
@@ -1505,6 +1507,12 @@
     return list;
   }
 
+  function syncAdvisorGenderToggle() {
+    document.querySelectorAll('#pane-advisors .roster-toggle[data-advisor-gender]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.advisorGender === state.advisorGender);
+    });
+  }
+
   function renderAdvisorFilters() {
     buildChipRow(advisorTeamFiltersEl,
       distinctTeams().map(function (t) { return { val: t, label: teamLabel(t) }; }),
@@ -1512,6 +1520,7 @@
       function (t) { toggleInArray(state.advisorTeams, t); syncChipRow(advisorTeamFiltersEl, state.advisorTeams); renderAdvisors(); },
       function () { state.advisorTeams = []; syncChipRow(advisorTeamFiltersEl, state.advisorTeams); renderAdvisors(); });
     syncChipRow(advisorTeamFiltersEl, state.advisorTeams);
+    syncAdvisorGenderToggle();
   }
 
   function renderAdvisors() {
@@ -1519,6 +1528,7 @@
     var q = state.advisorQuery.trim();
     var list = deriveAdvisors().filter(function (a) {
       if (state.advisorTeams.length && state.advisorTeams.indexOf(a.t) === -1) return false;
+      if (state.advisorGender !== 'all' && a.g !== state.advisorGender) return false;
       return true;
     });
     if (q) {
@@ -1559,23 +1569,6 @@
       card.appendChild(main);
       advisorListEl.appendChild(card);
     });
-  }
-
-  // ---- 領袖聯絡方式 ----
-  function renderContacts() {
-    if (state.contacts && state.contacts.length) {
-      // 預留：若日後提供 leaders.json，可在此渲染
-      return;
-    }
-    contactsBodyEl.innerHTML = '';
-    var note = document.createElement('div');
-    note.className = 'contacts-empty';
-    note.innerHTML = '<div class="contacts-empty-icon">📞</div>' +
-      '<div class="contacts-empty-title">尚未提供聯絡資料</div>' +
-      '<div class="contacts-empty-text">已查過 LINE 對話紀錄，裡面只有遊覽車司機／後勤的電話，' +
-      '沒有完整的 FSY 領袖聯絡清單。請把領袖聯絡名單（姓名／職務／電話或 LINE）提供給管理者即可建立。<br><br>' +
-      '⚠ 提醒：本 App 為公開網址，建議聯絡資訊以加密或非公開方式管理，避免個資外流。</div>';
-    contactsBodyEl.appendChild(note);
   }
 
   // ---- 歌詞 ----
@@ -1981,11 +1974,6 @@
       renderRoster();
     });
   });
-  rosterEarlyToggleEl.addEventListener('click', function () {
-    state.rosterEarlyOnly = !state.rosterEarlyOnly;
-    syncRosterChips();
-    renderRoster();
-  });
   rosterNonMemberToggleEl.addEventListener('click', function () {
     state.rosterNonMemberOnly = !state.rosterNonMemberOnly;
     syncRosterChips();
@@ -2004,6 +1992,13 @@
     advisorInputEl.closest('.roster-search').classList.remove('has-text');
     renderAdvisors();
     advisorInputEl.focus();
+  });
+  document.querySelectorAll('#pane-advisors .roster-toggle[data-advisor-gender]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.advisorGender = b.dataset.advisorGender;
+      syncAdvisorGenderToggle();
+      renderAdvisors();
+    });
   });
 
   // draw events

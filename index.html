@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 <div class="app">
@@ -74,13 +74,6 @@
           <span class="tool-menu-icon">👥</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊員一覽</span>
-          </span>
-          <span class="tool-menu-arrow">›</span>
-        </button>
-        <button class="tool-menu-card" data-tool="contacts">
-          <span class="tool-menu-icon">📞</span>
-          <span class="tool-menu-text">
-            <span class="tool-menu-label">領袖聯絡方式</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -151,7 +144,6 @@
             <button class="roster-toggle" data-gender="all">全部</button>
             <button class="roster-toggle" data-gender="男">男</button>
             <button class="roster-toggle" data-gender="女">女</button>
-            <button class="roster-toggle roster-toggle-early" id="roster-early-toggle">🕑 早退</button>
             <button class="roster-toggle roster-toggle-nonmember" id="roster-nonmember-toggle">👤 非成員</button>
           </div>
           <div id="roster-list" class="roster-list"></div>
@@ -211,13 +203,12 @@
             <div class="filter-label">中隊<span class="filter-hint">可複選</span></div>
             <div class="roster-filters" id="advisor-team-filters"></div>
           </div>
+          <div class="roster-toggles">
+            <button class="roster-toggle" data-advisor-gender="all">全部</button>
+            <button class="roster-toggle" data-advisor-gender="男">男</button>
+            <button class="roster-toggle" data-advisor-gender="女">女</button>
+          </div>
           <div id="advisor-list" class="roster-list"></div>
-        </div>
-
-        <!-- 領袖聯絡方式 -->
-        <div id="pane-contacts" class="tool-pane" hidden>
-          <div class="tool-head"><h2 class="tool-title">領袖聯絡方式</h2></div>
-          <div id="contacts-body" class="contacts-body"></div>
         </div>
 
         <!-- 歌詞：歌曲列表 -->
@@ -364,6 +355,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=42"></script>
+<script src="app.js?v=43"></script>
 </body>
 </html>
