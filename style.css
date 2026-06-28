@@ -1201,11 +1201,15 @@ body {
 .tool-back {
   appearance: none;
   border: none;
-  background: none;
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-primary-light);
   color: var(--color-primary);
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  padding: 2px 0 12px;
+  padding: 10px 18px;
+  margin-bottom: 12px;
+  border-radius: 999px;
   cursor: pointer;
 }
 

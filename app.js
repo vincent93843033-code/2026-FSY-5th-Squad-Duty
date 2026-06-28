@@ -604,7 +604,8 @@
         var label = /https?:\/\//.test(row.detailLink) ? '開啟細流' : row.detailLink;
         fields.push(['細流連結', buildLinkValue(label, url)]);
       } else {
-        fields.push(['細流連結', buildTextValue(row.detailLink)]);
+        // 說明欄非連結時為一般備註，標示為「說明」而非「細流連結」
+        fields.push(['說明', buildTextValue(row.detailLink)]);
       }
     } else if (isMealActivity(row.activity)) {
       fields.push(['膳食組細流', buildLinkValue('開啟膳食組細流', MEAL_LINK_URL)]);
@@ -1560,7 +1561,7 @@
       name.className = 'member-name';
       name.textContent = a.a;
       nameRow.appendChild(name);
-      nameRow.appendChild(makeTag(a.g === '男' ? 'tag-male' : 'tag-female', a.g === '男' ? '男隊' : '女隊'));
+      nameRow.appendChild(makeTag(a.g === '男' ? 'tag-male' : 'tag-female', a.g === '男' ? '男隊輔' : '女隊輔'));
       main.appendChild(nameRow);
       var meta = document.createElement('div');
       meta.className = 'member-meta';
