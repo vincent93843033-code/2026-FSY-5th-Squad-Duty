@@ -287,8 +287,8 @@
     return { people: people, days: days };
   }
 
-  // 「2026 細流」欄位順序（A起算）：0時間 1活動內容 2待修改事項 3說明(細流連結)
-  // 4主要負責的工作人員 5參與的工作人員 6地點 7使用設備 8小隊輔指引 9助理協調員指引
+  // 「2026 細流」欄位順序（A起算）：0時間 1活動內容 2待修改事項 3地點
+  // 4說明(細流連結) 5主要負責的工作人員 6參與的工作人員 7使用設備 8小隊輔指引 9助理協調員指引
   function parseXiliu(rows) {
     var days = {};
     var current = null;
@@ -306,9 +306,9 @@
         current.rows.push({
           time: col0,
           activity: (row[1] || '').trim(),
-          location: (row[6] || '').trim(),
-          leader: (row[4] || '').trim(),
-          detailLink: (row[3] || '').trim(),
+          location: (row[3] || '').trim(),
+          leader: (row[5] || '').trim(),
+          detailLink: (row[4] || '').trim(),
           leaderGuide: (row[8] || '').trim(),
           acGuide: (row[9] || '').trim(),
         });
