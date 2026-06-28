@@ -12,6 +12,10 @@ zhize.csv
 members.json
 _encrypt.js
 
+# 課程分配結果（含青少年姓名等個資）— 只留本機，請勿公開上傳
+課程資料夾/
+*課程分配結果*.xlsx
+
 # 本機預覽設定與雜項
 .claude/
 中文介紹.png
