@@ -420,6 +420,7 @@
   function loadData(isManual) {
     if (isManual) refreshBtnEl.classList.add('spinning');
     if (!state.lastUpdated) statusTextEl.textContent = '資料載入中…';
+    if (isManual) refreshRosterIfUnlocked();
     return Promise.all([
       fetchCsvText(buildCsvUrl(ZHIZE_ID, ZHIZE_SHEET)),
       fetchCsvText(buildCsvUrl(XILIU_ID, XILIU_SHEET)),
@@ -1080,6 +1081,29 @@
     decryptWith(o.p)
       .then(function (data) { applySecret(data); saveUnlock(o.p); })
       .catch(function () { clearUnlock(); });
+  }
+
+  // 手動重新整理時，若已解鎖則一併重抓最新加密名冊（data.enc.json），
+  // 讓「抽籤／點名／小隊員一覽」在名冊更新後免重載即可即時反映人員變動。
+  function refreshRosterIfUnlocked() {
+    if (!state.unlocked) return Promise.resolve();
+    var raw;
+    try { raw = sessionStorage.getItem(UNLOCK_KEY); } catch (e) { return Promise.resolve(); }
+    if (!raw) return Promise.resolve();
+    var o;
+    try { o = JSON.parse(raw); } catch (e) { return Promise.resolve(); }
+    if (!o || !o.p) return Promise.resolve();
+    encBlobCache = null; // 清掉本次 session 快取，強制重抓最新檔案
+    return decryptWith(o.p).then(function (data) {
+      applySecret(data);
+      saveUnlock(o.p);
+      // 重新渲染目前開啟的小工具，使人數／名單即時更新
+      var t = state.currentTool;
+      if (t === 'roster') { renderRosterFilters(); renderRoster(); }
+      else if (t === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
+      else if (t === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
+      else if (t === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
+    }).catch(function () { /* 密碼／網路問題：維持現有名冊，不中斷行程更新 */ });
   }
 
   function showUnlock() {
