@@ -1377,9 +1377,9 @@
     detail.className = 'member-detail';
 
     detail.appendChild(makeDetailRow('小隊輔', advisors.join('、') || m.a));
-    // Day3 課程教室（尚未公布，冒號後留白，待正式資料）
-    detail.appendChild(makeDetailRow('課程1', m.r1 || ''));
-    detail.appendChild(makeDetailRow('課程2', m.r2 || ''));
+    // 選課（教室＋課程名）：時段一＝課程1（10:10–11:00）、時段二＝課程2（11:10–12:00）
+    detail.appendChild(makeDetailRow('課程1', m.r1 || '未選課'));
+    detail.appendChild(makeDetailRow('課程2', m.r2 || '未選課'));
     detail.appendChild(makeDetailRow('身分', m.m ? '成員' : '非成員（朋友）'));
     detail.appendChild(makeDetailRow('支會', m.w || '—'));
     detail.appendChild(makeDetailRow('宿舍房號', m.dorm || '未分配'));
