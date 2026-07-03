@@ -49,6 +49,144 @@
       '我尋覓你吾友',
     ] },
   ];
+  // 用餐時段（來源：「2026 FSY 膳食」試算表；第五中隊 18–22 小隊皆為 B 梯次＝16–31 小隊場）
+  // rows：同一路線／前後半的小隊合併成一列；未列在路線表的小隊以 note 註明
+  var MEAL_SCHEDULE = [
+    { day: '7/13', dow: '一', meals: [
+      { name: '午餐', icon: '🥪', time: '11:00-13:00', place: '報到處領取', note: '大會準備輕食小點，記得吃早餐或自備點心' },
+      { name: '晚餐', icon: '🍛', time: '17:25-18:00', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線1・後半・就緒 17:40' },
+        { squads: '20・21 小隊', detail: '路線2・前半・就緒 17:20' },
+        { squads: '22 小隊', detail: '路線2・後半・就緒 17:40' },
+      ] },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍' },
+    ] },
+    { day: '7/14', dow: '二', meals: [
+      { name: '早餐', icon: '🍳', time: '7:45-8:15', place: '學生餐廳', note: '16–31 小隊同場入座，無路線分流' },
+      { name: '午餐', icon: '🍛', time: '12:55-13:30', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線2・後半・就緒 13:10' },
+        { squads: '20・21 小隊', detail: '路線3・前半・就緒 12:50' },
+        { squads: '22 小隊', detail: '路線3・後半・就緒 13:10' },
+      ] },
+      { name: '晚餐', icon: '🍛', time: '17:10-17:45', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線3・後半・就緒 17:25' },
+      ], note: '20–22 小隊本餐未列路線，依現場引導入場' },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍' },
+    ] },
+    { day: '7/15', dow: '三', meals: [
+      { name: '早餐', icon: '🍳', time: '7:30-8:00', place: '宿舍（分送）' },
+      { name: '午餐', icon: '🍛', time: '12:55-13:30', place: '學生餐廳', rows: [
+        { squads: '20・21 小隊', detail: '路線1・前半・就緒 12:50' },
+        { squads: '22 小隊', detail: '路線1・後半・就緒 13:10' },
+      ], note: '18・19 小隊本餐未列路線，依現場引導入場' },
+      { name: '晚餐', icon: '🍛', time: '17:10-17:45', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線1・後半・就緒 17:25' },
+        { squads: '20・21 小隊', detail: '路線2・前半・就緒 17:05' },
+        { squads: '22 小隊', detail: '路線2・後半・就緒 17:25' },
+      ] },
+      { name: '食物之夜', icon: '🎉', time: '20:30-21:00', place: '操場' },
+    ] },
+    { day: '7/16', dow: '四', meals: [
+      { name: '早餐', icon: '🍳', time: '7:30-8:15', place: '宿舍（分送）' },
+      { name: '午餐', icon: '🍛', time: '12:30-13:00', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線2・後半・就緒 12:40' },
+        { squads: '20・21 小隊', detail: '路線3・前半・就緒 12:25' },
+        { squads: '22 小隊', detail: '路線3・後半・就緒 12:40' },
+      ] },
+      { name: '晚餐', icon: '🍛', time: '16:30-17:10', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線3・後半・就緒 16:45' },
+      ], note: '20–22 小隊本餐未列路線，依現場引導入場' },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍' },
+    ] },
+    { day: '7/17', dow: '五', meals: [
+      { name: '早餐', icon: '🍳', time: '7:15-7:45', place: '學生餐廳', note: '16–31 小隊同場入座，無路線分流' },
+      { name: '午餐', icon: '🍛', time: '12:30-13:00', place: '學生餐廳', rows: [
+        { squads: '20・21 小隊', detail: '路線1・前半・就緒 12:25' },
+        { squads: '22 小隊', detail: '路線1・後半・就緒 12:40' },
+      ], note: '18・19 小隊本餐未列路線，依現場引導入場' },
+      { name: '晚餐', icon: '🍛', time: '16:45-17:20', place: '學生餐廳', rows: [
+        { squads: '18・19 小隊', detail: '路線1・後半・就緒 17:00' },
+        { squads: '20・21 小隊', detail: '路線2・前半・就緒 16:40' },
+        { squads: '22 小隊', detail: '路線2・後半・就緒 17:00' },
+      ], note: '本餐發舞會貼紙，18:00 舞會進場' },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '體育館' },
+    ] },
+    { day: '7/18', dow: '六', meals: [
+      { name: '早午餐', icon: '🍞', time: '7:30 領取', place: '宿舍（分送）', note: '8:00-8:30 早餐／小隊時間（宣達事項）' },
+    ] },
+  ];
+
+  // 每日清點人數時間（來源：「2026 細流」）
+  var ROLLCALL_TIMES = {
+    1: '18:00、21:00',
+    2: '13:40、21:00',
+    3: '13:40、20:30',
+    4: '13:30、21:00',
+    5: '13:30、23:00（熄燈時）',
+    6: '退房清點依隊輔會議指示',
+  };
+
+  // 大會資訊（來源：行前通知－青少年、2026 細流、工作人員手冊）
+  var INFO_SECTIONS = [
+    { icon: '👕', title: '每日服裝', lines: [
+      'D-1～D-3、D-5、D-6：大會 T-shirt',
+      'D-4（7/16）：整日安息日服裝；工作人員配戴傳道名牌、青少年配戴未來傳教士名牌',
+      'D-5（7/17）晚會：安息日服裝（男：襯衫＋長褲；女：及膝裙裝），舞會禁止拖鞋和短褲',
+      '服務活動（D-3）可能有躺地上的環節，提醒小隊員穿不易走光的衣服',
+    ] },
+    { icon: '⏰', title: '每日作息重點', lines: [
+      '起床 06:30–07:00（D-1 為 07:00–07:30）',
+      '中隊輔與隊輔會議 07:00–07:10（每天早上）',
+      '寧靜時間 21:00–22:30／反思和回顧 22:30–23:00',
+      '熄燈 23:00：熄燈後除緊急狀況，嚴禁離開房間',
+    ] },
+    { icon: '🕐', title: '清點人數時間', lines: [
+      'D-1：18:00、21:00',
+      'D-2：13:40、21:00',
+      'D-3：13:40、20:30',
+      'D-4：13:30、21:00',
+      'D-5：13:30、23:00（熄燈時）',
+      'D-6：退房清點依隊輔會議指示',
+    ] },
+    { icon: '🚻', title: '安全陪同規定', lines: [
+      '小隊員離隊（上洗手間、裝水）必須先告知小隊輔，不可獨自離開',
+      '陪同人數：2 位工作人員陪 1 位青少年，或 1 位工作人員陪 2 位以上青少年',
+      '宿舍樓層：男生 1–3 樓、女生 4–5 樓，嚴禁進入異性樓層或寢室',
+      '不可自行換房；請遵守宿舍垃圾分類，勿損壞公物',
+      '同一房間請勿同時使用多台吹風機，以免跳電',
+    ] },
+    { icon: '🩺', title: '身體不適怎麼辦', lines: [
+      '頭暈、噁心、快中暑？別撐著！請小隊員立刻告訴小隊輔',
+      '由小隊輔帶往醫護組（保健協調員），聯絡資訊見「醫護組資訊」',
+      '回報時記得留下聯絡方式、交接地點，並記得領回小隊員',
+    ] },
+    { icon: '⚠️', title: '六大紀律（違者可能送回家）', lines: [
+      '1. 參與或鼓吹任何不道德行為（違反貞潔律法、觀看或發布色情）',
+      '2. 盜取店舖商品、偷竊或任何形式的蓄意破壞',
+      '3. 違反智慧語（含抽電子煙、持有非法或有害物質）',
+      '4. 持有武器或任何危險物品',
+      '5. 在身體、靈性或情緒上傷害或威脅傷害自己或他人（含霸凌）',
+      '6. 未經適當程序自行離開、未經許可缺席預定活動或違反宵禁',
+    ] },
+    { icon: '📱', title: '手機與家人聯絡', lines: [
+      '大會沒有規定定時報平安，依小隊員與家人事先的約定即可',
+      '家人有緊急事項聯絡不上時，會直接打營本部（24 小時）0906-901-216',
+      '活動期間管制進出，不開放親友探訪',
+    ] },
+    { icon: '🚌', title: '報到與離營', lines: [
+      '報到：7/13（一）11:00–13:00，各支聯會抵達時間不同',
+      'D-6：07:00–08:00 場次後檢查／小隊員退房（行李放體育館）',
+      'D-6：09:30–11:00 各支聯會車輛抵達＆離開大會',
+      '工作人員專車 12:00–12:30 離開，14:00 慶功宴 🎊',
+    ] },
+    { icon: '🧺', title: '生活提醒', lines: [
+      '衣物一律手洗，大會不開放使用洗衣機',
+      '大會 T-shirt 大家都一樣，晾曬前記得標示',
+      '宿舍是硬板床，冷氣很涼——確認小隊員都有帶寢具',
+      '宵夜想吃泡麵要自備餐具，大會不提供免洗餐具',
+    ] },
+  ];
+
   // 醫護組資訊：團隊成員（標籤：組長／司機）
   var MEDICAL_TEAM = [
     { name: '俞采', tags: ['組長'] },
@@ -149,6 +287,15 @@
   var medicalReportTextEl = document.getElementById('medical-report-text');
   var medicalReportNoteEl = document.getElementById('medical-report-note');
   var medicalVehicleBodyEl = document.getElementById('medical-vehicle-body');
+  var nowBannerEl = document.getElementById('now-banner');
+  var themeBtnEl = document.getElementById('theme-btn');
+  var mealsDayFiltersEl = document.getElementById('meals-day-filters');
+  var mealsBodyEl = document.getElementById('meals-body');
+  var infoBodyEl = document.getElementById('info-body');
+  var rollcallTimesEl = document.getElementById('rollcall-times');
+  var drawNoRepeatToggleEl = document.getElementById('draw-norepeat-toggle');
+  var drawResetBtnEl = document.getElementById('draw-reset-btn');
+  var drawnCountEl = document.getElementById('drawn-count');
 
   var state = {
     days: [],
@@ -171,6 +318,9 @@
     drawSquads: [],       // 抽籤範圍（小隊；空 = 所選中隊全部）
     drawMale: 1,
     drawFemale: 0,
+    drawNoRepeat: false, // 抽籤是否排除已抽過的人
+    drawnKeys: {},       // 已抽過的人（memberKey -> 1）
+    mealsDay: 0,         // 用餐時段所選日期索引
     rollcallSquad: 18,    // 點名小隊（第五中隊 18-22）
     rollcallPresent: {},  // { squad: { memberKey: true } }
     rollcallReasons: {},  // { squad: textarea內容 }
@@ -186,6 +336,48 @@
   };
 
   var didInitialScroll = false;
+
+  // ---- 觸覺回饋（Android 支援 vibrate；iOS 會靜默忽略，仍保留 CSS 按壓回饋）----
+  function buzz(pattern) {
+    if (navigator.vibrate) { try { navigator.vibrate(pattern || 8); } catch (e) {} }
+  }
+  // 全域輕震：所有可點擊元件按下時給一個很短的震動
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('button, .rollcall-row, .member-card, .activity-card.expandable, .search-result-item, .day-section-header, .tool-menu-card')) {
+      buzz(8);
+    }
+  }, true);
+
+  // ---- 外觀主題（自動／深色／淺色；深夜寧靜時間好用）----
+  var THEME_KEY = 'fsy5_theme';
+  var themeMedia = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function currentThemeMode() {
+    try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { return 'auto'; }
+  }
+  function applyTheme() {
+    var mode = currentThemeMode();
+    var dark = mode === 'dark' || (mode === 'auto' && themeMedia && themeMedia.matches);
+    document.documentElement.classList.toggle('dark', dark);
+    if (themeBtnEl) {
+      themeBtnEl.textContent = mode === 'auto' ? '🌗' : (mode === 'dark' ? '🌙' : '☀️');
+      themeBtnEl.title = '外觀：' + (mode === 'auto' ? '自動' : mode === 'dark' ? '深色' : '淺色');
+    }
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', dark ? '#16211c' : '#2f6f4f');
+  }
+  if (themeBtnEl) {
+    themeBtnEl.addEventListener('click', function () {
+      var order = ['auto', 'dark', 'light'];
+      var next = order[(order.indexOf(currentThemeMode()) + 1) % order.length];
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      applyTheme();
+    });
+  }
+  if (themeMedia) {
+    if (themeMedia.addEventListener) themeMedia.addEventListener('change', applyTheme);
+    else if (themeMedia.addListener) themeMedia.addListener(applyTheme);
+  }
+  applyTheme();
 
   function buildCsvUrl(sheetId, sheetName) {
     return (
@@ -384,9 +576,11 @@
     state.people = zhize.people;
     state.days = buildJoinedDays(zhize, xiliu);
     if (state.selectedDay === null) {
-      state.selectedDay = detectTodayDayIndex() || 1;
+      var todayIdx = detectTodayDayIndex();
+      state.selectedDay = todayIdx || 1;
+      // 大會期間自動展開「今天」，其他日子收合；會前則全部收合
       state.days.forEach(function (day) {
-        state.collapsedDays[day.index] = true;
+        state.collapsedDays[day.index] = todayIdx ? day.index !== todayIdx : true;
       });
     }
     state.lastUpdated = updatedDate;
@@ -479,12 +673,35 @@
     personSelectEl.value = (stored && state.people.indexOf(stored) !== -1) ? stored : '';
   }
 
+  // 從日期標題（如「7/13 (一) D-1」）取出「7/13」與星期
+  function parseDayLabelParts(label) {
+    var m = (label || '').match(/^(\d{1,2}\/\d{1,2})\s*[（(]([一二三四五六日])[)）]?/);
+    return m ? { date: m[1], dow: m[2] } : null;
+  }
+
+  function makeDayPill(dTag, dateText, active) {
+    var btn = document.createElement('button');
+    btn.className = 'day-pill' + (active ? ' active' : '');
+    var top = document.createElement('span');
+    top.className = 'day-pill-d';
+    top.textContent = dTag;
+    btn.appendChild(top);
+    if (dateText) {
+      var sub = document.createElement('span');
+      sub.className = 'day-pill-date';
+      sub.textContent = dateText;
+      btn.appendChild(sub);
+    }
+    return btn;
+  }
+
   function renderDayPills() {
     dayPillsEl.innerHTML = '';
+    var todayIdx = detectTodayDayIndex();
     state.days.forEach(function (day) {
-      var btn = document.createElement('button');
-      btn.className = 'day-pill' + (day.index === state.selectedDay ? ' active' : '');
-      btn.textContent = 'D-' + day.index;
+      var parts = parseDayLabelParts(day.label);
+      var btn = makeDayPill('D-' + day.index, parts ? parts.date + ' ' + parts.dow : '', day.index === state.selectedDay);
+      if (day.index === todayIdx) btn.classList.add('today');
       btn.addEventListener('click', function () {
         state.selectedDay = day.index;
         renderDayPills();
@@ -636,11 +853,24 @@
     return body;
   }
 
+  function setCardProgress(card, timeStr, now) {
+    var range = parseTimeRange(timeStr);
+    if (range.start === null || range.end === null) return;
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    var pct = Math.round(((nowMin - range.start) / (range.end - range.start)) * 100);
+    card.style.setProperty('--prog', Math.max(3, Math.min(100, pct)) + '%');
+  }
+
   function buildActivityCard(row, highlightPerson, dayLabel, now) {
     var card = document.createElement('div');
     var hasAssignments = Object.keys(row.people).length > 0;
     var classes = ['activity-card'];
-    if (now && isRowCurrent(dayLabel, row, now)) classes.push('current');
+    card.dataset.time = row.time;
+    card.dataset.dayLabel = dayLabel || '';
+    if (now && isRowCurrent(dayLabel, row, now)) {
+      classes.push('current');
+      setCardProgress(card, row.time, now);
+    }
     card.className = classes.join(' ');
 
     var header = document.createElement('div');
@@ -833,6 +1063,7 @@
       overviewContentEl.appendChild(card);
     });
 
+    renderNowBanner();
     playFadeIn(overviewContentEl);
     fitCardText(overviewContentEl);
   }
@@ -861,6 +1092,83 @@
     var el = container.querySelector('.activity-card.current');
     if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
+
+  // ---- 「現在／接下來」即時橫幅（行程總覽，僅在看「今天」時顯示）----
+  function formatMinutesLeft(mins) {
+    if (mins < 60) return mins + ' 分鐘';
+    var h = Math.floor(mins / 60), m = mins % 60;
+    return h + ' 小時' + (m ? ' ' + m + ' 分' : '');
+  }
+
+  function findLiveRows(day, now) {
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    var current = null, next = null, nextStart = null;
+    day.rows.forEach(function (row) {
+      var range = parseTimeRange(row.time);
+      if (range.start === null) return;
+      if (range.end !== null && nowMin >= range.start && nowMin < range.end) {
+        if (!current) current = row;
+      } else if (range.start > nowMin && (nextStart === null || range.start < nextStart)) {
+        next = row;
+        nextStart = range.start;
+      }
+    });
+    return { current: current, next: next, nextStart: nextStart, nowMin: nowMin };
+  }
+
+  function renderNowBanner() {
+    if (!nowBannerEl) return;
+    var todayIdx = detectTodayDayIndex();
+    if (!todayIdx || state.selectedDay !== todayIdx) { nowBannerEl.hidden = true; return; }
+    var day = state.days.filter(function (d) { return d.index === todayIdx; })[0];
+    if (!day) { nowBannerEl.hidden = true; return; }
+    var now = getNow();
+    var live = findLiveRows(day, now);
+    if (!live.current && !live.next) { nowBannerEl.hidden = true; return; }
+
+    nowBannerEl.innerHTML = '';
+    if (live.current) {
+      var range = parseTimeRange(live.current.time);
+      var line = document.createElement('div');
+      line.className = 'now-line';
+      line.innerHTML =
+        '<span class="now-dot"></span><span class="now-tag">進行中</span>' +
+        '<span class="now-time">' + escapeHtml(live.current.time) + '</span>' +
+        '<span class="now-title">' + escapeHtml(splitActivityTitle(live.current.activity).main) + '</span>';
+      nowBannerEl.appendChild(line);
+      if (range.start !== null && range.end !== null) {
+        var prog = document.createElement('div');
+        prog.className = 'now-prog';
+        var pct = Math.round(((live.nowMin - range.start) / (range.end - range.start)) * 100);
+        prog.innerHTML = '<i style="width:' + Math.max(3, Math.min(100, pct)) + '%"></i>';
+        nowBannerEl.appendChild(prog);
+      }
+    }
+    if (live.next) {
+      var nextLine = document.createElement('div');
+      nextLine.className = 'next-line';
+      nextLine.textContent =
+        '接下來 ' + live.next.time + '　' + splitActivityTitle(live.next.activity).main +
+        '（還有 ' + formatMinutesLeft(live.nextStart - live.nowMin) + '）';
+      nowBannerEl.appendChild(nextLine);
+    }
+    nowBannerEl.hidden = false;
+  }
+
+  // 每 30 秒更新一次「進行中」卡片標記、進度與橫幅（不重繪整頁，展開狀態不受影響）
+  function updateLiveState() {
+    var now = getNow();
+    document.querySelectorAll('.activity-card[data-time]').forEach(function (card) {
+      var isCur = isRowCurrent(card.dataset.dayLabel, { time: card.dataset.time }, now);
+      card.classList.toggle('current', isCur);
+      if (isCur) setCardProgress(card, card.dataset.time, now);
+    });
+    renderNowBanner();
+  }
+
+  setInterval(function () {
+    if (!document.hidden) updateLiveState();
+  }, 30000);
 
   function updateTopbarHeight() {
     var topBar = document.querySelector('.top-bar');
@@ -1181,10 +1489,12 @@
     if (pane) playFadeIn(pane);
     if (name === 'roster') { renderRosterFilters(); renderRoster(); }
     if (name === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
-    if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
+    if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); syncDrawExtra(); }
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
+    if (name === 'meals') { state.mealsDay = detectMealsDayIndex(); renderMeals(); }
+    if (name === 'info') renderInfo();
     window.scrollTo(0, 0);
   }
 
@@ -1472,8 +1782,18 @@
     return state.members.filter(function (m) {
       if (state.drawTeams.length && state.drawTeams.indexOf(m.t) === -1) return false;
       if (state.drawSquads.length && state.drawSquads.indexOf(m.s) === -1) return false;
+      if (state.drawNoRepeat && state.drawnKeys[memberKey(m)]) return false;
       return m.g === gender;
     });
+  }
+
+  function syncDrawExtra() {
+    var n = Object.keys(state.drawnKeys).length;
+    if (drawNoRepeatToggleEl) drawNoRepeatToggleEl.classList.toggle('active', state.drawNoRepeat);
+    if (drawResetBtnEl) {
+      drawResetBtnEl.hidden = n === 0;
+      if (drawnCountEl) drawnCountEl.textContent = n;
+    }
   }
 
   function sampleN(arr, n) {
@@ -1489,11 +1809,22 @@
       randomResultEl.appendChild(emptyNote('請先設定要抽幾位男生或女生'));
       return;
     }
-    var picks = sampleN(drawPool('男'), state.drawMale).concat(sampleN(drawPool('女'), state.drawFemale));
-    if (!picks.length) { randomResultEl.appendChild(emptyNote('此範圍沒有可抽的人')); return; }
+    var poolM = drawPool('男'), poolF = drawPool('女');
+    var picks = sampleN(poolM, state.drawMale).concat(sampleN(poolF, state.drawFemale));
+    if (!picks.length) {
+      randomResultEl.appendChild(emptyNote(state.drawNoRepeat && Object.keys(state.drawnKeys).length
+        ? '此範圍可抽的人都抽過了，請按「清除已抽」重新開始'
+        : '此範圍沒有可抽的人'));
+      return;
+    }
 
-    var shortfall = (state.drawMale > drawPool('男').length) || (state.drawFemale > drawPool('女').length);
-    if (shortfall) randomResultEl.appendChild(emptyNote('人數超過範圍人數，已抽出全部可抽者'));
+    var shortfall = (state.drawMale > poolM.length) || (state.drawFemale > poolF.length);
+    if (shortfall) randomResultEl.appendChild(emptyNote('人數超過可抽人數，已抽出全部可抽者'));
+
+    if (state.drawNoRepeat) {
+      picks.forEach(function (m) { state.drawnKeys[memberKey(m)] = 1; });
+      syncDrawExtra();
+    }
 
     picks.forEach(function (m, i) {
       var card = document.createElement('div');
@@ -1795,6 +2126,111 @@
     });
   }
 
+  // ---- 用餐時段（第五中隊 18–22 小隊）----
+  function detectMealsDayIndex() {
+    var now = getNow();
+    var key = (now.getMonth() + 1) + '/' + now.getDate();
+    for (var i = 0; i < MEAL_SCHEDULE.length; i++) {
+      if (MEAL_SCHEDULE[i].day === key) return i;
+    }
+    return 0;
+  }
+
+  function renderMeals() {
+    mealsDayFiltersEl.innerHTML = '';
+    MEAL_SCHEDULE.forEach(function (d, idx) {
+      var btn = makeDayPill('D-' + (idx + 1), d.day + ' ' + d.dow, idx === state.mealsDay);
+      btn.dataset.idx = idx;
+      mealsDayFiltersEl.appendChild(btn);
+    });
+
+    var dayData = MEAL_SCHEDULE[state.mealsDay];
+    mealsBodyEl.innerHTML = '';
+    var now = getNow();
+    var isToday = ((now.getMonth() + 1) + '/' + now.getDate()) === dayData.day;
+    dayData.meals.forEach(function (meal, i) {
+      var card = document.createElement('div');
+      card.className = 'meal-card';
+      if (isToday) {
+        var range = parseTimeRange(meal.time);
+        var nowMin = now.getHours() * 60 + now.getMinutes();
+        if (range.start !== null && range.end !== null && nowMin >= range.start && nowMin < range.end) {
+          card.classList.add('current');
+        }
+      }
+      card.style.animationDelay = (i * 0.04) + 's';
+
+      var head = document.createElement('div');
+      head.className = 'meal-head';
+      head.innerHTML =
+        '<span class="meal-icon">' + meal.icon + '</span>' +
+        '<span class="meal-name">' + escapeHtml(meal.name) + '</span>' +
+        '<span class="meal-time">' + escapeHtml(meal.time) + '</span>';
+      card.appendChild(head);
+
+      var place = document.createElement('div');
+      place.className = 'meal-place';
+      place.textContent = meal.place;
+      card.appendChild(place);
+
+      (meal.rows || []).forEach(function (r) {
+        var rowEl = document.createElement('div');
+        rowEl.className = 'meal-row';
+        rowEl.innerHTML =
+          '<span class="meal-squads">' + escapeHtml(r.squads) + '</span>' +
+          '<span class="meal-detail">' + escapeHtml(r.detail) + '</span>';
+        card.appendChild(rowEl);
+      });
+
+      if (meal.note) {
+        var note = document.createElement('div');
+        note.className = 'meal-note';
+        note.textContent = '💡 ' + meal.note;
+        card.appendChild(note);
+      }
+      mealsBodyEl.appendChild(card);
+    });
+  }
+
+  // ---- 大會資訊（可展開的資訊卡）----
+  function renderInfo() {
+    if (infoBodyEl.childElementCount) return; // 靜態內容只建一次
+    INFO_SECTIONS.forEach(function (sec, i) {
+      var card = document.createElement('div');
+      card.className = 'info-card';
+      card.style.animationDelay = (i * 0.03) + 's';
+
+      var head = document.createElement('button');
+      head.type = 'button';
+      head.className = 'info-card-head';
+      head.innerHTML =
+        '<span class="info-card-icon">' + sec.icon + '</span>' +
+        '<span class="info-card-title">' + escapeHtml(sec.title) + '</span>' +
+        '<span class="card-expand-caret">▾</span>';
+      card.appendChild(head);
+
+      var wrap = document.createElement('div');
+      wrap.className = 'info-card-wrap';
+      var body = document.createElement('div');
+      body.className = 'info-card-body';
+      sec.lines.forEach(function (line) {
+        var p = document.createElement('div');
+        p.className = 'info-line';
+        p.textContent = line;
+        body.appendChild(p);
+      });
+      wrap.appendChild(body);
+      card.appendChild(wrap);
+
+      head.addEventListener('click', function () {
+        var open = card.classList.toggle('open');
+        wrap.style.maxHeight = open ? body.scrollHeight + 'px' : '0px';
+      });
+
+      infoBodyEl.appendChild(card);
+    });
+  }
+
   // ---- 點名（第五中隊 18-22 小隊）----
   function renderRollcallFilters() {
     var squads = squadsForTeams([FIFTH]);
@@ -1837,6 +2273,13 @@
 
     var advisors = state.squadAdvisors[FIFTH + '|' + s] || {};
     rollcallCountEl.textContent = '到 ' + presentCount + ' / ' + total;
+
+    // 今日清點人數時間提示（會前顯示 D-1 的時間）
+    if (rollcallTimesEl) {
+      var todayIdx = detectTodayDayIndex();
+      var d = todayIdx || 1;
+      rollcallTimesEl.textContent = '🕐 ' + (todayIdx ? '今日' : 'D-1') + '清點人數時間：' + (ROLLCALL_TIMES[d] || '—');
+    }
 
     rollcallBoardEl.innerHTML = '';
     var header = document.createElement('div');
@@ -1979,6 +2422,21 @@
     renderMedicalSchedule();
   });
 
+  // meals events
+  mealsDayFiltersEl.addEventListener('click', function (e) {
+    var chip = e.target.closest('.day-pill');
+    if (!chip) return;
+    state.mealsDay = parseInt(chip.dataset.idx, 10);
+    renderMeals();
+  });
+
+  // 「現在／接下來」橫幅：點一下捲到進行中的活動
+  if (nowBannerEl) {
+    nowBannerEl.addEventListener('click', function () {
+      scrollToCurrent(document.getElementById('tab-overview'));
+    });
+  }
+
   // roster events
   rosterInputEl.addEventListener('input', function () {
     state.rosterQuery = rosterInputEl.value;
@@ -2041,8 +2499,21 @@
     randomPickBtnEl.classList.remove('rolling');
     void randomPickBtnEl.offsetWidth;
     randomPickBtnEl.classList.add('rolling');
+    buzz([12, 40, 12]);
     setTimeout(runDraw, 250);
   });
+  if (drawNoRepeatToggleEl) {
+    drawNoRepeatToggleEl.addEventListener('click', function () {
+      state.drawNoRepeat = !state.drawNoRepeat;
+      syncDrawExtra();
+    });
+  }
+  if (drawResetBtnEl) {
+    drawResetBtnEl.addEventListener('click', function () {
+      state.drawnKeys = {};
+      syncDrawExtra();
+    });
+  }
 
   // rollcall events
   rollcallAllEl.addEventListener('click', function () { setAllRollcall(true); });
@@ -2114,6 +2585,13 @@
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', syncSearchViewport);
     window.visualViewport.addEventListener('scroll', syncSearchViewport);
+  }
+
+  // 離線快取：把整個 App（含地圖、歌詞頁面）留在裝置上，會場收訊差也能開
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* 不支援就照常線上使用 */ });
+    });
   }
 
   loadFromCache();

@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=33">
+<link rel="stylesheet" href="style.css?v=34">
 </head>
 <body>
 <div class="app">
@@ -24,6 +24,7 @@
       </div>
       <div class="status-row">
         <span id="status-text" class="status-text">資料載入中…</span>
+        <button id="theme-btn" class="refresh-btn theme-btn" title="切換深淺色" aria-label="切換深淺色">🌗</button>
         <button id="refresh-btn" class="refresh-btn" title="重新整理">
           <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="23 4 23 10 17 10"></polyline>
@@ -55,6 +56,7 @@
     <!-- Tab 2: 時段總覽 -->
     <section id="tab-overview" class="tab-panel">
       <div class="day-pills" id="day-pills"></div>
+      <div id="now-banner" class="now-banner" hidden></div>
       <div id="overview-content" class="day-list"></div>
     </section>
 
@@ -63,10 +65,19 @@
 
       <!-- 工具選單 -->
       <div id="tools-menu" class="tools-menu">
-        <button class="tool-menu-card" data-tool="advisors">
-          <span class="tool-menu-icon">🧑‍🏫</span>
+        <button class="tool-menu-card" data-tool="rollcall">
+          <span class="tool-menu-icon">✅</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">小隊輔一覽</span>
+            <span class="tool-menu-label">點名</span>
+            <span class="tool-menu-desc">清點人數＋一鍵複製回報</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="meals">
+          <span class="tool-menu-icon">🍚</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">用餐時段</span>
+            <span class="tool-menu-desc">18–22 小隊入場路線與時間</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -74,13 +85,15 @@
           <span class="tool-menu-icon">👥</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊員一覽</span>
+            <span class="tool-menu-desc">名冊、選課、房號一次查</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
-        <button class="tool-menu-card" data-tool="rollcall">
-          <span class="tool-menu-icon">✅</span>
+        <button class="tool-menu-card" data-tool="advisors">
+          <span class="tool-menu-icon">🧑‍🏫</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">點名</span>
+            <span class="tool-menu-label">小隊輔一覽</span>
+            <span class="tool-menu-desc">全 FSY 隊輔快速查詢</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -88,6 +101,7 @@
           <span class="tool-menu-icon">🎲</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">隨機抽籤</span>
+            <span class="tool-menu-desc">遊戲抽人，可避免重複</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -95,6 +109,7 @@
           <span class="tool-menu-icon">🎵</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">歌詞</span>
+            <span class="tool-menu-desc">與我同行・前生</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -102,6 +117,15 @@
           <span class="tool-menu-icon">🗺️</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">校園地圖</span>
+            <span class="tool-menu-desc">活動地點一目瞭然</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="info">
+          <span class="tool-menu-icon">📖</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">大會資訊</span>
+            <span class="tool-menu-desc">規定、服裝、緊急聯絡</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -109,6 +133,7 @@
           <span class="tool-menu-icon">🩺</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">醫護組資訊</span>
+            <span class="tool-menu-desc">值班、電話、回報格式</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -179,10 +204,33 @@
               </div>
             </div>
           </div>
+          <div class="roster-toggles draw-extra">
+            <button class="roster-toggle" id="draw-norepeat-toggle">🚫 不重複抽</button>
+            <button class="roster-toggle" id="draw-reset-btn" hidden>♻️ 清除已抽（<span id="drawn-count">0</span>）</button>
+          </div>
           <button id="random-pick-btn" class="random-btn">
             <span class="random-dice">🎲</span> 開始抽籤
           </button>
           <div id="random-result" class="random-result"></div>
+        </div>
+
+        <!-- 用餐時段（第五中隊 18–22 小隊，B梯次） -->
+        <div id="pane-meals" class="tool-pane" hidden>
+          <div class="tool-head">
+            <h2 class="tool-title">用餐時段</h2>
+            <span class="tool-count">第五中隊・B梯次</span>
+          </div>
+          <p class="tool-hint">18–22 小隊的用餐時段、餐廳入場路線與就緒時間（打菜勤務請看「我的職責」）。</p>
+          <div class="day-pills" id="meals-day-filters"></div>
+          <div id="meals-body" class="meals-body"></div>
+        </div>
+
+        <!-- 大會資訊（行前通知＋大會規定摘要） -->
+        <div id="pane-info" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">大會資訊</h2></div>
+          <a class="info-call-btn" href="tel:0906901216">📞 營本部 24 小時電話　0906-901-216</a>
+          <p class="tool-hint">營本部：築夢學苑 9145 室（體育館對面，宿舍 1F 大門右手邊）</p>
+          <div id="info-body" class="info-list"></div>
         </div>
 
         <!-- 小隊輔一覽 -->
@@ -280,6 +328,7 @@
             <div class="filter-label">選擇小隊</div>
             <div class="roster-filters" id="rollcall-squad-filters"></div>
           </div>
+          <p class="tool-hint rollcall-times" id="rollcall-times"></p>
           <div id="rollcall-board" class="rollcall-board"></div>
           <div class="rollcall-actions">
             <button id="rollcall-all" class="rollcall-action-btn">全部到齊</button>
@@ -355,6 +404,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=44"></script>
+<script src="app.js?v=45"></script>
 </body>
 </html>
