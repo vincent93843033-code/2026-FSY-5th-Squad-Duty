@@ -18,9 +18,37 @@
     '2026 FSY才藝表演.xlsx」複本': 'https://docs.google.com/spreadsheets/d/1Fsvovrxh9Yn8gRP697UHrsXKpGQmk5D3/edit',
     '2026 FSY 服務活動企劃書_v3.docx': 'https://docs.google.com/document/d/1TGLKBuK7L2A7UcmvZsJ27ZO-OnSxRHk0/edit',
     '時間安排與證據分組': 'https://docs.google.com/spreadsheets/d/1hiKERqbLXLUBoSfcUj6A0GCYKVDR1C6vSOkgF5RK4g8/edit?gid=0',
+    '發家長的一封信時間': 'https://docs.google.com/spreadsheets/d/1k0jIGOmWtQJm-HPxPgD_gH1fkljspUuq/edit?gid=448836474',
   };
   // 膳食組細流（用餐時段自動附上連結）
   var MEAL_LINK_URL = 'https://docs.google.com/spreadsheets/d/1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE/edit';
+  // 營本部試算表（值班表、無線電／翻譯器材／物資借用表）
+  var HQ_SHEET_URL = 'https://docs.google.com/spreadsheets/d/11PdofNUdrroU9KKVWMBl1etw7F3pPE-BK6b_OayOGVs/edit';
+  // 工作人員房號（「2026 FSY 青少年分隊總表」的「工作人員房號」分頁；權限由 Google 試算表共用設定控管）
+  var STAFF_ROOMS_URL = 'https://docs.google.com/spreadsheets/d/1gf87SbL_jbF1XxgcsodxDMgUqioGSTE23YJj9t3d0CU/edit';
+  // 常用連結：小隊輔會用到的細流／總表／名單，集中一處秒找
+  var LINKS_SECTIONS = [
+    { title: '📋 總表與名冊', links: [
+      { icon: '🗓️', label: '2026 細流（大會總行程）', url: 'https://docs.google.com/spreadsheets/d/' + XILIU_ID + '/edit' },
+      { icon: '🧭', label: '2026 FSY 第五中隊（職責總表）', url: 'https://docs.google.com/spreadsheets/d/' + ZHIZE_ID + '/edit' },
+      { icon: '👥', label: '5中 18–22 小隊名單', url: 'https://docs.google.com/spreadsheets/d/1DIkYc3ubdavSY8de6jDXEOACRZt53r-RQb47oNZDZ40/edit' },
+      { icon: '🛏️', label: '工作人員房號（分隊總表「工作人員房號」分頁）', url: STAFF_ROOMS_URL },
+      { icon: '🏕️', label: '營本部（排班表／物資借用）', url: HQ_SHEET_URL },
+    ] },
+    { title: '🎯 活動細流', links: [
+      { icon: '🍚', label: '膳食組細流（用餐）', url: MEAL_LINK_URL },
+      { icon: '📚', label: '課程&見證聚會總表', url: XILIU_LINKS['課程&見證聚會總表'] },
+      { icon: '🎵', label: '音樂節目細流', url: XILIU_LINKS['音樂節目細流'] },
+      { icon: '🚩', label: '隊呼與隊旗細流', url: XILIU_LINKS['隊呼與隊旗細流'] },
+      { icon: '🎮', label: '遊戲之夜與家庭晚會遊戲', url: XILIU_LINKS['遊戲之夜與家庭晚會遊戲'] },
+      { icon: '🎤', label: '2026 FSY 才藝表演', url: XILIU_LINKS['2026 FSY才藝表演.xlsx」複本'] },
+      { icon: '🤝', label: '2026 FSY 服務活動企劃書', url: XILIU_LINKS['2026 FSY 服務活動企劃書_v3.docx'] },
+      { icon: '🕊️', label: '七十週年活動', url: 'https://reurl.cc/YDa8OD' },
+      { icon: '🙏', label: '男女青年活動（時間安排與證據分組）', url: XILIU_LINKS['時間安排與證據分組'] },
+      { icon: '💌', label: '把它帶回家（發家長的一封信時間）', url: XILIU_LINKS['發家長的一封信時間'] },
+      { icon: '🧳', label: '報到與離場活動細流', url: 'https://docs.google.com/spreadsheets/d/1wWjlm3MwRGtfVn1wrXPX_a8T5n-oopDmWwi8Oq2ieLM/edit' },
+    ] },
+  ];
   // 第五中隊「男女青年活動」證據分配（隊內資料，不在共用試算表內）
   var YM_EVIDENCE = [
     '亞聖・宜昕 → 證據 1、8',
@@ -49,7 +77,8 @@
       '我尋覓你吾友',
     ] },
   ];
-  // 用餐時段（來源：「2026 FSY 膳食」試算表；第五中隊 18–22 小隊皆為 B 梯次＝16–31 小隊場）
+  // 用餐分流（來源：「2026 FSY 膳食」試算表；第五中隊 18–22 小隊皆為 B 梯次＝16–31 小隊場）
+  // 不再是獨立工具：行程總覽（Tab 2）餐點卡片展開「詳情」時，依日期＋餐別自動帶出對應分流
   // rows：同一路線／前後半的小隊合併成一列；未列在路線表的小隊以 note 註明
   var MEAL_SCHEDULE = [
     { day: '7/13', dow: '一', meals: [
@@ -116,6 +145,88 @@
     ] },
   ];
 
+  // 營本部排班表（來源：「營本部」試算表「值班表」分頁；已把上下兩班交錯的 2 小時值班換算成逐時段名單）
+  // D-6 無排班（依值班說明：查點名表、退房與遺失物由當日 AC 處理）
+  var HQ_SCHEDULE = [
+    { day: '7/13', dow: '一', tag: 'D-1', slots: [
+      { time: '11:00-12:00', names: ['劉茗文'] },
+      { time: '12:00-13:00', names: ['趙建傑', '劉茗文'] },
+      { time: '13:00-14:00', names: ['趙建傑', '何于彰'] },
+      { time: '14:00-15:00', names: ['許若伊', '何于彰'] },
+      { time: '15:00-16:00', names: ['許若伊', '周明儀'] },
+      { time: '16:00-17:00', names: ['李湘儀', '周明儀'] },
+      { time: '17:00-18:00', names: ['李湘儀', '江前安'] },
+      { time: '18:00-19:00', names: ['江前安'] },
+      { time: '19:00-20:00', names: ['江前安', '李厚璿'] },
+      { time: '20:00-21:00', names: ['許百加', '李厚璿'] },
+      { time: '21:00-21:30', names: ['許百加'] },
+    ] },
+    { day: '7/14', dow: '二', tag: 'D-2', slots: [
+      { time: '8:00-9:00', names: ['周明儀'] },
+      { time: '9:00-10:00', names: ['周明儀', '周語歆'] },
+      { time: '10:00-11:00', names: ['李湘儀', '周語歆'] },
+      { time: '11:00-12:00', names: ['李湘儀', '陳德璟'] },
+      { time: '12:00-13:00', names: ['張蕙庭', '陳德璟'] },
+      { time: '13:00-14:00', names: ['張蕙庭', '莊世瑄'] },
+      { time: '14:00-15:00', names: ['徐俞霈', '莊世瑄'] },
+      { time: '15:00-16:00', names: ['徐俞霈', '趙子琁'] },
+      { time: '16:00-17:00', names: ['陳德璟', '趙子琁'] },
+      { time: '17:00-18:00', names: ['陳德璟', '胡沛菁'] },
+      { time: '18:00-19:00', names: ['金郁翎', '胡沛菁'] },
+      { time: '19:00-20:00', names: ['金郁翎', '周成禾'] },
+      { time: '20:00-21:00', names: ['張書寧', '周成禾'] },
+      { time: '21:00-21:30', names: ['張書寧'] },
+    ] },
+    { day: '7/15', dow: '三', tag: 'D-3', slots: [
+      { time: '8:00-9:00', names: ['周成禾'] },
+      { time: '9:00-10:00', names: ['周成禾', '周語歆'] },
+      { time: '10:00-11:00', names: ['李庭宇', '周語歆'] },
+      { time: '11:00-12:00', names: ['李庭宇', '胡滿祥'] },
+      { time: '12:00-13:00', names: ['張蕙庭', '胡滿祥'] },
+      { time: '13:00-14:00', names: ['張蕙庭', '胡沛菁'] },
+      { time: '14:00-15:00', names: ['許若伊', '胡沛菁'] },
+      { time: '15:00-16:00', names: ['許若伊', '陳德璟'] },
+      { time: '16:00-17:00', names: ['金郁翎', '陳德璟'] },
+      { time: '17:00-18:00', names: ['金郁翎', '徐俞霈'] },
+      { time: '18:00-19:00', names: ['江前安', '徐俞霈'] },
+      { time: '19:00-20:00', names: ['江前安', '場次夫婦'] },
+      { time: '20:00-21:00', names: ['江前安', '趙建傑'] },
+      { time: '21:00-21:30', names: ['趙建傑'] },
+    ] },
+    { day: '7/16', dow: '四', tag: 'D-4', slots: [
+      { time: '8:00-9:00', names: ['林以理'] },
+      { time: '9:00-10:00', names: ['林以理', '邱凱莉'] },
+      { time: '10:00-11:00', names: ['林薏瓏', '邱凱莉'] },
+      { time: '11:00-12:00', names: ['林薏瓏', '許百加'] },
+      { time: '12:00-13:00', names: ['李厚璿', '許百加'] },
+      { time: '13:00-14:00', names: ['李厚璿', '楊喬安'] },
+      { time: '14:00-15:00', names: ['趙子琁', '楊喬安'] },
+      { time: '15:00-16:00', names: ['趙子琁', '徐俞霈'] },
+      { time: '16:00-17:00', names: ['詹咏朋', '徐俞霈'] },
+      { time: '17:00-18:00', names: ['詹咏朋', '林以理'] },
+      { time: '18:00-19:00', names: ['趙子琁', '林以理'] },
+      { time: '19:00-20:00', names: ['趙子琁', '胡沛菁'] },
+      { time: '20:00-21:00', names: ['張書寧', '胡沛菁'] },
+      { time: '21:00-21:30', names: ['張書寧'] },
+    ] },
+    { day: '7/17', dow: '五', tag: 'D-5', slots: [
+      { time: '8:00-9:00', names: ['林以理'] },
+      { time: '9:00-10:00', names: ['林以理', '林薏瓏'] },
+      { time: '10:00-11:00', names: ['邱凱莉', '林薏瓏'] },
+      { time: '11:00-12:00', names: ['邱凱莉', '楊喬安'] },
+      { time: '12:00-13:00', names: ['趙子琁', '楊喬安'] },
+      { time: '13:00-14:00', names: ['趙子琁', '胡滿祥'] },
+      { time: '14:00-15:00', names: ['何于彰', '胡滿祥'] },
+      { time: '15:00-16:00', names: ['何于彰', '李庭宇'] },
+      { time: '16:00-17:00', names: ['周明儀', '李庭宇'] },
+      { time: '17:00-18:00', names: ['周明儀', '詹咏朋'] },
+      { time: '18:00-19:00', names: ['何于彰', '詹咏朋'] },
+      { time: '19:00-20:00', names: ['何于彰', '莊世瑄'] },
+      { time: '20:00-21:00', names: ['劉茗文', '莊世瑄'] },
+      { time: '21:00-21:30', names: ['劉茗文'] },
+    ] },
+  ];
+
   // 每日清點人數時間（來源：「2026 細流」）
   var ROLLCALL_TIMES = {
     1: '18:00、21:00',
@@ -126,7 +237,7 @@
     6: '退房清點依隊輔會議指示',
   };
 
-  // 大會資訊（來源：行前通知－青少年、2026 細流、工作人員手冊）
+  // 營本部聯絡資訊頁的資訊卡（只留必要的：服裝、六大紀律）
   var INFO_SECTIONS = [
     { icon: '👕', title: '每日服裝', lines: [
       'D-1～D-3、D-5、D-6：大會 T-shirt',
@@ -134,56 +245,13 @@
       'D-5（7/17）晚會：安息日服裝（男：襯衫＋長褲；女：及膝裙裝），舞會禁止拖鞋和短褲',
       '服務活動（D-3）可能有躺地上的環節，提醒小隊員穿不易走光的衣服',
     ] },
-    { icon: '⏰', title: '每日作息重點', lines: [
-      '起床 06:30–07:00（D-1 為 07:00–07:30）',
-      '中隊輔與隊輔會議 07:00–07:10（每天早上）',
-      '寧靜時間 21:00–22:30／反思和回顧 22:30–23:00',
-      '熄燈 23:00：熄燈後除緊急狀況，嚴禁離開房間',
-    ] },
-    { icon: '🕐', title: '清點人數時間', lines: [
-      'D-1：18:00、21:00',
-      'D-2：13:40、21:00',
-      'D-3：13:40、20:30',
-      'D-4：13:30、21:00',
-      'D-5：13:30、23:00（熄燈時）',
-      'D-6：退房清點依隊輔會議指示',
-    ] },
-    { icon: '🚻', title: '安全陪同規定', lines: [
-      '小隊員離隊（上洗手間、裝水）必須先告知小隊輔，不可獨自離開',
-      '陪同人數：2 位工作人員陪 1 位青少年，或 1 位工作人員陪 2 位以上青少年',
-      '宿舍樓層：男生 1–3 樓、女生 4–5 樓，嚴禁進入異性樓層或寢室',
-      '不可自行換房；請遵守宿舍垃圾分類，勿損壞公物',
-      '同一房間請勿同時使用多台吹風機，以免跳電',
-    ] },
-    { icon: '🩺', title: '身體不適怎麼辦', lines: [
-      '頭暈、噁心、快中暑？別撐著！請小隊員立刻告訴小隊輔',
-      '由小隊輔帶往醫護組（保健協調員），聯絡資訊見「醫護組資訊」',
-      '回報時記得留下聯絡方式、交接地點，並記得領回小隊員',
-    ] },
-    { icon: '⚠️', title: '六大紀律（違者可能送回家）', lines: [
+    { icon: '⚠️', title: '六大紀律', lines: [
       '1. 參與或鼓吹任何不道德行為（違反貞潔律法、觀看或發布色情）',
       '2. 盜取店舖商品、偷竊或任何形式的蓄意破壞',
       '3. 違反智慧語（含抽電子煙、持有非法或有害物質）',
       '4. 持有武器或任何危險物品',
       '5. 在身體、靈性或情緒上傷害或威脅傷害自己或他人（含霸凌）',
       '6. 未經適當程序自行離開、未經許可缺席預定活動或違反宵禁',
-    ] },
-    { icon: '📱', title: '手機與家人聯絡', lines: [
-      '大會沒有規定定時報平安，依小隊員與家人事先的約定即可',
-      '家人有緊急事項聯絡不上時，會直接打營本部（24 小時）0906-901-216',
-      '活動期間管制進出，不開放親友探訪',
-    ] },
-    { icon: '🚌', title: '報到與離營', lines: [
-      '報到：7/13（一）11:00–13:00，各支聯會抵達時間不同',
-      'D-6：07:00–08:00 場次後檢查／小隊員退房（行李放體育館）',
-      'D-6：09:30–11:00 各支聯會車輛抵達＆離開大會',
-      '工作人員專車 12:00–12:30 離開，14:00 慶功宴 🎊',
-    ] },
-    { icon: '🧺', title: '生活提醒', lines: [
-      '衣物一律手洗，大會不開放使用洗衣機',
-      '大會 T-shirt 大家都一樣，晾曬前記得標示',
-      '宿舍是硬板床，冷氣很涼——確認小隊員都有帶寢具',
-      '宵夜想吃泡麵要自備餐具，大會不提供免洗餐具',
     ] },
   ];
 
@@ -289,8 +357,11 @@
   var medicalVehicleBodyEl = document.getElementById('medical-vehicle-body');
   var nowBannerEl = document.getElementById('now-banner');
   var themeBtnEl = document.getElementById('theme-btn');
-  var mealsDayFiltersEl = document.getElementById('meals-day-filters');
-  var mealsBodyEl = document.getElementById('meals-body');
+  var hqNowEl = document.getElementById('hq-now');
+  var hqDayFiltersEl = document.getElementById('hq-day-filters');
+  var hqScheduleBodyEl = document.getElementById('hq-schedule-body');
+  var hqSheetLinkEl = document.getElementById('hq-sheet-link');
+  var linksBodyEl = document.getElementById('links-body');
   var infoBodyEl = document.getElementById('info-body');
   var rollcallTimesEl = document.getElementById('rollcall-times');
   var drawNoRepeatToggleEl = document.getElementById('draw-norepeat-toggle');
@@ -320,7 +391,7 @@
     drawFemale: 0,
     drawNoRepeat: false, // 抽籤是否排除已抽過的人
     drawnKeys: {},       // 已抽過的人（memberKey -> 1）
-    mealsDay: 0,         // 用餐時段所選日期索引
+    hqDay: 0,            // 營本部排班表所選日期索引
     rollcallSquad: 18,    // 點名小隊（第五中隊 18-22）
     rollcallPresent: {},  // { squad: { memberKey: true } }
     rollcallReasons: {},  // { squad: textarea內容 }
@@ -792,6 +863,16 @@
     return box;
   }
 
+  // iOS 主畫面（standalone）模式下 target=_blank 會失效，改用程式開啟並保底導向
+  function bindExternalOpen(a, url) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var opened = window.open(url, '_blank');
+      if (!opened) window.location.href = url;
+    });
+  }
+
   function buildLinkValue(label, url) {
     var span = document.createElement('span');
     span.className = 'detail-value';
@@ -801,18 +882,56 @@
     a.rel = 'noopener noreferrer';
     a.className = 'detail-link';
     a.textContent = '🔗 ' + label;
-    a.addEventListener('click', function (e) {
-      // iOS 主畫面（standalone）模式下 target=_blank 會失效，改用程式開啟並保底導向
-      e.preventDefault();
-      e.stopPropagation();
-      var opened = window.open(url, '_blank');
-      if (!opened) window.location.href = url;
-    });
+    bindExternalOpen(a, url);
     span.appendChild(a);
     return span;
   }
 
-  function buildDetailBody(row) {
+  // 依日期＋餐別找到對應的用餐分流（A 梯次的餐不套用：第五中隊是 B 梯次）
+  function findMealInfo(dayLabel, activity) {
+    var act = activity || '';
+    if (/A梯次(早|午|晚)餐/.test(act)) return null;
+    var m = (dayLabel || '').match(/^(\d{1,2}\/\d{1,2})/);
+    if (!m) return null;
+    var dayData = null;
+    for (var i = 0; i < MEAL_SCHEDULE.length; i++) {
+      if (MEAL_SCHEDULE[i].day === m[1]) { dayData = MEAL_SCHEDULE[i]; break; }
+    }
+    if (!dayData) return null;
+    var name = null;
+    if (act.indexOf('早午餐') !== -1) name = '早午餐';
+    else if (act.indexOf('食物之夜') !== -1) name = '食物之夜';
+    else if (act.indexOf('早餐') !== -1) name = '早餐';
+    else if (act.indexOf('午餐') !== -1) name = '午餐';
+    else if (act.indexOf('晚餐') !== -1) name = '晚餐';
+    else if (act.indexOf('宵夜') !== -1) name = '宵夜';
+    if (!name) return null;
+    for (var j = 0; j < dayData.meals.length; j++) {
+      if (dayData.meals[j].name === name) return dayData.meals[j];
+    }
+    return null;
+  }
+
+  function buildMealRows(meal) {
+    var box = document.createElement('div');
+    box.className = 'detail-value meal-rows';
+    meal.rows.forEach(function (r) {
+      var rowEl = document.createElement('div');
+      rowEl.className = 'meal-row';
+      var squads = document.createElement('span');
+      squads.className = 'meal-squads';
+      squads.textContent = r.squads;
+      rowEl.appendChild(squads);
+      var detail = document.createElement('span');
+      detail.className = 'meal-detail';
+      detail.textContent = r.detail;
+      rowEl.appendChild(detail);
+      box.appendChild(rowEl);
+    });
+    return box;
+  }
+
+  function buildDetailBody(row, dayLabel) {
     var fields = [];
     if (row.leader) fields.push(['主要負責', buildTextValue(row.leader)]);
 
@@ -827,6 +946,18 @@
       }
     } else if (isMealActivity(row.activity)) {
       fields.push(['膳食組細流', buildLinkValue('開啟膳食組細流', MEAL_LINK_URL)]);
+    }
+
+    // 餐點卡片：直接帶出 18–22 小隊的入場分流與備註（原「用餐時段」工具的內容）
+    var meal = findMealInfo(dayLabel, row.activity);
+    if (meal) {
+      if (meal.time || meal.place) {
+        fields.push(['用餐資訊', buildTextValue([meal.time, meal.place].filter(Boolean).join('・'))]);
+      }
+      if (meal.rows && meal.rows.length) {
+        fields.push(['入場分流', buildMealRows(meal), true]);
+      }
+      if (meal.note) fields.push(['備註', buildTextValue(meal.note)]);
     }
 
     if (row.leaderGuide) fields.push(['小隊輔指引', buildTextValue(row.leaderGuide)]);
@@ -924,7 +1055,7 @@
       card.appendChild(buildPersonChips(row.people, null, personSelectEl.value));
     }
 
-    var detailBody = buildDetailBody(row);
+    var detailBody = buildDetailBody(row, dayLabel);
     if (detailBody) {
       var detailWrap = document.createElement('div');
       detailWrap.className = 'card-detail-wrap';
@@ -1493,8 +1624,8 @@
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
-    if (name === 'meals') { state.mealsDay = detectMealsDayIndex(); renderMeals(); }
-    if (name === 'info') renderInfo();
+    if (name === 'links') renderLinks();
+    if (name === 'info') { renderInfo(); state.hqDay = detectHqDayIndex(); renderHqSchedule(); }
     window.scrollTo(0, 0);
   }
 
@@ -2126,73 +2257,108 @@
     });
   }
 
-  // ---- 用餐時段（第五中隊 18–22 小隊）----
-  function detectMealsDayIndex() {
+  // ---- 常用連結 ----
+  function renderLinks() {
+    if (linksBodyEl.childElementCount) return; // 靜態內容只建一次
+    LINKS_SECTIONS.forEach(function (sec) {
+      var title = document.createElement('h3');
+      title.className = 'links-section-title';
+      title.textContent = sec.title;
+      linksBodyEl.appendChild(title);
+
+      var list = document.createElement('div');
+      list.className = 'links-list';
+      sec.links.forEach(function (link, i) {
+        var a = document.createElement('a');
+        a.className = 'link-card';
+        a.href = link.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.style.animationDelay = Math.min(i, 12) * 0.02 + 's';
+        bindExternalOpen(a, link.url);
+
+        var icon = document.createElement('span');
+        icon.className = 'link-card-icon';
+        icon.textContent = link.icon;
+        a.appendChild(icon);
+        var label = document.createElement('span');
+        label.className = 'link-card-label';
+        label.textContent = link.label;
+        a.appendChild(label);
+        var arrow = document.createElement('span');
+        arrow.className = 'link-card-arrow';
+        arrow.textContent = '↗';
+        a.appendChild(arrow);
+        list.appendChild(a);
+      });
+      linksBodyEl.appendChild(list);
+    });
+  }
+
+  // ---- 營本部排班表 ----
+  function detectHqDayIndex() {
     var now = getNow();
     var key = (now.getMonth() + 1) + '/' + now.getDate();
-    for (var i = 0; i < MEAL_SCHEDULE.length; i++) {
-      if (MEAL_SCHEDULE[i].day === key) return i;
+    for (var i = 0; i < HQ_SCHEDULE.length; i++) {
+      if (HQ_SCHEDULE[i].day === key) return i;
     }
     return 0;
   }
 
-  function renderMeals() {
-    mealsDayFiltersEl.innerHTML = '';
-    MEAL_SCHEDULE.forEach(function (d, idx) {
-      var btn = makeDayPill('D-' + (idx + 1), d.day + ' ' + d.dow, idx === state.mealsDay);
+  function renderHqSchedule() {
+    hqDayFiltersEl.innerHTML = '';
+    HQ_SCHEDULE.forEach(function (d, idx) {
+      var btn = makeDayPill(d.tag, d.day + ' ' + d.dow, idx === state.hqDay);
       btn.dataset.idx = idx;
-      mealsDayFiltersEl.appendChild(btn);
+      hqDayFiltersEl.appendChild(btn);
     });
 
-    var dayData = MEAL_SCHEDULE[state.mealsDay];
-    mealsBodyEl.innerHTML = '';
+    var dayData = HQ_SCHEDULE[state.hqDay];
     var now = getNow();
     var isToday = ((now.getMonth() + 1) + '/' + now.getDate()) === dayData.day;
-    dayData.meals.forEach(function (meal, i) {
-      var card = document.createElement('div');
-      card.className = 'meal-card';
-      if (isToday) {
-        var range = parseTimeRange(meal.time);
-        var nowMin = now.getHours() * 60 + now.getMinutes();
-        if (range.start !== null && range.end !== null && nowMin >= range.start && nowMin < range.end) {
-          card.classList.add('current');
-        }
-      }
-      card.style.animationDelay = (i * 0.04) + 's';
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    var currentNames = null;
 
-      var head = document.createElement('div');
-      head.className = 'meal-head';
-      head.innerHTML =
-        '<span class="meal-icon">' + meal.icon + '</span>' +
-        '<span class="meal-name">' + escapeHtml(meal.name) + '</span>' +
-        '<span class="meal-time">' + escapeHtml(meal.time) + '</span>';
-      card.appendChild(head);
+    hqScheduleBodyEl.innerHTML = '';
+    dayData.slots.forEach(function (slot) {
+      var range = parseTimeRange(slot.time);
+      var isCurrent = isToday && range.start !== null && range.end !== null &&
+        nowMin >= range.start && nowMin < range.end;
+      if (isCurrent) currentNames = slot.names;
 
-      var place = document.createElement('div');
-      place.className = 'meal-place';
-      place.textContent = meal.place;
-      card.appendChild(place);
-
-      (meal.rows || []).forEach(function (r) {
-        var rowEl = document.createElement('div');
-        rowEl.className = 'meal-row';
-        rowEl.innerHTML =
-          '<span class="meal-squads">' + escapeHtml(r.squads) + '</span>' +
-          '<span class="meal-detail">' + escapeHtml(r.detail) + '</span>';
-        card.appendChild(rowEl);
+      var rowEl = document.createElement('div');
+      rowEl.className = 'hq-slot' + (isCurrent ? ' current' : '');
+      var time = document.createElement('span');
+      time.className = 'hq-slot-time';
+      time.textContent = slot.time;
+      rowEl.appendChild(time);
+      var names = document.createElement('span');
+      names.className = 'hq-slot-names';
+      slot.names.forEach(function (n) {
+        var tag = document.createElement('span');
+        tag.className = 'medical-name-tag';
+        tag.textContent = n;
+        names.appendChild(tag);
       });
-
-      if (meal.note) {
-        var note = document.createElement('div');
-        note.className = 'meal-note';
-        note.textContent = '💡 ' + meal.note;
-        card.appendChild(note);
-      }
-      mealsBodyEl.appendChild(card);
+      rowEl.appendChild(names);
+      hqScheduleBodyEl.appendChild(rowEl);
     });
+
+    // 「現在值班」提示：只有看「今天」且正好在值班時段內才顯示
+    if (currentNames) {
+      hqNowEl.textContent = '🟢 現在值班：' + currentNames.join('、');
+      hqNowEl.hidden = false;
+    } else {
+      hqNowEl.hidden = true;
+    }
+
+    if (hqSheetLinkEl && hqSheetLinkEl.getAttribute('href') === '#') {
+      hqSheetLinkEl.href = HQ_SHEET_URL;
+      bindExternalOpen(hqSheetLinkEl, HQ_SHEET_URL);
+    }
   }
 
-  // ---- 大會資訊（可展開的資訊卡）----
+  // ---- 營本部聯絡資訊（可展開的資訊卡）----
   function renderInfo() {
     if (infoBodyEl.childElementCount) return; // 靜態內容只建一次
     INFO_SECTIONS.forEach(function (sec, i) {
@@ -2422,12 +2588,12 @@
     renderMedicalSchedule();
   });
 
-  // meals events
-  mealsDayFiltersEl.addEventListener('click', function (e) {
+  // 營本部排班表：切換日期
+  hqDayFiltersEl.addEventListener('click', function (e) {
     var chip = e.target.closest('.day-pill');
     if (!chip) return;
-    state.mealsDay = parseInt(chip.dataset.idx, 10);
-    renderMeals();
+    state.hqDay = parseInt(chip.dataset.idx, 10);
+    renderHqSchedule();
   });
 
   // 「現在／接下來」橫幅：點一下捲到進行中的活動
