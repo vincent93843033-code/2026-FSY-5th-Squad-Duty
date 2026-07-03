@@ -2070,12 +2070,6 @@ body {
   50% { opacity: 0.65; }
 }
 
-/* 工具選單卡片副標 */
-.tool-menu-desc {
-  font-size: 0.74rem;
-  color: var(--color-muted);
-}
-
 /* 抽籤附加選項 */
 .draw-extra {
   margin-bottom: 12px;
@@ -2087,56 +2081,11 @@ body {
   font-weight: 600;
 }
 
-/* 用餐時段 */
-.meals-body {
+/* 用餐分流（顯示在行程卡片的「詳情」內） */
+.meal-rows {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.meal-card {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  animation: memberIn 0.28s ease both;
-}
-
-.meal-card.current {
-  border: 2px solid var(--color-accent);
-}
-
-.meal-head {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.meal-icon {
-  font-size: 1.2rem;
-}
-
-.meal-name {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.meal-time {
-  margin-left: auto;
-  font-size: 1.02rem;
-  font-weight: 800;
-  color: var(--color-text);
-}
-
-.meal-place {
-  font-size: 0.85rem;
-  color: var(--color-muted);
-  margin: 2px 0 2px;
-}
-
-.meal-place::before {
-  content: "📍 ";
+  gap: 6px;
 }
 
 .meal-row {
@@ -2146,7 +2095,6 @@ body {
   padding: 7px 10px;
   background: var(--color-primary-light);
   border-radius: 9px;
-  margin-top: 6px;
 }
 
 .meal-squads {
@@ -2162,14 +2110,127 @@ body {
   min-width: 0;
 }
 
-.meal-note {
-  font-size: 0.78rem;
-  color: var(--color-muted);
-  margin-top: 8px;
-  line-height: 1.5;
+/* 常用連結 */
+.links-body {
+  display: flex;
+  flex-direction: column;
 }
 
-/* 大會資訊 */
+.links-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 4px 0 8px;
+}
+
+.links-section-title:not(:first-child) {
+  margin-top: 18px;
+}
+
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  text-decoration: none;
+  animation: memberIn 0.28s ease both;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.link-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.link-card-icon {
+  font-size: 1.25rem;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: 11px;
+}
+
+.link-card-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.link-card-arrow {
+  font-size: 1.05rem;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+/* 營本部排班表 */
+.hq-now {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+}
+
+.hq-schedule-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hq-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  border-radius: 10px;
+  padding: 7px 11px;
+}
+
+.hq-slot.current {
+  border: 2px solid var(--color-accent);
+}
+
+.hq-slot-time {
+  flex-shrink: 0;
+  width: 96px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.hq-slot-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hq-sheet-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.88rem;
+}
+
+/* 營本部聯絡資訊 */
 .info-call-btn {
   display: flex;
   align-items: center;

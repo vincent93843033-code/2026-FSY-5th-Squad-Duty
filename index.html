@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=34">
+<link rel="stylesheet" href="style.css?v=35">
 </head>
 <body>
 <div class="app">
@@ -69,15 +69,13 @@
           <span class="tool-menu-icon">✅</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">點名</span>
-            <span class="tool-menu-desc">清點人數＋一鍵複製回報</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
-        <button class="tool-menu-card" data-tool="meals">
-          <span class="tool-menu-icon">🍚</span>
+        <button class="tool-menu-card" data-tool="links">
+          <span class="tool-menu-icon">🔗</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">用餐時段</span>
-            <span class="tool-menu-desc">18–22 小隊入場路線與時間</span>
+            <span class="tool-menu-label">常用連結</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -85,7 +83,6 @@
           <span class="tool-menu-icon">👥</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊員一覽</span>
-            <span class="tool-menu-desc">名冊、選課、房號一次查</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -93,7 +90,6 @@
           <span class="tool-menu-icon">🧑‍🏫</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">小隊輔一覽</span>
-            <span class="tool-menu-desc">全 FSY 隊輔快速查詢</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -101,7 +97,6 @@
           <span class="tool-menu-icon">🎲</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">隨機抽籤</span>
-            <span class="tool-menu-desc">遊戲抽人，可避免重複</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -109,7 +104,6 @@
           <span class="tool-menu-icon">🎵</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">歌詞</span>
-            <span class="tool-menu-desc">與我同行・前生</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -117,15 +111,13 @@
           <span class="tool-menu-icon">🗺️</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">校園地圖</span>
-            <span class="tool-menu-desc">活動地點一目瞭然</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
         <button class="tool-menu-card" data-tool="info">
-          <span class="tool-menu-icon">📖</span>
+          <span class="tool-menu-icon">🏕️</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">大會資訊</span>
-            <span class="tool-menu-desc">規定、服裝、緊急聯絡</span>
+            <span class="tool-menu-label">營本部聯絡資訊</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -133,7 +125,6 @@
           <span class="tool-menu-icon">🩺</span>
           <span class="tool-menu-text">
             <span class="tool-menu-label">醫護組資訊</span>
-            <span class="tool-menu-desc">值班、電話、回報格式</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -214,22 +205,24 @@
           <div id="random-result" class="random-result"></div>
         </div>
 
-        <!-- 用餐時段（第五中隊 18–22 小隊，B梯次） -->
-        <div id="pane-meals" class="tool-pane" hidden>
-          <div class="tool-head">
-            <h2 class="tool-title">用餐時段</h2>
-            <span class="tool-count">第五中隊・B梯次</span>
-          </div>
-          <p class="tool-hint">18–22 小隊的用餐時段、餐廳入場路線與就緒時間（打菜勤務請看「我的職責」）。</p>
-          <div class="day-pills" id="meals-day-filters"></div>
-          <div id="meals-body" class="meals-body"></div>
+        <!-- 常用連結（各活動細流、總表與名單） -->
+        <div id="pane-links" class="tool-pane" hidden>
+          <div class="tool-head"><h2 class="tool-title">常用連結</h2></div>
+          <div id="links-body" class="links-body"></div>
         </div>
 
-        <!-- 大會資訊（行前通知＋大會規定摘要） -->
+        <!-- 營本部聯絡資訊（電話＋排班表＋服裝與紀律） -->
         <div id="pane-info" class="tool-pane" hidden>
-          <div class="tool-head"><h2 class="tool-title">大會資訊</h2></div>
+          <div class="tool-head"><h2 class="tool-title">營本部聯絡資訊</h2></div>
           <a class="info-call-btn" href="tel:0906901216">📞 營本部 24 小時電話　0906-901-216</a>
           <p class="tool-hint">營本部：築夢學苑 9145 室（體育館對面，宿舍 1F 大門右手邊）</p>
+          <section class="medical-section">
+            <h3 class="medical-section-title">🗓️ 營本部排班表</h3>
+            <div id="hq-now" class="hq-now" hidden></div>
+            <div class="day-pills" id="hq-day-filters"></div>
+            <div id="hq-schedule-body" class="hq-schedule-body"></div>
+            <a id="hq-sheet-link" class="detail-link hq-sheet-link" href="#" target="_blank" rel="noopener noreferrer">🔗 開啟營本部試算表（排班／物資借用）</a>
+          </section>
           <div id="info-body" class="info-list"></div>
         </div>
 
@@ -404,6 +397,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=45"></script>
+<script src="app.js?v=46"></script>
 </body>
 </html>
