@@ -960,6 +960,10 @@ body {
   --mc: #d36a93;
 }
 
+.member-card.neutral {
+  --mc: #6a917f;
+}
+
 .member-avatar {
   flex-shrink: 0;
   width: 38px;
@@ -2081,11 +2085,60 @@ body {
   font-weight: 600;
 }
 
-/* 用餐分流（顯示在行程卡片的「詳情」內） */
-.meal-rows {
+/* 用餐指南 */
+.meals-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+}
+
+.meal-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  animation: memberIn 0.28s ease both;
+}
+
+.meal-card.current {
+  border: 2px solid var(--color-accent);
+}
+
+.meal-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.meal-icon {
+  font-size: 1.2rem;
+}
+
+.meal-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.meal-time {
+  margin-left: auto;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.meal-place {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin: 2px 0 2px;
+}
+
+.meal-place::before {
+  content: "📍 ";
+}
+
+.meal-squad-row {
+  margin-top: 8px;
 }
 
 .meal-row {
@@ -2094,7 +2147,11 @@ body {
   gap: 8px;
   padding: 7px 10px;
   background: var(--color-primary-light);
-  border-radius: 9px;
+  border-radius: 9px 9px 0 9px;
+}
+
+.meal-squad-row:has(.meal-serve) .meal-row {
+  border-radius: 9px 9px 0 0;
 }
 
 .meal-squads {
@@ -2108,6 +2165,57 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
   min-width: 0;
+}
+
+.meal-serve {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-top: 1px dashed var(--color-border);
+  border-radius: 0 0 9px 9px;
+  padding: 5px 10px 6px;
+}
+
+.meal-food {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.55;
+  margin-top: 8px;
+}
+
+.meal-note {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* 尋找工作人員：負責活動標籤 */
+.staff-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.staff-role-tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.staff-role-tag.lead {
+  background: #fff3d6;
+  color: #b8860b;
+}
+
+html.dark .staff-role-tag.lead {
+  background: rgba(230, 190, 80, 0.15);
+  color: #e6c568;
 }
 
 /* 常用連結 */

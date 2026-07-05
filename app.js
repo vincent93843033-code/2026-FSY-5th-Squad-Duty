@@ -16,7 +16,7 @@
     '隊呼與隊旗細流': 'https://docs.google.com/spreadsheets/d/1RNfCiwYePMPmVvD1ebRU_iAEvQvJKLCoUcJWBbDqlVg/edit',
     '遊戲之夜與家庭晚會遊戲': 'https://docs.google.com/spreadsheets/d/1WSGDsZg_KE9f9Pj-8Sx3x_XAlUWRIP1Jy4GelxzlQIg/edit',
     '2026 FSY才藝表演.xlsx」複本': 'https://docs.google.com/spreadsheets/d/1Fsvovrxh9Yn8gRP697UHrsXKpGQmk5D3/edit',
-    '2026 FSY 服務活動企劃書_v3.docx': 'https://docs.google.com/document/d/1TGLKBuK7L2A7UcmvZsJ27ZO-OnSxRHk0/edit',
+    '2026 FSY 服務活動企劃書_v3.docx': 'https://docs.google.com/document/d/1xAUB3ERfX0ZBJgnUYQzseXNtGj-dmaTM/edit',
     '時間安排與證據分組': 'https://docs.google.com/spreadsheets/d/1hiKERqbLXLUBoSfcUj6A0GCYKVDR1C6vSOkgF5RK4g8/edit?gid=0',
     '發家長的一封信時間': 'https://docs.google.com/spreadsheets/d/1k0jIGOmWtQJm-HPxPgD_gH1fkljspUuq/edit?gid=448836474',
   };
@@ -31,7 +31,6 @@
     { title: '📋 總表與名冊', links: [
       { icon: '🗓️', label: '2026 細流（大會總行程）', url: 'https://docs.google.com/spreadsheets/d/' + XILIU_ID + '/edit' },
       { icon: '🧭', label: '2026 FSY 第五中隊（職責總表）', url: 'https://docs.google.com/spreadsheets/d/' + ZHIZE_ID + '/edit' },
-      { icon: '👥', label: '5中 18–22 小隊名單', url: 'https://docs.google.com/spreadsheets/d/1DIkYc3ubdavSY8de6jDXEOACRZt53r-RQb47oNZDZ40/edit' },
       { icon: '🛏️', label: '工作人員房號（分隊總表「工作人員房號」分頁）', url: STAFF_ROOMS_URL },
       { icon: '🏕️', label: '營本部（排班表／物資借用）', url: HQ_SHEET_URL },
     ] },
@@ -42,7 +41,7 @@
       { icon: '🚩', label: '隊呼與隊旗細流', url: XILIU_LINKS['隊呼與隊旗細流'] },
       { icon: '🎮', label: '遊戲之夜與家庭晚會遊戲', url: XILIU_LINKS['遊戲之夜與家庭晚會遊戲'] },
       { icon: '🎤', label: '2026 FSY 才藝表演', url: XILIU_LINKS['2026 FSY才藝表演.xlsx」複本'] },
-      { icon: '🤝', label: '2026 FSY 服務活動企劃書', url: XILIU_LINKS['2026 FSY 服務活動企劃書_v3.docx'] },
+      { icon: '🤝', label: '2026 FSY 服務活動企劃書（v7 最新）', url: 'https://docs.google.com/document/d/1xAUB3ERfX0ZBJgnUYQzseXNtGj-dmaTM/edit' },
       { icon: '🕊️', label: '七十週年活動', url: 'https://reurl.cc/YDa8OD' },
       { icon: '🙏', label: '男女青年活動（時間安排與證據分組）', url: XILIU_LINKS['時間安排與證據分組'] },
       { icon: '💌', label: '把它帶回家（發家長的一封信時間）', url: XILIU_LINKS['發家長的一封信時間'] },
@@ -77,71 +76,117 @@
       '我尋覓你吾友',
     ] },
   ];
-  // 用餐分流（來源：「2026 FSY 膳食」試算表；第五中隊 18–22 小隊皆為 B 梯次＝16–31 小隊場）
-  // 不再是獨立工具：行程總覽（Tab 2）餐點卡片展開「詳情」時，依日期＋餐別自動帶出對應分流
-  // rows：同一路線／前後半的小隊合併成一列；未列在路線表的小隊以 note 註明
-  var MEAL_SCHEDULE = [
+  // 用餐指南（來源：「2026 FSY 膳食」試算表的「在餐廳用餐」「不在餐廳用餐」「打菜班表」三個分頁）
+  // 第五中隊 18–22 小隊皆為 B 梯次（16–31 小隊場）
+  // squads：各小隊的進場路線／前後半／就緒時間；serve：該小隊隊輔的打菜任務（打菜路線可能與走的路線不同）
+  var MEALS_GUIDE = [
     { day: '7/13', dow: '一', meals: [
-      { name: '午餐', icon: '🥪', time: '11:00-13:00', place: '報到處領取', note: '大會準備輕食小點，記得吃早餐或自備點心' },
-      { name: '晚餐', icon: '🍛', time: '17:25-18:00', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線1・後半・就緒 17:40' },
-        { squads: '20・21 小隊', detail: '路線2・前半・就緒 17:20' },
-        { squads: '22 小隊', detail: '路線2・後半・就緒 17:40' },
-      ] },
-      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍' },
+      { name: '午餐', icon: '🥪', time: '11:00-13:00', place: '報到處', how: '報到時領取',
+        food: '男女青年：貝果×1＋鋁箔包飲料×1（工作人員：飯糰×1＋舒跑×1）',
+        note: '請小隊員把飲料鋁箔包清洗、壓扁再回收' },
+      { name: '晚餐', icon: '🍛', time: '17:25-18:00', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線1・後半・就緒 17:40', serve: '亞各（後半・路線1）' },
+          { s: 19, walk: '路線1・後半・就緒 17:40', serve: '敏恩（後半・路線1）' },
+          { s: 20, walk: '路線2・前半・就緒 17:20', serve: '亞聖（前半・路線1）' },
+          { s: 21, walk: '路線2・前半・就緒 17:20', serve: '唯哲（前半・路線1）' },
+          { s: 22, walk: '路線2・後半・就緒 17:40', serve: '家均（後半・路線2）' },
+        ] },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍', how: '分送到小隊',
+        food: '愛玉／仙草×1、品客×1、多穀×1',
+        note: '發放時確認小隊人數；請小隊員清洗飲料盒，發完後隊輔繳回箱子' },
     ] },
     { day: '7/14', dow: '二', meals: [
-      { name: '早餐', icon: '🍳', time: '7:45-8:15', place: '學生餐廳', note: '16–31 小隊同場入座，無路線分流' },
-      { name: '午餐', icon: '🍛', time: '12:55-13:30', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線2・後半・就緒 13:10' },
-        { squads: '20・21 小隊', detail: '路線3・前半・就緒 12:50' },
-        { squads: '22 小隊', detail: '路線3・後半・就緒 13:10' },
-      ] },
-      { name: '晚餐', icon: '🍛', time: '17:10-17:45', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線3・後半・就緒 17:25' },
-      ], note: '20–22 小隊本餐未列路線，依現場引導入場' },
-      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍' },
+      { name: '早餐', icon: '🍳', time: '7:45-8:15', place: '學生餐廳', how: '同場入座',
+        note: '16–31 小隊同場、無路線分流；打餐由 AC／中隊輔負責（就緒 7:40）' },
+      { name: '午餐', icon: '🍛', time: '12:55-13:30', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線2・後半・就緒 13:10', serve: '昉靚（後半・路線2）' },
+          { s: 19, walk: '路線2・後半・就緒 13:10', serve: '羽庭（後半・路線2）' },
+          { s: 20, walk: '路線3・前半・就緒 12:50', serve: '宜昕（前半・路線3）' },
+          { s: 21, walk: '路線3・前半・就緒 12:50', serve: '唯哲（前半・路線3）' },
+          { s: 22, walk: '路線3・後半・就緒 13:10', serve: '屸承（後半・路線3）' },
+        ] },
+      { name: '晚餐', icon: '🍛', time: '17:10-17:45', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線3・後半・就緒 17:25', serve: '亞各（後半・路線3）' },
+          { s: 19, walk: '路線3・後半・就緒 17:25', serve: '敏恩（後半・路線3）' },
+        ],
+        note: '20–22 小隊本餐未列路線，依現場引導入場' },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍', how: '分送到小隊',
+        food: '晶晶棒×1、雞塊×1',
+        note: '發放時確認小隊人數；請小隊員清洗晶晶棒包裝' },
     ] },
     { day: '7/15', dow: '三', meals: [
-      { name: '早餐', icon: '🍳', time: '7:30-8:00', place: '宿舍（分送）' },
-      { name: '午餐', icon: '🍛', time: '12:55-13:30', place: '學生餐廳', rows: [
-        { squads: '20・21 小隊', detail: '路線1・前半・就緒 12:50' },
-        { squads: '22 小隊', detail: '路線1・後半・就緒 13:10' },
-      ], note: '18・19 小隊本餐未列路線，依現場引導入場' },
-      { name: '晚餐', icon: '🍛', time: '17:10-17:45', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線1・後半・就緒 17:25' },
-        { squads: '20・21 小隊', detail: '路線2・前半・就緒 17:05' },
-        { squads: '22 小隊', detail: '路線2・後半・就緒 17:25' },
-      ] },
-      { name: '食物之夜', icon: '🎉', time: '20:30-21:00', place: '操場' },
+      { name: '早餐', icon: '🍳', time: '7:30-8:00', place: '宿舍', how: '分送到小隊',
+        note: '餐廳 7:00 送達宿舍，由分送人員發放' },
+      { name: '午餐', icon: '🍛', time: '12:55-13:30', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 20, walk: '路線1・前半・就緒 12:50', serve: '亞聖（前半・路線1）' },
+          { s: 21, walk: '路線1・前半・就緒 12:50', serve: '唯哲（前半・路線1）' },
+          { s: 22, walk: '路線1・後半・就緒 13:10', serve: '屸承（後半・路線1）' },
+        ],
+        note: '18・19 小隊本餐未列路線，依現場引導入場' },
+      { name: '晚餐', icon: '🍛', time: '17:10-17:45', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線1・後半・就緒 17:25', serve: '亞各（後半・路線1）' },
+          { s: 19, walk: '路線1・後半・就緒 17:25', serve: '羽庭（後半・路線1）' },
+          { s: 20, walk: '路線2・前半・就緒 17:05', serve: '宜昕（前半・路線2）' },
+          { s: 21, walk: '路線2・前半・就緒 17:05', serve: '唯哲（前半・路線2）' },
+          { s: 22, walk: '路線2・後半・就緒 17:25', serve: '家均（後半・路線2）' },
+        ] },
+      { name: '食物之夜', icon: '🎉', time: '20:30-21:00', place: '操場', how: '現場發放',
+        food: '冰棒、蛋塔、炸雞（一人一個）＋薯格格×1、果凍×1、卡辣×1、芒果乾×1、飲料×3（以小隊計）',
+        note: '帶垃圾袋；盒罐回收後一起拿到垃圾場（雨天備案改在宿舍發）' },
     ] },
     { day: '7/16', dow: '四', meals: [
-      { name: '早餐', icon: '🍳', time: '7:30-8:15', place: '宿舍（分送）' },
-      { name: '午餐', icon: '🍛', time: '12:30-13:00', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線2・後半・就緒 12:40' },
-        { squads: '20・21 小隊', detail: '路線3・前半・就緒 12:25' },
-        { squads: '22 小隊', detail: '路線3・後半・就緒 12:40' },
-      ] },
-      { name: '晚餐', icon: '🍛', time: '16:30-17:10', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線3・後半・就緒 16:45' },
-      ], note: '20–22 小隊本餐未列路線，依現場引導入場' },
-      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍' },
+      { name: '早餐', icon: '🍳', time: '7:30-8:15', place: '宿舍', how: '分送到小隊',
+        note: '餐廳 7:00 送達宿舍，由分送人員發放' },
+      { name: '午餐', icon: '🍛', time: '12:30-13:00', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線2・後半・就緒 12:40', serve: '昉靚（後半・路線2）' },
+          { s: 19, walk: '路線2・後半・就緒 12:40', serve: '敏恩（後半・路線2）' },
+          { s: 20, walk: '路線3・前半・就緒 12:25', serve: '宜昕（前半・路線3）' },
+          { s: 21, walk: '路線3・前半・就緒 12:25', serve: '曜瑄（前半・路線3）' },
+          { s: 22, walk: '路線3・後半・就緒 12:40', serve: '屸承（後半・路線3）' },
+        ] },
+      { name: '晚餐', icon: '🍛', time: '16:30-17:10', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線3・後半・就緒 16:45', serve: '亞各（後半・路線3）' },
+          { s: 19, walk: '路線3・後半・就緒 16:45', serve: '羽庭（後半・路線3）' },
+        ],
+        note: '20–22 小隊本餐未列路線，依現場引導入場' },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '宿舍', how: '分送到小隊',
+        food: '寒天檸檬×1、Oreo×1、洋蔥圈×2',
+        note: '發放時確認小隊人數；請小隊員清洗瓶子' },
     ] },
     { day: '7/17', dow: '五', meals: [
-      { name: '早餐', icon: '🍳', time: '7:15-7:45', place: '學生餐廳', note: '16–31 小隊同場入座，無路線分流' },
-      { name: '午餐', icon: '🍛', time: '12:30-13:00', place: '學生餐廳', rows: [
-        { squads: '20・21 小隊', detail: '路線1・前半・就緒 12:25' },
-        { squads: '22 小隊', detail: '路線1・後半・就緒 12:40' },
-      ], note: '18・19 小隊本餐未列路線，依現場引導入場' },
-      { name: '晚餐', icon: '🍛', time: '16:45-17:20', place: '學生餐廳', rows: [
-        { squads: '18・19 小隊', detail: '路線1・後半・就緒 17:00' },
-        { squads: '20・21 小隊', detail: '路線2・前半・就緒 16:40' },
-        { squads: '22 小隊', detail: '路線2・後半・就緒 17:00' },
-      ], note: '本餐發舞會貼紙，18:00 舞會進場' },
-      { name: '宵夜', icon: '🌙', time: '21:00', place: '體育館' },
+      { name: '早餐', icon: '🍳', time: '7:15-7:45', place: '學生餐廳', how: '同場入座',
+        note: '16–31 小隊同場、無路線分流；打餐由 AC／中隊輔負責（就緒 7:10）' },
+      { name: '午餐', icon: '🍛', time: '12:30-13:00', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 20, walk: '路線1・前半・就緒 12:25', serve: '亞聖（前半・路線1）' },
+          { s: 21, walk: '路線1・前半・就緒 12:25', serve: '曜瑄（前半・路線1）' },
+          { s: 22, walk: '路線1・後半・就緒 12:40', serve: '屸承（後半・路線1）' },
+        ],
+        note: '18・19 小隊本餐未列路線，依現場引導入場' },
+      { name: '晚餐', icon: '🍛', time: '16:45-17:20', place: '學生餐廳', how: '路線進場',
+        squads: [
+          { s: 18, walk: '路線1・後半・就緒 17:00', serve: '亞各（後半・路線1）' },
+          { s: 19, walk: '路線1・後半・就緒 17:00', serve: '敏恩（後半・路線1）' },
+          { s: 20, walk: '路線2・前半・就緒 16:40', serve: '亞聖（前半・路線2）' },
+          { s: 21, walk: '路線2・前半・就緒 16:40', serve: '曜瑄（前半・路線2）' },
+          { s: 22, walk: '路線2・後半・就緒 17:00', serve: '家均（後半・路線2）' },
+        ],
+        note: '本餐發舞會貼紙，18:00 舞會進場' },
+      { name: '宵夜', icon: '🌙', time: '21:00', place: '體育館', how: '現場發放',
+        food: '楊枝甘露×1、披薩／牛肉捲／海鮮捲×1（一隊 9 片披薩＋14 份捲）',
+        note: '確認小隊人數；帶垃圾袋，盒罐回收後丟垃圾場' },
     ] },
     { day: '7/18', dow: '六', meals: [
-      { name: '早午餐', icon: '🍞', time: '7:30 領取', place: '宿舍（分送）', note: '8:00-8:30 早餐／小隊時間（宣達事項）' },
+      { name: '早午餐', icon: '🍞', time: '7:30 領取', place: '宿舍', how: '分送到小隊',
+        food: '餐盒',
+        note: '8:00-8:30 早餐／小隊時間（宣達事項）；沒發完的放回營本部' },
     ] },
   ];
 
@@ -235,6 +280,81 @@
     4: '13:30、21:00',
     5: '13:30、23:00（熄燈時）',
     6: '退房清點依隊輔會議指示',
+  };
+
+  // 工作人員住宿房號（來源：「2026 FSY 青少年分隊總表」的「工作人員房號」分頁；宿舍＝築夢學苑）
+  var STAFF_ROOMS = [
+    { floor: '5F', group: '女隊輔', room: '9517', names: ['林昉靚', '薛羽庭', '劉宜昕', '邢曜瑄'] },
+    { floor: '5F', group: '女隊輔', room: '9506', names: ['劉家均', '許若凡', '葛俐妤', '黃英旻'] },
+    { floor: '5F', group: '女隊輔', room: '9501', names: ['黃矞曦', '林佳晨', '杜孟蓉'] },
+    { floor: '5F', group: '女隊輔', room: '9537', names: ['葉歆', '何祐萱', '王晴安'] },
+    { floor: '4F', group: '女隊輔', room: '9417', names: ['王詩妤', '陳怡安', '游淯雲', '張瓊文'] },
+    { floor: '4F', group: '女隊輔', room: '9406', names: ['吳心妤', '林䓵瓏', '鍾治勻', '鄧恩淩'] },
+    { floor: '4F', group: '女隊輔', room: '9401', names: ['丁予柔', '蔡慧英', '陳安潼'] },
+    { floor: '4F', group: '女隊輔', room: '9434', names: ['阮庭恩', '毛心妍', '衛詩諾'] },
+    { floor: '4F', group: '女隊輔', room: '9441', names: ['姚相蓉(英)', '許少芸', '王若馨'] },
+    { floor: '3F', group: '男隊輔', room: '9317', names: ['吳敬堯(英)', '黃敬倫', '王皓平', '賴亞各'] },
+    { floor: '3F', group: '男隊輔', room: '9306', names: ['蘇敏恩', '陳亞聖', '徐唯哲', '徐屸承'] },
+    { floor: '3F', group: '男隊輔', room: '9347', names: ['徐瑞澤', '盧承恩', '李為宇'] },
+    { floor: '3F', group: '男隊輔', room: '9341', names: ['王奎棟', '張以理', '吳宥瑜', '王恩予'] },
+    { floor: '2F', group: '男隊輔', room: '9217', names: ['姚歆磊', '彭林禹', '曾廷瑋', '徐聖源'] },
+    { floor: '2F', group: '男隊輔', room: '9206', names: ['宋昇祐', '郭俊言', '譚道遠', '張宏敏'] },
+    { floor: '2F', group: '男隊輔', room: '9201', names: ['許尚恩', '高啟恩', '彭林彥', '黃恩星'] },
+    { floor: '2F', group: '男隊輔', room: '9241', names: ['廖瑋群', '顧千祥'] },
+    { floor: '1F', group: '男隊輔', room: '9117', names: ['黃睿揚', '張永峯'] },
+    { floor: '1F', group: '核心委員會', room: '9111', names: ['場次夫婦'] },
+    { floor: '1F', group: '核心委員會', room: '9129', names: ['女協調員'] },
+    { floor: '1F', group: '核心委員會', room: '9131', names: ['男協調員'] },
+    { floor: '1F', group: '助理協調員', room: '9125', names: ['王亭喻', '李湘儀', '周語歆', '胡沛菁'] },
+    { floor: '1F', group: '助理協調員', room: '9126', names: ['林薏瓏', '邱凱莉', '楊喬安'] },
+    { floor: '1F', group: '助理協調員', room: '9127', names: ['許若伊', '許百加', '金郁翎'] },
+    { floor: '1F', group: '助理協調員', room: '9128', names: ['徐俞霈', '張書寧', '張蕙庭', '周成禾'] },
+    { floor: '1F', group: '助理協調員', room: '9132', names: ['陳瑋竣', '周明儀', '陳德璟', '劉茗文'] },
+    { floor: '1F', group: '助理協調員', room: '9133', names: ['胡滿祥', '莊世瑄', '李庭宇'] },
+    { floor: '1F', group: '助理協調員', room: '9134', names: ['何于彰', '李厚璿', '江前安'] },
+    { floor: '1F', group: '助理協調員', room: '9135', names: ['林以理', '詹咏朋', '趙子琁', '趙建傑'] },
+    { floor: '1F', group: '攝影組', room: '9106', names: ['江恩慈', '張菀眞', '蔡薰雅'] },
+    { floor: '1F', group: '其他工作人員', room: '9136', names: ['張發貴', '林子鈞', '莊士慶', '楊恩在'] },
+    { floor: '1F', group: '其他工作人員', room: '9137', names: ['應奇穎'] },
+    { floor: '1F', group: '醫護組', room: '9104', names: ['陳俞采', '蘇靖琇', '楊紫祺'] },
+    { floor: '1F', group: '醫護組', room: '9105', names: ['彭瑀恩', '林書亞', '蔡君佩', '謝岱娜'] },
+  ];
+  // 醫護組未列房號者（仍可搜尋到，電話解鎖後顯示）
+  var STAFF_EXTRA = [
+    { name: '蔡連凱', group: '醫護組' },
+    { name: '綉娟', group: '醫護組' },
+  ];
+  // 助理協調員的活動組別（來源：「AC活動組別分配」試算表；★＝該活動組長）
+  // 全體 AC 另有共同輪值：營本部排班、入場就座／抄寫員、損壞報告、失物招領
+  var AC_ROLES = {
+    '王亭喻': ['鞏固青年指南活動', '感謝卡', '遊戲之夜'],
+    '江前安': ['音樂節目', '才藝表演', '鞏固青年指南活動'],
+    '何于彰': ['膳食', '隊呼隊旗'],
+    '李庭宇': ['★鞏固青年指南活動（組長）', '男女青年活動', '膳食', '音樂節目'],
+    '李厚璿': ['★舞會（組長）', '技術設備', '遊戲之夜'],
+    '李湘儀': ['★隊呼隊旗（組長）', '報到與離場', '遊戲之夜'],
+    '周成禾': ['★音樂節目（組長）', '膳食', '遊戲之夜'],
+    '周明儀': ['★課程（組長）', '「奉行福音」活動', '遊戲之夜'],
+    '周語歆': ['音樂節目', '服務活動', '感謝卡', '遊戲之夜'],
+    '林以理': ['舞會', '技術設備', '遊戲之夜'],
+    '林薏瓏': ['「奉行福音」活動', '七十週年活動', '遊戲之夜', '舞會'],
+    '邱凱莉': ['★七十週年活動（組長）', '舞會', '遊戲之夜'],
+    '金郁翎': ['遊戲之夜', '報到與離場', '才藝表演'],
+    '徐俞霈': ['舞會', '攝影', '技術設備'],
+    '張書寧': ['★男女青年活動（組長）', '才藝表演', '服務活動'],
+    '張蕙庭': ['★感謝卡（組長）', '男女青年活動', '才藝表演', '遊戲之夜'],
+    '莊世瑄': ['遊戲之夜'],
+    '許百加': ['★遊戲之夜（組長）', '課程', '感謝卡'],
+    '許若伊': ['★膳食（組長）', '男女青年活動'],
+    '陳德璟': ['★「奉行福音」活動（組長）', '七十週年活動', '遊戲之夜'],
+    '楊喬安': ['★報到與離場（組長）', '遊戲之夜', '音樂節目'],
+    '詹咏朋': ['★技術設備（組長）', '才藝表演', '隊呼隊旗'],
+    '趙子琁': ['報到與離場', '遊戲之夜'],
+    '趙建傑': ['隊呼隊旗', '七十週年活動', '報到與離場', '音樂節目'],
+    '劉茗文': ['★服務活動（組長）', '膳食', '課程', '隊呼隊旗'],
+    '胡沛菁': ['★才藝表演（組長）', '遊戲之夜'],
+    '胡滿祥': ['★攝影（組長）', '鞏固青年指南活動', '男女青年活動'],
+    '陳瑋竣': ['營本部值班手機輪值（當夜執勤協調員）'],
   };
 
   // 營本部聯絡資訊頁的資訊卡（只留必要的：服裝、六大紀律）
@@ -339,11 +459,13 @@
   var rollcallAbsentCountEl = document.getElementById('rollcall-absent-count');
   var rollcallReasonEl = document.getElementById('rollcall-reason');
   var rollcallCopyEl = document.getElementById('rollcall-copy');
-  var advisorInputEl = document.getElementById('advisor-input');
-  var advisorClearEl = document.getElementById('advisor-clear');
-  var advisorTeamFiltersEl = document.getElementById('advisor-team-filters');
-  var advisorListEl = document.getElementById('advisor-list');
-  var advisorCountEl = document.getElementById('advisor-count');
+  var staffInputEl = document.getElementById('staff-input');
+  var staffClearEl = document.getElementById('staff-clear');
+  var staffGroupFiltersEl = document.getElementById('staff-group-filters');
+  var staffListEl = document.getElementById('staff-list');
+  var staffCountEl = document.getElementById('staff-count');
+  var mealsDayFiltersEl = document.getElementById('meals-day-filters');
+  var mealsBodyEl = document.getElementById('meals-body');
   var lyricsBodyEl = document.getElementById('lyrics-body');
   var lyricsSongPaneEl = document.getElementById('pane-lyrics-song');
   var lyricsSongBackEl = document.getElementById('lyrics-song-back');
@@ -382,9 +504,9 @@
     rosterGender: 'all',
     rosterNonMemberOnly: false,
     rosterQuery: '',
-    advisorTeams: [],
-    advisorGender: 'all',
-    advisorQuery: '',
+    staffGroup: 'all',    // 尋找工作人員：組別篩選
+    staffQuery: '',
+    mealsDay: 0,          // 用餐指南所選日期索引
     drawTeams: [],        // 抽籤範圍（中隊；空 = 全FSY）
     drawSquads: [],       // 抽籤範圍（小隊；空 = 所選中隊全部）
     drawMale: 1,
@@ -887,51 +1009,7 @@
     return span;
   }
 
-  // 依日期＋餐別找到對應的用餐分流（A 梯次的餐不套用：第五中隊是 B 梯次）
-  function findMealInfo(dayLabel, activity) {
-    var act = activity || '';
-    if (/A梯次(早|午|晚)餐/.test(act)) return null;
-    var m = (dayLabel || '').match(/^(\d{1,2}\/\d{1,2})/);
-    if (!m) return null;
-    var dayData = null;
-    for (var i = 0; i < MEAL_SCHEDULE.length; i++) {
-      if (MEAL_SCHEDULE[i].day === m[1]) { dayData = MEAL_SCHEDULE[i]; break; }
-    }
-    if (!dayData) return null;
-    var name = null;
-    if (act.indexOf('早午餐') !== -1) name = '早午餐';
-    else if (act.indexOf('食物之夜') !== -1) name = '食物之夜';
-    else if (act.indexOf('早餐') !== -1) name = '早餐';
-    else if (act.indexOf('午餐') !== -1) name = '午餐';
-    else if (act.indexOf('晚餐') !== -1) name = '晚餐';
-    else if (act.indexOf('宵夜') !== -1) name = '宵夜';
-    if (!name) return null;
-    for (var j = 0; j < dayData.meals.length; j++) {
-      if (dayData.meals[j].name === name) return dayData.meals[j];
-    }
-    return null;
-  }
-
-  function buildMealRows(meal) {
-    var box = document.createElement('div');
-    box.className = 'detail-value meal-rows';
-    meal.rows.forEach(function (r) {
-      var rowEl = document.createElement('div');
-      rowEl.className = 'meal-row';
-      var squads = document.createElement('span');
-      squads.className = 'meal-squads';
-      squads.textContent = r.squads;
-      rowEl.appendChild(squads);
-      var detail = document.createElement('span');
-      detail.className = 'meal-detail';
-      detail.textContent = r.detail;
-      rowEl.appendChild(detail);
-      box.appendChild(rowEl);
-    });
-    return box;
-  }
-
-  function buildDetailBody(row, dayLabel) {
+  function buildDetailBody(row) {
     var fields = [];
     if (row.leader) fields.push(['主要負責', buildTextValue(row.leader)]);
 
@@ -946,18 +1024,6 @@
       }
     } else if (isMealActivity(row.activity)) {
       fields.push(['膳食組細流', buildLinkValue('開啟膳食組細流', MEAL_LINK_URL)]);
-    }
-
-    // 餐點卡片：直接帶出 18–22 小隊的入場分流與備註（原「用餐時段」工具的內容）
-    var meal = findMealInfo(dayLabel, row.activity);
-    if (meal) {
-      if (meal.time || meal.place) {
-        fields.push(['用餐資訊', buildTextValue([meal.time, meal.place].filter(Boolean).join('・'))]);
-      }
-      if (meal.rows && meal.rows.length) {
-        fields.push(['入場分流', buildMealRows(meal), true]);
-      }
-      if (meal.note) fields.push(['備註', buildTextValue(meal.note)]);
     }
 
     if (row.leaderGuide) fields.push(['小隊輔指引', buildTextValue(row.leaderGuide)]);
@@ -1055,7 +1121,7 @@
       card.appendChild(buildPersonChips(row.people, null, personSelectEl.value));
     }
 
-    var detailBody = buildDetailBody(row, dayLabel);
+    var detailBody = buildDetailBody(row);
     if (detailBody) {
       var detailWrap = document.createElement('div');
       detailWrap.className = 'card-detail-wrap';
@@ -1434,7 +1500,7 @@
   }
 
   // ---- Tab 3: 小工具（含個資的工具需密碼解鎖）----
-  var PROTECTED_TOOLS = { roster: 1, advisors: 1, draw: 1, rollcall: 1, medical: 1 };
+  var PROTECTED_TOOLS = { roster: 1, staff: 1, draw: 1, rollcall: 1, medical: 1 };
   var UNLOCK_KEY = 'fsy5_unlock';
   var IDLE_MS = 30 * 60 * 1000; // 離開／背景超過 30 分鐘才需重新輸入密碼
   var encBlobCache = null;
@@ -1541,7 +1607,7 @@
       if (t === 'roster') { renderRosterFilters(); renderRoster(); }
       else if (t === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
       else if (t === 'draw') { renderDrawFilters(); syncDrawSteppers(); }
-      else if (t === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
+      else if (t === 'staff') { renderStaffFilters(); renderStaff(); }
     }).catch(function () { /* 密碼／網路問題：維持現有名冊，不中斷行程更新 */ });
   }
 
@@ -1619,11 +1685,12 @@
     var pane = document.getElementById('pane-' + name);
     if (pane) playFadeIn(pane);
     if (name === 'roster') { renderRosterFilters(); renderRoster(); }
-    if (name === 'advisors') { renderAdvisorFilters(); renderAdvisors(); }
+    if (name === 'staff') { renderStaffFilters(); renderStaff(); }
     if (name === 'draw') { renderDrawFilters(); syncDrawSteppers(); syncDrawExtra(); }
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
+    if (name === 'meals') { state.mealsDay = detectMealsDayIndex(); renderMeals(); }
     if (name === 'links') renderLinks();
     if (name === 'info') { renderInfo(); state.hqDay = detectHqDayIndex(); renderHqSchedule(); }
     window.scrollTo(0, 0);
@@ -1981,7 +2048,7 @@
     return e;
   }
 
-  // ---- 小隊輔一覽 ----
+  // ---- 尋找工作人員（小隊輔＋助理協調員＋醫護組等，含房號／電話／負責活動）----
   function deriveAdvisors() {
     var seen = {}, list = [];
     state.members.forEach(function (m) {
@@ -1994,67 +2061,326 @@
     return list;
   }
 
-  function syncAdvisorGenderToggle() {
-    document.querySelectorAll('#pane-advisors .roster-toggle[data-advisor-gender]').forEach(function (b) {
-      b.classList.toggle('active', b.dataset.advisorGender === state.advisorGender);
+  // 名字正規化：去掉「(英)」等括號註記與空白，供房號／名冊／醫護名單交叉比對
+  function normalizeStaffName(n) {
+    return (n || '').replace(/[（(][^)）]*[)）]/g, '').replace(/\s+/g, '').trim();
+  }
+  function staffNameMatch(a, b) {
+    var x = normalizeStaffName(a), y = normalizeStaffName(b);
+    if (!x || !y) return false;
+    if (x === y) return true;
+    // 短名（如「俞采」）對全名（如「陳俞采」）
+    if (x.length >= 2 && y.length >= 2) {
+      if (x.length > y.length) return x.slice(-y.length) === y;
+      if (y.length > x.length) return y.slice(-x.length) === x;
+    }
+    return false;
+  }
+
+  var STAFF_GROUPS = ['小隊輔', '助理協調員', '醫護組', '核心委員會', '攝影組', '其他'];
+
+  // 把房號表＋名冊隊輔＋AC 組別＋醫護資料合成一份可搜尋的名單
+  function buildStaffIndex() {
+    var entries = [];
+    STAFF_ROOMS.forEach(function (block) {
+      block.names.forEach(function (rawName) {
+        entries.push({
+          name: normalizeStaffName(rawName) || rawName,
+          rawName: rawName,
+          group: block.group,
+          room: block.room,
+          floor: block.floor,
+        });
+      });
     });
+    STAFF_EXTRA.forEach(function (x) {
+      entries.push({ name: x.name, rawName: x.name, group: x.group, room: '', floor: '' });
+    });
+
+    // 名冊隊輔 → 補上中隊／小隊／性別；名冊上有但房號表沒有的隊輔也補進名單
+    deriveAdvisors().forEach(function (adv) {
+      var hit = null;
+      for (var i = 0; i < entries.length; i++) {
+        if (staffNameMatch(entries[i].name, adv.a)) { hit = entries[i]; break; }
+      }
+      if (!hit) {
+        hit = { name: normalizeStaffName(adv.a), rawName: adv.a, group: adv.g + '隊輔', room: '', floor: '' };
+        entries.push(hit);
+      }
+      hit.team = adv.t;
+      hit.squad = adv.s;
+      hit.gender = adv.g;
+    });
+
+    // 醫護組 → 標籤（組長／司機）與電話（電話來自解鎖後的加密資料）
+    MEDICAL_TEAM.forEach(function (p) {
+      var hit = null;
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].group === '醫護組' && staffNameMatch(entries[i].name, p.name)) { hit = entries[i]; break; }
+      }
+      if (!hit) return;
+      hit.tags = p.tags;
+      var phone = (state.medicalPhones || {})[p.name];
+      if (phone) hit.phone = phone;
+    });
+    // 「瑪恩」在醫護名單為短名，房號表為「彭瑀恩」——staffNameMatch 比不到時手動補
+    entries.forEach(function (e) {
+      if (e.name === '彭瑀恩' && !e.phone) {
+        var phone = (state.medicalPhones || {})['瑪恩'];
+        if (phone) { e.phone = phone; e.tags = e.tags || []; }
+      }
+    });
+
+    entries.forEach(function (e) {
+      if (AC_ROLES[e.name]) e.roles = AC_ROLES[e.name];
+      e.filterGroup =
+        /隊輔/.test(e.group) ? '小隊輔' :
+        e.group === '助理協調員' ? '助理協調員' :
+        e.group === '醫護組' ? '醫護組' :
+        e.group === '核心委員會' ? '核心委員會' :
+        e.group === '攝影組' ? '攝影組' : '其他';
+      e.searchText = [
+        e.name, e.rawName, e.group, e.filterGroup,
+        e.room ? e.room : '', e.floor,
+        e.team ? teamLabel(e.team) : '', e.squad ? e.squad + '小隊' : '',
+        (e.tags || []).join(' '), (e.roles || []).join(' '),
+      ].filter(Boolean).join(' ');
+    });
+    return entries;
   }
 
-  function renderAdvisorFilters() {
-    buildChipRow(advisorTeamFiltersEl,
-      distinctTeams().map(function (t) { return { val: t, label: teamLabel(t) }; }),
-      null,
-      function (t) { toggleInArray(state.advisorTeams, t); syncChipRow(advisorTeamFiltersEl, state.advisorTeams); renderAdvisors(); },
-      function () { state.advisorTeams = []; syncChipRow(advisorTeamFiltersEl, state.advisorTeams); renderAdvisors(); });
-    syncChipRow(advisorTeamFiltersEl, state.advisorTeams);
-    syncAdvisorGenderToggle();
+  function renderStaffFilters() {
+    staffGroupFiltersEl.innerHTML = '';
+    ['all'].concat(STAFF_GROUPS).forEach(function (g) {
+      var chip = document.createElement('button');
+      chip.className = 'roster-chip' + ((state.staffGroup === g) ? ' active' : '');
+      chip.textContent = g === 'all' ? '全部' : g;
+      chip.dataset.group = g;
+      staffGroupFiltersEl.appendChild(chip);
+    });
+    staffGroupFiltersEl.onclick = function (e) {
+      var chip = e.target.closest('.roster-chip');
+      if (!chip) return;
+      state.staffGroup = chip.dataset.group;
+      renderStaffFilters();
+      renderStaff();
+    };
   }
 
-  function renderAdvisors() {
-    if (!state.membersLoaded) { advisorCountEl.textContent = '載入中…'; return; }
-    var q = state.advisorQuery.trim();
-    var list = deriveAdvisors().filter(function (a) {
-      if (state.advisorTeams.length && state.advisorTeams.indexOf(a.t) === -1) return false;
-      if (state.advisorGender !== 'all' && a.g !== state.advisorGender) return false;
-      return true;
+  var STAFF_GROUP_ORDER = { '助理協調員': 1, '核心委員會': 2, '醫護組': 3, '小隊輔': 4, '攝影組': 5, '其他': 6 };
+
+  function renderStaff() {
+    var q = state.staffQuery.trim();
+    var list = buildStaffIndex().filter(function (e) {
+      return state.staffGroup === 'all' || e.filterGroup === state.staffGroup;
     });
     if (q) {
       list = list
-        .map(function (a) { return { a: a, score: fuzzyScore(q, a.a + ' ' + teamLabel(a.t) + ' ' + a.s + '小隊 ' + a.g) }; })
+        .map(function (e) { return { e: e, score: fuzzyScore(q, e.searchText) }; })
         .filter(function (x) { return x.score > -1; })
         .sort(function (a, b) { return b.score - a.score; })
-        .map(function (x) { return x.a; });
+        .map(function (x) { return x.e; });
     } else {
-      list.sort(function (a, b) { return a.t - b.t || a.s - b.s || (a.g === '男' ? -1 : 1); });
+      list.sort(function (a, b) {
+        var ga = STAFF_GROUP_ORDER[a.filterGroup] || 9, gb = STAFF_GROUP_ORDER[b.filterGroup] || 9;
+        if (ga !== gb) return ga - gb;
+        if (a.filterGroup === '小隊輔') {
+          return (a.team || 99) - (b.team || 99) || (a.squad || 99) - (b.squad || 99);
+        }
+        return (a.room || 'zzz') < (b.room || 'zzz') ? -1 : 1;
+      });
     }
-    advisorCountEl.textContent = (state.advisorTeams.length ? scopeLabel(state.advisorTeams, []) : '全FSY') + ' · ' + list.length + ' 位';
+    staffCountEl.textContent = (state.staffGroup === 'all' ? '全部' : state.staffGroup) + ' · ' + list.length + ' 位';
 
-    advisorListEl.innerHTML = '';
-    if (!list.length) { advisorListEl.appendChild(emptyNote('找不到符合的隊輔')); return; }
-    list.forEach(function (a, i) {
+    staffListEl.innerHTML = '';
+    if (!list.length) { staffListEl.appendChild(emptyNote('找不到符合的工作人員')); return; }
+    list.forEach(function (e, i) {
+      staffListEl.appendChild(buildStaffCard(e, i));
+    });
+  }
+
+  function buildStaffCard(e, i) {
+    var card = document.createElement('div');
+    var genderCls = e.gender === '男' ? 'male' : e.gender === '女' ? 'female' : 'neutral';
+    card.className = 'member-card staff-card ' + genderCls;
+    card.style.animationDelay = Math.min(i, 12) * 0.02 + 's';
+
+    var avatar = document.createElement('div');
+    avatar.className = 'member-avatar';
+    avatar.textContent = e.name ? e.name.charAt(0) : '?';
+    card.appendChild(avatar);
+
+    var main = document.createElement('div');
+    main.className = 'member-main';
+
+    var nameRow = document.createElement('div');
+    nameRow.className = 'member-name-row';
+    var name = document.createElement('span');
+    name.className = 'member-name';
+    name.textContent = e.name;
+    nameRow.appendChild(name);
+    (e.tags || []).forEach(function (t) {
+      nameRow.appendChild(makeTag(t === '組長' ? 'tag-lead' : 'tag-driver', t));
+    });
+    if (e.roles && e.roles.length && e.roles[0].charAt(0) === '★') {
+      nameRow.appendChild(makeTag('tag-lead', '組長'));
+    }
+    main.appendChild(nameRow);
+
+    var meta = document.createElement('div');
+    meta.className = 'member-meta';
+    var bits = [e.group];
+    if (e.team) bits.push(teamLabel(e.team) + ' ' + e.squad + '小隊');
+    if (e.room) bits.push('🛏 ' + e.room);
+    meta.innerHTML = bits.map(function (b) { return escapeHtml(b); }).join('<span class="dot">·</span>');
+    main.appendChild(meta);
+
+    // 展開詳情：房號／電話／負責活動
+    var wrap = document.createElement('div');
+    wrap.className = 'member-detail-wrap';
+    var detail = document.createElement('div');
+    detail.className = 'member-detail';
+
+    detail.appendChild(makeDetailRow('組別', e.group + (e.team ? '（' + teamLabel(e.team) + ' ' + e.squad + '小隊）' : '')));
+    detail.appendChild(makeDetailRow('住宿', e.room ? '築夢學苑 ' + e.room + '（' + e.floor + '）' : '未列於房號表'));
+    if (e.phone) {
+      detail.appendChild(makeDetailRow('電話', e.phone));
+    } else if (e.filterGroup === '助理協調員' || e.filterGroup === '核心委員會') {
+      detail.appendChild(makeDetailRow('聯絡', '營本部 24 小時電話 0906-901-216'));
+    }
+    if (e.roles && e.roles.length) {
+      var rolesRow = document.createElement('div');
+      rolesRow.className = 'member-detail-row detail-row-block';
+      var lab = document.createElement('span');
+      lab.className = 'member-detail-label';
+      lab.textContent = '負責活動：';
+      rolesRow.appendChild(lab);
+      var box = document.createElement('div');
+      box.className = 'staff-roles';
+      e.roles.forEach(function (r) {
+        var tag = document.createElement('span');
+        var isLead = r.charAt(0) === '★';
+        tag.className = 'staff-role-tag' + (isLead ? ' lead' : '');
+        tag.textContent = isLead ? r.slice(1) : r;
+        box.appendChild(tag);
+      });
+      rolesRow.appendChild(box);
+      detail.appendChild(rolesRow);
+    }
+    wrap.appendChild(detail);
+    main.appendChild(wrap);
+    card.appendChild(main);
+
+    if (e.phone) {
+      var callBtn = document.createElement('a');
+      callBtn.className = 'medical-call-btn';
+      callBtn.href = 'tel:' + e.phone.replace(/[^0-9+]/g, '');
+      callBtn.setAttribute('aria-label', '撥打給' + e.name);
+      callBtn.textContent = '📞';
+      callBtn.addEventListener('click', function (ev) { ev.stopPropagation(); });
+      card.appendChild(callBtn);
+    }
+
+    card.addEventListener('click', function () {
+      var isOpen = card.classList.contains('open');
+      if (isOpen) {
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        void wrap.offsetWidth;
+        wrap.style.maxHeight = '0px';
+        card.classList.remove('open');
+      } else {
+        card.classList.add('open');
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        wrap.addEventListener('transitionend', function te(ev) {
+          if (ev.propertyName === 'max-height' && card.classList.contains('open')) {
+            wrap.style.maxHeight = 'none';
+          }
+          wrap.removeEventListener('transitionend', te);
+        });
+      }
+    });
+
+    return card;
+  }
+
+  // ---- 用餐指南（第五中隊 18–22 小隊）----
+  function detectMealsDayIndex() {
+    var now = getNow();
+    var key = (now.getMonth() + 1) + '/' + now.getDate();
+    for (var i = 0; i < MEALS_GUIDE.length; i++) {
+      if (MEALS_GUIDE[i].day === key) return i;
+    }
+    return 0;
+  }
+
+  function renderMeals() {
+    mealsDayFiltersEl.innerHTML = '';
+    MEALS_GUIDE.forEach(function (d, idx) {
+      var btn = makeDayPill('D-' + (idx + 1), d.day + ' ' + d.dow, idx === state.mealsDay);
+      btn.dataset.idx = idx;
+      mealsDayFiltersEl.appendChild(btn);
+    });
+
+    var dayData = MEALS_GUIDE[state.mealsDay];
+    mealsBodyEl.innerHTML = '';
+    var now = getNow();
+    var isToday = ((now.getMonth() + 1) + '/' + now.getDate()) === dayData.day;
+    dayData.meals.forEach(function (meal, i) {
       var card = document.createElement('div');
-      card.className = 'member-card ' + (a.g === '男' ? 'male' : 'female');
-      card.style.animationDelay = Math.min(i, 12) * 0.02 + 's';
-      var avatar = document.createElement('div');
-      avatar.className = 'member-avatar';
-      avatar.textContent = a.a ? a.a.charAt(0) : '?';
-      card.appendChild(avatar);
-      var main = document.createElement('div');
-      main.className = 'member-main';
-      var nameRow = document.createElement('div');
-      nameRow.className = 'member-name-row';
-      var name = document.createElement('span');
-      name.className = 'member-name';
-      name.textContent = a.a;
-      nameRow.appendChild(name);
-      nameRow.appendChild(makeTag(a.g === '男' ? 'tag-male' : 'tag-female', a.g === '男' ? '男隊輔' : '女隊輔'));
-      main.appendChild(nameRow);
-      var meta = document.createElement('div');
-      meta.className = 'member-meta';
-      meta.textContent = teamLabel(a.t) + ' · ' + a.s + '小隊';
-      main.appendChild(meta);
-      card.appendChild(main);
-      advisorListEl.appendChild(card);
+      card.className = 'meal-card';
+      if (isToday) {
+        var range = parseTimeRange(meal.time);
+        var nowMin = now.getHours() * 60 + now.getMinutes();
+        if (range.start !== null && range.end !== null && nowMin >= range.start && nowMin < range.end) {
+          card.classList.add('current');
+        }
+      }
+      card.style.animationDelay = (i * 0.04) + 's';
+
+      var head = document.createElement('div');
+      head.className = 'meal-head';
+      head.innerHTML =
+        '<span class="meal-icon">' + meal.icon + '</span>' +
+        '<span class="meal-name">' + escapeHtml(meal.name) + '</span>' +
+        '<span class="meal-time">' + escapeHtml(meal.time) + '</span>';
+      card.appendChild(head);
+
+      var place = document.createElement('div');
+      place.className = 'meal-place';
+      place.textContent = meal.place + (meal.how ? '・' + meal.how : '');
+      card.appendChild(place);
+
+      (meal.squads || []).forEach(function (sq) {
+        var rowEl = document.createElement('div');
+        rowEl.className = 'meal-squad-row';
+        var head2 = document.createElement('div');
+        head2.className = 'meal-row';
+        head2.innerHTML =
+          '<span class="meal-squads">' + sq.s + ' 小隊</span>' +
+          '<span class="meal-detail">' + escapeHtml(sq.walk) + '</span>';
+        rowEl.appendChild(head2);
+        if (sq.serve) {
+          var serveEl = document.createElement('div');
+          serveEl.className = 'meal-serve';
+          serveEl.textContent = '🥄 打菜：' + sq.serve;
+          rowEl.appendChild(serveEl);
+        }
+        card.appendChild(rowEl);
+      });
+
+      if (meal.food) {
+        var food = document.createElement('div');
+        food.className = 'meal-food';
+        food.textContent = '🍽 ' + meal.food;
+        card.appendChild(food);
+      }
+      if (meal.note) {
+        var note = document.createElement('div');
+        note.className = 'meal-note';
+        note.textContent = meal.note;
+        card.appendChild(note);
+      }
+      mealsBodyEl.appendChild(card);
     });
   }
 
@@ -2629,25 +2955,26 @@
     renderRoster();
   });
 
-  // advisor events
-  advisorInputEl.addEventListener('input', function () {
-    state.advisorQuery = advisorInputEl.value;
-    advisorInputEl.closest('.roster-search').classList.toggle('has-text', !!advisorInputEl.value);
-    renderAdvisors();
+  // staff events（尋找工作人員）
+  staffInputEl.addEventListener('input', function () {
+    state.staffQuery = staffInputEl.value;
+    staffInputEl.closest('.roster-search').classList.toggle('has-text', !!staffInputEl.value);
+    renderStaff();
   });
-  advisorClearEl.addEventListener('click', function () {
-    advisorInputEl.value = '';
-    state.advisorQuery = '';
-    advisorInputEl.closest('.roster-search').classList.remove('has-text');
-    renderAdvisors();
-    advisorInputEl.focus();
+  staffClearEl.addEventListener('click', function () {
+    staffInputEl.value = '';
+    state.staffQuery = '';
+    staffInputEl.closest('.roster-search').classList.remove('has-text');
+    renderStaff();
+    staffInputEl.focus();
   });
-  document.querySelectorAll('#pane-advisors .roster-toggle[data-advisor-gender]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      state.advisorGender = b.dataset.advisorGender;
-      syncAdvisorGenderToggle();
-      renderAdvisors();
-    });
+
+  // meals events（用餐指南）
+  mealsDayFiltersEl.addEventListener('click', function (e) {
+    var chip = e.target.closest('.day-pill');
+    if (!chip) return;
+    state.mealsDay = parseInt(chip.dataset.idx, 10);
+    renderMeals();
   });
 
   // draw events

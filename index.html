@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=35">
+<link rel="stylesheet" href="style.css?v=36">
 </head>
 <body>
 <div class="app">
@@ -72,31 +72,38 @@
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
-        <button class="tool-menu-card" data-tool="links">
-          <span class="tool-menu-icon">🔗</span>
+        <button class="tool-menu-card" data-tool="meals">
+          <span class="tool-menu-icon">🍚</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">常用連結</span>
+            <span class="tool-menu-label">用餐指南</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
         <button class="tool-menu-card" data-tool="roster">
           <span class="tool-menu-icon">👥</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">小隊員一覽</span>
+            <span class="tool-menu-label">尋找小隊員</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
-        <button class="tool-menu-card" data-tool="advisors">
+        <button class="tool-menu-card" data-tool="staff">
           <span class="tool-menu-icon">🧑‍🏫</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">小隊輔一覽</span>
+            <span class="tool-menu-label">尋找工作人員</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
         <button class="tool-menu-card" data-tool="draw">
           <span class="tool-menu-icon">🎲</span>
           <span class="tool-menu-text">
-            <span class="tool-menu-label">隨機抽籤</span>
+            <span class="tool-menu-label">抽籤</span>
+          </span>
+          <span class="tool-menu-arrow">›</span>
+        </button>
+        <button class="tool-menu-card" data-tool="links">
+          <span class="tool-menu-icon">🔗</span>
+          <span class="tool-menu-text">
+            <span class="tool-menu-label">常用連結</span>
           </span>
           <span class="tool-menu-arrow">›</span>
         </button>
@@ -134,10 +141,10 @@
       <div id="tool-view" class="tool-view" hidden>
         <button id="tool-back" class="tool-back">‹ 返回</button>
 
-        <!-- 小隊員一覽 -->
+        <!-- 尋找小隊員 -->
         <div id="pane-roster" class="tool-pane" hidden>
           <div class="tool-head">
-            <h2 class="tool-title">小隊員一覽</h2>
+            <h2 class="tool-title">尋找小隊員</h2>
             <span class="tool-count" id="roster-count">載入中…</span>
           </div>
           <div class="roster-search">
@@ -165,9 +172,9 @@
           <div id="roster-list" class="roster-list"></div>
         </div>
 
-        <!-- 隨機抽籤 -->
+        <!-- 抽籤 -->
         <div id="pane-draw" class="tool-pane" hidden>
-          <div class="tool-head"><h2 class="tool-title">隨機抽籤</h2></div>
+          <div class="tool-head"><h2 class="tool-title">抽籤</h2></div>
           <p class="tool-hint">設定範圍與男女人數，從全 FSY 小隊員中隨機抽出（適合遊戲、點名、分組）。</p>
           <div class="filter-group">
             <div class="filter-label">範圍（中隊）<span class="filter-hint">可複選</span></div>
@@ -226,30 +233,37 @@
           <div id="info-body" class="info-list"></div>
         </div>
 
-        <!-- 小隊輔一覽 -->
-        <div id="pane-advisors" class="tool-pane" hidden>
+        <!-- 尋找工作人員（小隊輔＋助理協調員＋醫護組等） -->
+        <div id="pane-staff" class="tool-pane" hidden>
           <div class="tool-head">
-            <h2 class="tool-title">小隊輔一覽</h2>
-            <span class="tool-count" id="advisor-count"></span>
+            <h2 class="tool-title">尋找工作人員</h2>
+            <span class="tool-count" id="staff-count"></span>
           </div>
           <div class="roster-search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="roster-search-icon" aria-hidden="true">
               <circle cx="11" cy="11" r="7"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input id="advisor-input" type="text" placeholder="搜尋隊輔姓名、中隊、小隊…" autocomplete="off">
-            <button id="advisor-clear" class="roster-clear" aria-label="清除">✕</button>
+            <input id="staff-input" type="text" placeholder="搜尋姓名、小隊（如 18）、組別、活動…" autocomplete="off">
+            <button id="staff-clear" class="roster-clear" aria-label="清除">✕</button>
           </div>
           <div class="filter-group">
-            <div class="filter-label">中隊<span class="filter-hint">可複選</span></div>
-            <div class="roster-filters" id="advisor-team-filters"></div>
+            <div class="filter-label">組別</div>
+            <div class="roster-filters" id="staff-group-filters"></div>
           </div>
-          <div class="roster-toggles">
-            <button class="roster-toggle" data-advisor-gender="all">全部</button>
-            <button class="roster-toggle" data-advisor-gender="男">男</button>
-            <button class="roster-toggle" data-advisor-gender="女">女</button>
+          <div id="staff-list" class="roster-list"></div>
+          <p class="tool-hint">點人名展開房號、電話與負責活動。助理協調員另輪值：營本部排班、入場就座、損壞報告、失物招領（詳見營本部聯絡資訊）。</p>
+        </div>
+
+        <!-- 用餐指南（第五中隊 18–22 小隊） -->
+        <div id="pane-meals" class="tool-pane" hidden>
+          <div class="tool-head">
+            <h2 class="tool-title">用餐指南</h2>
+            <span class="tool-count">第五中隊 18–22 小隊</span>
           </div>
-          <div id="advisor-list" class="roster-list"></div>
+          <div class="day-pills" id="meals-day-filters"></div>
+          <div id="meals-body" class="meals-body"></div>
+          <p class="tool-hint">資料來源：「2026 FSY 膳食」試算表（在餐廳用餐／不在餐廳用餐／打菜班表）。</p>
         </div>
 
         <!-- 歌詞：歌曲列表 -->
@@ -397,6 +411,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app.js?v=46"></script>
+<script src="app.js?v=47"></script>
 </body>
 </html>
