@@ -37,6 +37,7 @@
     { title: '🎯 活動細流', links: [
       { icon: '🍚', label: '膳食組細流（用餐）', url: MEAL_LINK_URL },
       { icon: '📚', label: '課程&見證聚會總表', url: XILIU_LINKS['課程&見證聚會總表'] },
+      { icon: '✅', label: '2026 FSY 各教室點名表', url: 'https://docs.google.com/spreadsheets/d/12BHka4KuQQwGJWVF29PCJ8kWZ29-x-g6/edit' },
       { icon: '🎵', label: '音樂節目細流', url: XILIU_LINKS['音樂節目細流'] },
       { icon: '🚩', label: '隊呼與隊旗細流', url: XILIU_LINKS['隊呼與隊旗細流'] },
       { icon: '🎮', label: '遊戲之夜與家庭晚會遊戲', url: XILIU_LINKS['遊戲之夜與家庭晚會遊戲'] },
