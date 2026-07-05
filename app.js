@@ -303,13 +303,13 @@
     { floor: '2F', group: '男隊輔', room: '9241', names: ['廖瑋群', '顧千祥'] },
     { floor: '1F', group: '男隊輔', room: '9117', names: ['黃睿揚', '張永峯'] },
     { floor: '1F', group: '核心委員會', room: '9111', names: ['場次夫婦'] },
-    { floor: '1F', group: '核心委員會', room: '9129', names: ['女協調員'] },
-    { floor: '1F', group: '核心委員會', room: '9131', names: ['男協調員'] },
+    { floor: '1F', group: '核心委員會', room: '9129', names: ['李心潔'] },
+    { floor: '1F', group: '核心委員會', room: '9131', names: ['陳瑋竣'] },
     { floor: '1F', group: '助理協調員', room: '9125', names: ['王亭喻', '李湘儀', '周語歆', '胡沛菁'] },
     { floor: '1F', group: '助理協調員', room: '9126', names: ['林薏瓏', '邱凱莉', '楊喬安'] },
     { floor: '1F', group: '助理協調員', room: '9127', names: ['許若伊', '許百加', '金郁翎'] },
     { floor: '1F', group: '助理協調員', room: '9128', names: ['徐俞霈', '張書寧', '張蕙庭', '周成禾'] },
-    { floor: '1F', group: '助理協調員', room: '9132', names: ['陳瑋竣', '周明儀', '陳德璟', '劉茗文'] },
+    { floor: '1F', group: '助理協調員', room: '9132', names: ['周明儀', '陳德璟', '劉茗文'] },
     { floor: '1F', group: '助理協調員', room: '9133', names: ['胡滿祥', '莊世瑄', '李庭宇'] },
     { floor: '1F', group: '助理協調員', room: '9134', names: ['何于彰', '李厚璿', '江前安'] },
     { floor: '1F', group: '助理協調員', room: '9135', names: ['林以理', '詹咏朋', '趙子琁', '趙建傑'] },
@@ -377,15 +377,15 @@
 
   // 醫護組資訊：團隊成員（標籤：組長／司機）
   var MEDICAL_TEAM = [
-    { name: '俞采', tags: ['組長'] },
-    { name: '瑪恩', tags: [] },
-    { name: '綉娟', tags: ['司機'] },
-    { name: '君佩', tags: ['司機'] },
-    { name: '紫祺', tags: ['組長'] },
-    { name: '書亞', tags: [] },
-    { name: '岱娜', tags: [] },
-    { name: '靖琇', tags: [] },
-    { name: '連凱', tags: ['組長', '司機'] },
+    { name: '俞采', room: '9104', tags: ['組長'] },
+    { name: '瑪恩', room: '9105', tags: [] },
+    { name: '綉娟', room: '', tags: ['司機'] },
+    { name: '君佩', room: '9105', tags: ['司機'] },
+    { name: '紫祺', room: '9104', tags: ['組長'] },
+    { name: '書亞', room: '9105', tags: [] },
+    { name: '岱娜', room: '9105', tags: [] },
+    { name: '靖琇', room: '9104', tags: [] },
+    { name: '連凱', room: '', tags: ['組長', '司機'] },
   ];
   // 醫護組人員電話：改由加密檔 data.enc.json 解密後提供（state.medicalPhones），不再寫在公開程式中
   // 醫護組值班表（D-1～D-6 對應 7/13～7/18）
@@ -2533,11 +2533,12 @@
       var phone = (state.medicalPhones || {})[person.name];
       var phoneEl = document.createElement('div');
       phoneEl.className = 'member-meta';
+      var roomText = person.room ? '房號 ' + person.room : '房號未列於原表';
       if (phone) {
-        phoneEl.textContent = phone;
+        phoneEl.textContent = roomText + ' · ' + phone;
       } else {
         phoneEl.classList.add('medical-phone-missing');
-        phoneEl.textContent = '電話尚未提供';
+        phoneEl.textContent = roomText + ' · 電話尚未提供';
       }
       main.appendChild(phoneEl);
       card.appendChild(main);
