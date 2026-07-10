@@ -1,13 +1,13 @@
 // 第五中隊 App 離線快取：
 // 策略一律「先網路、失敗才用快取」，確保有網路時永遠拿到最新版，
 // 沒網路時（會場收訊差、宿舍地下室）也能開啟整個 App。
-var CACHE = 'fsy5-v9';
+var CACHE = 'fsy5-v10';
 var CORE = [
   './',
   'index.html',
-  'style.css?v=38',
-  'app.js?v=51',
-  'app-data.js?v=2',
+  'style.css?v=39',
+  'app.js?v=52',
+  'app-data.js?v=3',
   'manifest.json',
   'au_campus_map.jpg?v=3',
   'meal-route-map.jpg?v=1',

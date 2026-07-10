@@ -2089,16 +2089,232 @@ body {
 .meals-body {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.meal-day-summary,
+.meal-group,
+.meal-overview {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px;
+  animation: memberIn 0.28s ease both;
+}
+
+.meal-day-summary {
+  border-left: 5px solid var(--color-primary);
+}
+
+.meal-day-title {
+  font-size: 1.18rem;
+  font-weight: 850;
+  color: var(--color-primary);
+}
+
+.meal-day-subtitle {
+  margin-top: 4px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+  font-weight: 650;
+}
+
+.meal-group {
+  display: grid;
   gap: 10px;
+}
+
+.meal-group-head,
+.meal-session-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.meal-group-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.meal-group-name {
+  font-size: 1.08rem;
+  font-weight: 850;
+  color: var(--color-text);
+}
+
+.meal-session {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.meal-session.offsite {
+  border-color: rgba(138, 111, 42, 0.28);
+  background: rgba(255, 248, 230, 0.7);
+}
+
+.meal-tier-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 62px;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  color: #fff;
+  background: #2f6f4f;
+}
+
+.meal-tier-pill.tier-b {
+  background: #245b7a;
+}
+
+.meal-session.offsite .meal-tier-pill {
+  min-width: 74px;
+  background: #8a6f2a;
+}
+
+.meal-session-title {
+  min-width: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.35;
+}
+
+.meal-session-meta,
+.meal-session-staff,
+.meal-map-caption,
+.meal-note {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+  font-weight: 650;
+}
+
+.meal-session-meta {
+  margin-top: 7px;
+}
+
+.meal-route-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.meal-route-card {
+  border-radius: 8px;
+  padding: 8px;
+  min-height: 76px;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  border: 1px solid rgba(47, 111, 79, 0.16);
+  background: var(--color-primary-light);
+}
+
+.meal-route-card.route-1 {
+  background: #fff0ec;
+  border-color: #f0b4a8;
+}
+
+.meal-route-card.route-2 {
+  background: #edf8ee;
+  border-color: #a9d9b3;
+}
+
+.meal-route-card.route-3 {
+  background: #eaf2fb;
+  border-color: #a9c8ec;
+}
+
+.meal-route-title {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+.meal-route-line {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.meal-session-staff {
+  margin-top: 8px;
+}
+
+.meal-offsite-detail {
+  display: grid;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.meal-info-line {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.65);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.meal-info-line span {
+  color: var(--color-muted);
+  font-weight: 800;
+}
+
+.meal-info-line strong {
+  color: var(--color-text);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.meal-serving-block {
+  border-top: 1px dashed var(--color-border);
+  padding-top: 9px;
+  display: grid;
+  gap: 7px;
+}
+
+.meal-serving-title,
+.meal-overview-title {
+  font-size: 0.92rem;
+  font-weight: 850;
+  color: var(--color-primary);
+}
+
+.meal-serving-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meal-serving-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(47, 111, 79, 0.1);
+  color: var(--color-text);
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  font-weight: 750;
 }
 
 .meal-overview {
   display: grid;
   gap: 12px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 12px;
+  margin-top: 4px;
 }
 
 .meal-map-img {
@@ -2113,10 +2329,6 @@ body {
 
 .meal-map-caption {
   margin-top: 8px;
-  color: var(--color-text);
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.55;
 }
 
 .meal-duty-guide {
@@ -2150,106 +2362,6 @@ body {
   font-weight: 600;
 }
 
-.meal-card {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  animation: memberIn 0.28s ease both;
-}
-
-.meal-card.current {
-  border: 2px solid var(--color-accent);
-}
-
-.meal-head {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.meal-icon {
-  font-size: 1.2rem;
-}
-
-.meal-name {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.meal-time {
-  margin-left: auto;
-  font-size: 1.02rem;
-  font-weight: 800;
-  color: var(--color-text);
-}
-
-.meal-place {
-  font-size: 0.85rem;
-  color: var(--color-muted);
-  margin: 2px 0 2px;
-}
-
-.meal-place::before {
-  content: "📍 ";
-}
-
-.meal-squad-row {
-  margin-top: 8px;
-}
-
-.meal-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  background: var(--color-primary-light);
-  border-radius: 9px 9px 0 9px;
-}
-
-.meal-squad-row:has(.meal-serve) .meal-row {
-  border-radius: 9px 9px 0 0;
-}
-
-.meal-squads {
-  flex-shrink: 0;
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.meal-detail {
-  font-size: 0.85rem;
-  font-weight: 600;
-  min-width: 0;
-}
-
-.meal-serve {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  border-top: 1px dashed var(--color-border);
-  border-radius: 0 0 9px 9px;
-  padding: 5px 10px 6px;
-}
-
-.meal-food {
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.55;
-  margin-top: 8px;
-}
-
-.meal-note {
-  font-size: 0.78rem;
-  color: var(--color-muted);
-  margin-top: 6px;
-  line-height: 1.5;
-}
-
-/* 尋找工作人員：負責活動標籤 */
 .staff-roles {
   display: flex;
   flex-wrap: wrap;

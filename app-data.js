@@ -350,10 +350,195 @@
   ],
   "mealsGuide": [
     {
+      "day": "7/13",
+      "dow": "",
+      "meals": [
+        {
+          "type": "offsite",
+          "name": "午餐",
+          "icon": "🍱",
+          "time": "11:00-13:00",
+          "place": "報到處",
+          "prepTime": "10:00",
+          "prep": "報到處擺長桌，放置貝果、飲料",
+          "control": "若伊",
+          "delivery": [
+            "于彰",
+            "庭宇",
+            "凱莉"
+          ],
+          "cleanup": [
+            "茗文",
+            "成禾"
+          ]
+        },
+        {
+          "type": "dining",
+          "name": "晚餐",
+          "icon": "🍛",
+          "time": "16:45-17:20(35mins)",
+          "tier": "A",
+          "squadRange": "1-15",
+          "ready": "16:40",
+          "control": "若伊",
+          "guides": [
+            "于彰",
+            "庭宇"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "16:40",
+              "half": "前半",
+              "squads": [
+                1,
+                2
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "16:40",
+              "half": "前半",
+              "squads": [
+                5,
+                6
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "16:40",
+              "half": "前半",
+              "squads": [
+                9,
+                10
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "17:00",
+              "half": "後半",
+              "squads": [
+                3,
+                4
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:00",
+              "half": "後半",
+              "squads": [
+                7,
+                8
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:00",
+              "half": "後半",
+              "squads": [
+                11,
+                12
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
+          "name": "晚餐",
+          "icon": "🍛",
+          "time": "17:25-18:00(35mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "17:20",
+          "control": "茗文",
+          "guides": [
+            "成禾",
+            "百加"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "17:20",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:20",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:20",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "17:40",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:40",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:40",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            }
+          ]
+        },
+        {
+          "type": "offsite",
+          "name": "宵夜",
+          "icon": "🌙",
+          "time": "21:00",
+          "place": "宿舍",
+          "prepTime": "20:00",
+          "prep": "分裝零食到箱子，發完後繳回箱子",
+          "control": "庭宇",
+          "delivery": [
+            "于彰",
+            "茗文(計算)",
+            "成禾",
+            "若伊(計算)"
+          ],
+          "cleanup": [
+            "分送人員一起"
+          ]
+        }
+      ]
+    },
+    {
       "day": "7/14",
       "dow": "",
       "meals": [
         {
+          "type": "dining",
           "name": "早餐",
           "icon": "🍙",
           "time": "7:15--7:45(30mins)",
@@ -368,22 +553,54 @@
           "routes": [
             {
               "route": "1",
-              "half": "",
-              "staff": "喬安"
+              "ready": "7:10",
+              "staff": "喬安 / 子琁"
             },
             {
               "route": "2",
-              "half": "",
-              "staff": "書寧"
+              "ready": "7:10",
+              "staff": "書寧 / 厚璿"
             },
             {
               "route": "3",
-              "half": "",
-              "staff": "俞霈"
+              "ready": "7:10",
+              "staff": "俞霈 / 若伊"
             }
           ]
         },
         {
+          "type": "dining",
+          "name": "早餐",
+          "icon": "🍙",
+          "time": "7:45-8:15(30mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "7:40",
+          "control": "若伊",
+          "guides": [
+            "茗文",
+            "庭宇"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "7:40",
+              "staff": "俞霈 / 前安"
+            },
+            {
+              "route": "2",
+              "ready": "7:40",
+              "staff": "沛菁 / 以理"
+            },
+            {
+              "route": "3",
+              "ready": "7:40",
+              "staff": "于彰 / 百加"
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "午餐",
           "icon": "🍱",
           "time": "12:15-12:50(35mins)",
@@ -398,6 +615,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "12:10",
               "half": "前半",
               "squads": [
                 13,
@@ -406,6 +624,7 @@
             },
             {
               "route": "2",
+              "ready": "12:10",
               "half": "前半",
               "squads": [
                 2,
@@ -414,15 +633,114 @@
             },
             {
               "route": "3",
+              "ready": "12:10",
               "half": "前半",
               "squads": [
                 6,
                 7
               ]
+            },
+            {
+              "route": "1",
+              "ready": "12:30",
+              "half": "後半",
+              "squads": [
+                15,
+                1
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:30",
+              "half": "後半",
+              "squads": [
+                4,
+                5
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:30",
+              "half": "後半",
+              "squads": [
+                8,
+                9
+              ]
             }
           ]
         },
         {
+          "type": "dining",
+          "name": "午餐",
+          "icon": "🍱",
+          "time": "12:55-13:30(35mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "12:50",
+          "control": "茗文",
+          "guides": [
+            "百加",
+            "湘儀"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "12:50",
+              "half": "前半",
+              "squads": [
+                28,
+                29
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:50",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:50",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                30,
+                31
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "晚餐",
           "icon": "🍛",
           "time": "16:30-17:05(35mins)",
@@ -437,6 +755,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "16:25",
               "half": "前半",
               "squads": [
                 10,
@@ -445,6 +764,7 @@
             },
             {
               "route": "2",
+              "ready": "16:25",
               "half": "前半",
               "squads": [
                 14,
@@ -453,13 +773,128 @@
             },
             {
               "route": "3",
+              "ready": "16:25",
               "half": "前半",
               "squads": [
                 3,
                 4
               ]
+            },
+            {
+              "route": "1",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                12,
+                13
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                1,
+                2
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                5,
+                6
+              ]
             }
           ]
+        },
+        {
+          "type": "dining",
+          "name": "晚餐",
+          "icon": "🍛",
+          "time": "17:10-17:45(35mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "17:05",
+          "control": "庭宇",
+          "guides": [
+            "茗文",
+            "百加"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "17:05",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:05",
+              "half": "前半",
+              "squads": [
+                28,
+                29
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:05",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "17:25",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:25",
+              "half": "後半",
+              "squads": [
+                30,
+                31
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:25",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            }
+          ]
+        },
+        {
+          "type": "offsite",
+          "name": "宵夜",
+          "icon": "🌙",
+          "time": "21:00",
+          "place": "宿舍",
+          "prepTime": "20:20",
+          "prep": "分裝雞塊到箱子",
+          "control": "茗文",
+          "delivery": [
+            "于彰",
+            "庭宇(計算)",
+            "若伊",
+            "成禾(計算)"
+          ],
+          "cleanup": []
         }
       ]
     },
@@ -468,6 +903,24 @@
       "dow": "",
       "meals": [
         {
+          "type": "offsite",
+          "name": "早餐",
+          "icon": "🍙",
+          "time": "7:30",
+          "place": "宿舍",
+          "prepTime": "6:50",
+          "prep": "分裝",
+          "control": "成禾",
+          "delivery": [
+            "于彰",
+            "茗文",
+            "世瑄",
+            "若伊"
+          ],
+          "cleanup": []
+        },
+        {
+          "type": "dining",
           "name": "午餐",
           "icon": "🍱",
           "time": "12:15-12:50(35mins)",
@@ -482,6 +935,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "12:10",
               "half": "前半",
               "squads": [
                 7,
@@ -490,6 +944,7 @@
             },
             {
               "route": "2",
+              "ready": "12:10",
               "half": "前半",
               "squads": [
                 11,
@@ -498,15 +953,114 @@
             },
             {
               "route": "3",
+              "ready": "12:10",
               "half": "前半",
               "squads": [
                 15,
                 1
               ]
+            },
+            {
+              "route": "1",
+              "ready": "12:30",
+              "half": "後半",
+              "squads": [
+                9,
+                10
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:30",
+              "half": "後半",
+              "squads": [
+                13,
+                14
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:30",
+              "half": "後半",
+              "squads": [
+                2,
+                3
+              ]
             }
           ]
         },
         {
+          "type": "dining",
+          "name": "午餐",
+          "icon": "🍱",
+          "time": "12:55-13:30(35mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "12:50",
+          "control": "于彰",
+          "guides": [
+            "世瑄",
+            "若伊"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "12:50",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:50",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:50",
+              "half": "前半",
+              "squads": [
+                28,
+                29
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                30,
+                31
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "晚餐",
           "icon": "🍛",
           "time": "16:30-17:05(35mins)",
@@ -521,6 +1075,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "16:25",
               "half": "前半",
               "squads": [
                 4,
@@ -529,6 +1084,7 @@
             },
             {
               "route": "2",
+              "ready": "16:25",
               "half": "前半",
               "squads": [
                 8,
@@ -537,12 +1093,131 @@
             },
             {
               "route": "3",
+              "ready": "16:25",
               "half": "前半",
               "squads": [
                 12,
                 13
               ]
+            },
+            {
+              "route": "1",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                6,
+                7
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                10,
+                11
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                14,
+                15
+              ]
             }
+          ]
+        },
+        {
+          "type": "dining",
+          "name": "晚餐",
+          "icon": "🍛",
+          "time": "17:10-17:45(35mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "15:05",
+          "control": "庭宇",
+          "guides": [
+            "成禾",
+            "世瑄"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "15:05",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "15:05",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "15:05",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "15:25",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "15:25",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "15:25",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            }
+          ]
+        },
+        {
+          "type": "offsite",
+          "name": "食物之夜",
+          "icon": "🌙",
+          "time": "20:30",
+          "place": "操場",
+          "prepTime": "晚餐後",
+          "prep": "分裝蛋塔、炸雞，搬長桌、餅乾、飲料；雨天備案在宿舍發",
+          "control": "若伊",
+          "delivery": [
+            "于彰",
+            "庭宇",
+            "世瑄",
+            "成禾",
+            "茗文",
+            "湘儀"
+          ],
+          "cleanup": [
+            "大家"
           ]
         }
       ]
@@ -552,6 +1227,96 @@
       "dow": "",
       "meals": [
         {
+          "type": "offsite",
+          "name": "早餐",
+          "icon": "🍙",
+          "time": "7:30",
+          "place": "宿舍",
+          "prepTime": "7:00",
+          "prep": "分裝",
+          "control": "成禾",
+          "delivery": [
+            "于彰",
+            "茗文",
+            "世瑄",
+            "若伊"
+          ],
+          "cleanup": [
+            "分送人員一起"
+          ]
+        },
+        {
+          "type": "dining",
+          "name": "午餐",
+          "icon": "🍱",
+          "time": "12:30-13:00(30mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "12:25",
+          "control": "成禾",
+          "guides": [
+            "于彰",
+            "凱莉"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "12:25",
+              "half": "前半",
+              "squads": [
+                28,
+                29
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:25",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:25",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "12:40",
+              "half": "後半",
+              "squads": [
+                30,
+                31
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:40",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:40",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "午餐",
           "icon": "🍱",
           "time": "13:00-13:30(30mins)",
@@ -566,6 +1331,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "12:55",
               "half": "前半",
               "squads": [
                 1,
@@ -574,6 +1340,7 @@
             },
             {
               "route": "2",
+              "ready": "12:55",
               "half": "前半",
               "squads": [
                 5,
@@ -582,15 +1349,114 @@
             },
             {
               "route": "3",
+              "ready": "12:55",
               "half": "前半",
               "squads": [
                 9,
                 10
               ]
+            },
+            {
+              "route": "1",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                3,
+                4
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                7,
+                8
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                11,
+                12
+              ]
             }
           ]
         },
         {
+          "type": "dining",
+          "name": "晚餐",
+          "icon": "🍛",
+          "time": "16:30-17:10(40mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "16:25",
+          "control": "若伊",
+          "guides": [
+            "于彰",
+            "湘儀"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "16:25",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "16:25",
+              "half": "前半",
+              "squads": [
+                28,
+                29
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "16:25",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                30,
+                31
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "16:45",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "晚餐",
           "icon": "🍛",
           "time": "17:10-17:50(40mins)",
@@ -605,6 +1471,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "17:05",
               "half": "前半",
               "squads": [
                 13,
@@ -613,6 +1480,7 @@
             },
             {
               "route": "2",
+              "ready": "17:05",
               "half": "前半",
               "squads": [
                 2,
@@ -621,13 +1489,58 @@
             },
             {
               "route": "3",
+              "ready": "17:05",
               "half": "前半",
               "squads": [
                 6,
                 7
               ]
+            },
+            {
+              "route": "1",
+              "ready": "17:25",
+              "half": "後半",
+              "squads": [
+                15,
+                1
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:25",
+              "half": "後半",
+              "squads": [
+                4,
+                5
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:25",
+              "half": "後半",
+              "squads": [
+                8,
+                9
+              ]
             }
           ]
+        },
+        {
+          "type": "offsite",
+          "name": "宵夜",
+          "icon": "🌙",
+          "time": "21:00",
+          "place": "宿舍",
+          "prepTime": "20:00",
+          "prep": "分裝零食到箱子，發完後繳回箱子",
+          "control": "茗文",
+          "delivery": [
+            "于彰",
+            "庭宇",
+            "世瑄",
+            "若伊"
+          ],
+          "cleanup": []
         }
       ]
     },
@@ -636,6 +1549,38 @@
       "dow": "",
       "meals": [
         {
+          "type": "dining",
+          "name": "早餐",
+          "icon": "🍙",
+          "time": "7:15-7:45(30mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "7:10",
+          "control": "成禾",
+          "guides": [
+            "世瑄",
+            "茗文"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "7:10",
+              "staff": "喬安 / 子琁"
+            },
+            {
+              "route": "2",
+              "ready": "7:10",
+              "staff": "書寧 / 厚璿"
+            },
+            {
+              "route": "3",
+              "ready": "7:10",
+              "staff": "于彰 / 若伊"
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "早餐",
           "icon": "🍙",
           "time": "7:45-8:15(30mins)",
@@ -650,22 +1595,93 @@
           "routes": [
             {
               "route": "1",
-              "half": "",
-              "staff": "俞霈"
+              "ready": "7:40",
+              "staff": "俞霈 / 建傑"
             },
             {
               "route": "2",
-              "half": "",
-              "staff": "凱莉"
+              "ready": "7:40",
+              "staff": "凱莉 / 以理"
             },
             {
               "route": "3",
-              "half": "",
-              "staff": "世瑄"
+              "ready": "7:40",
+              "staff": "世瑄 / 成禾"
             }
           ]
         },
         {
+          "type": "dining",
+          "name": "午餐",
+          "icon": "🍱",
+          "time": "12:30-13:00(30mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "12:25",
+          "control": "若伊",
+          "guides": [
+            "于彰",
+            "世瑄"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "12:25",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:25",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:25",
+              "half": "前半",
+              "squads": [
+                28,
+                29
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "12:40",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "12:40",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "12:40",
+              "half": "後半",
+              "squads": [
+                30,
+                31
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "午餐",
           "icon": "🍱",
           "time": "13:00-13:30(30mins)",
@@ -680,6 +1696,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "12:55",
               "half": "前半",
               "squads": [
                 10,
@@ -688,6 +1705,7 @@
             },
             {
               "route": "2",
+              "ready": "12:55",
               "half": "前半",
               "squads": [
                 14,
@@ -696,15 +1714,114 @@
             },
             {
               "route": "3",
+              "ready": "12:55",
               "half": "前半",
               "squads": [
                 3,
                 4
               ]
+            },
+            {
+              "route": "1",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                12,
+                13
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                1,
+                2
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "13:10",
+              "half": "後半",
+              "squads": [
+                5,
+                6
+              ]
             }
           ]
         },
         {
+          "type": "dining",
+          "name": "晚餐",
+          "icon": "🍛",
+          "time": "16:45-17:20(35mins)",
+          "tier": "B",
+          "squadRange": "16-31",
+          "ready": "16:40",
+          "control": "若伊",
+          "guides": [
+            "于彰",
+            "成禾"
+          ],
+          "routes": [
+            {
+              "route": "1",
+              "ready": "16:40",
+              "half": "前半",
+              "squads": [
+                16,
+                17
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "16:40",
+              "half": "前半",
+              "squads": [
+                20,
+                21
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "16:40",
+              "half": "前半",
+              "squads": [
+                24,
+                25
+              ]
+            },
+            {
+              "route": "1",
+              "ready": "17:00",
+              "half": "後半",
+              "squads": [
+                18,
+                19
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:00",
+              "half": "後半",
+              "squads": [
+                22,
+                23
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:00",
+              "half": "後半",
+              "squads": [
+                26,
+                27
+              ]
+            }
+          ]
+        },
+        {
+          "type": "dining",
           "name": "晚餐",
           "icon": "🍛",
           "time": "17:25-18:00(35mins)",
@@ -719,6 +1836,7 @@
           "routes": [
             {
               "route": "1",
+              "ready": "17:20",
               "half": "前半",
               "squads": [
                 7,
@@ -727,6 +1845,7 @@
             },
             {
               "route": "2",
+              "ready": "17:20",
               "half": "前半",
               "squads": [
                 11,
@@ -735,13 +1854,84 @@
             },
             {
               "route": "3",
+              "ready": "17:20",
               "half": "前半",
               "squads": [
                 15,
                 1
               ]
+            },
+            {
+              "route": "1",
+              "ready": "17:40",
+              "half": "後半",
+              "squads": [
+                9,
+                10
+              ]
+            },
+            {
+              "route": "2",
+              "ready": "17:40",
+              "half": "後半",
+              "squads": [
+                13,
+                14
+              ]
+            },
+            {
+              "route": "3",
+              "ready": "17:40",
+              "half": "後半",
+              "squads": [
+                2,
+                3
+              ]
             }
           ]
+        },
+        {
+          "type": "offsite",
+          "name": "宵夜",
+          "icon": "🌙",
+          "time": "21:00",
+          "place": "體育館",
+          "prepTime": "19:30",
+          "prep": "分裝披薩與捲，送到體育館門口；22:00-22:30 運到垃圾場",
+          "control": "若伊",
+          "delivery": [
+            "于彰",
+            "庭宇",
+            "世瑄",
+            "成禾"
+          ],
+          "cleanup": [
+            "茗文",
+            "世瑄"
+          ]
+        }
+      ]
+    },
+    {
+      "day": "7/18",
+      "dow": "",
+      "meals": [
+        {
+          "type": "offsite",
+          "name": "早午餐",
+          "icon": "🍙",
+          "time": "7:30",
+          "place": "宿舍",
+          "prepTime": "7:00",
+          "prep": "請餐廳 7:00 送至宿舍",
+          "control": "若伊",
+          "delivery": [
+            "于彰",
+            "茗文",
+            "世瑄",
+            "成禾"
+          ],
+          "cleanup": []
         }
       ]
     }

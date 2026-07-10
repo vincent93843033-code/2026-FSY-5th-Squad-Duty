@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=38">
+<link rel="stylesheet" href="style.css?v=39">
 </head>
 <body>
 <div class="app">
@@ -203,9 +203,10 @@
             </div>
           </div>
           <div class="roster-toggles draw-extra">
-            <button class="roster-toggle" id="draw-norepeat-toggle">🚫 不重複抽</button>
-            <button class="roster-toggle" id="draw-reset-btn" hidden>♻️ 清除已抽（<span id="drawn-count">0</span>）</button>
+            <button class="roster-toggle" id="draw-norepeat-toggle">🚫 排除已抽過的人</button>
+            <button class="roster-toggle" id="draw-reset-btn" hidden>♻️ 清除已抽名單（<span id="drawn-count">0</span>）</button>
           </div>
+          <p class="tool-hint draw-note">開啟後，這次開啟 APP 期間已抽到的人會先被排除；重新整理或按清除已抽名單會重置。</p>
           <button id="random-pick-btn" class="random-btn">
             <span class="random-dice">🎲</span> 開始抽籤
           </button>
@@ -411,7 +412,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="app-data.js?v=2"></script>
-<script src="app.js?v=51"></script>
+<script src="app-data.js?v=3"></script>
+<script src="app.js?v=52"></script>
 </body>
 </html>

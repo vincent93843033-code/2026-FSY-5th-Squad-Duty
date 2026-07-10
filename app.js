@@ -24,7 +24,7 @@
   var MEAL_LINK_URL = 'https://docs.google.com/spreadsheets/d/1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE/edit';
   // 營本部試算表（值班表、無線電／翻譯器材／物資借用表）
   var HQ_SHEET_URL = 'https://docs.google.com/spreadsheets/d/11PdofNUdrroU9KKVWMBl1etw7F3pPE-BK6b_OayOGVs/edit';
-  // 工作人員房號（「2026 FSY 青少年分隊總表」的「工作人員房號」分頁；權限由 Google 試算表共用設定控管）
+  // 工作人員房號（來源表的「工作人員房號」分頁；權限由 Google 試算表共用設定控管）
   var STAFF_ROOMS_URL = 'https://docs.google.com/spreadsheets/d/1gf87SbL_jbF1XxgcsodxDMgUqioGSTE23YJj9t3d0CU/edit';
   var MEAL_ROUTE_MAP_IMAGE = 'meal-route-map.jpg?v=1';
   var MEAL_STAFF_NOTES = [
@@ -33,16 +33,23 @@
     { title: '打菜人員', text: '準時到負責路線，戴口罩與髮帽、先洗手，確實交接後再離開崗位。' },
     { title: '用餐收尾', text: '用餐完單時提醒隊輔預備離場，讓後續抵達的人有位置用餐。' },
   ];
+  var STAFF_ROOM_GENDER = {
+    '9125': '女', '9126': '女', '9127': '女', '9128': '女',
+    '9132': '男', '9133': '男', '9134': '男', '9135': '男',
+    '9117': '男', '9106': '女', '9136': '男', '9137': '男',
+    '9104': '女', '9105': '女', '9129': '女', '9131': '男',
+  };
+  var STAFF_ROOM_NAME_OVERRIDES = {
+    '9129': { name: '李心潔', position: '女協調員' },
+    '9131': { name: '陳瑋竣', position: '男協調員' },
+  };
   // 常用連結：小隊輔會用到的細流／總表／名單，集中一處秒找
   var LINKS_SECTIONS = [
     { title: '📋 全程常用', links: [
-      { icon: '🔗', label: '2026 FSY 連結總表', url: 'https://docs.google.com/spreadsheets/d/1aNrP8o3k9004O-ZAyjZ-_T3W7VBJ6GB5DpZp7MyZmu0/edit?gid=924062872#gid=924062872' },
       { icon: '🗓️', label: '2026 細流（大會總行程）', url: 'https://docs.google.com/spreadsheets/d/' + XILIU_ID + '/edit' },
       { icon: '🧭', label: '2026 FSY 第五中隊（職責總表）', url: 'https://docs.google.com/spreadsheets/d/' + ZHIZE_ID + '/edit' },
       { icon: '🛏️', label: '工作人員房號（分隊總表「工作人員房號」分頁）', url: STAFF_ROOMS_URL },
-      { icon: '📋', label: '2026 FSY 青少年分隊總表', url: 'https://docs.google.com/spreadsheets/d/1gf87SbL_jbF1XxgcsodxDMgUqioGSTE23YJj9t3d0CU/edit?gid=682326953#gid=682326953' },
       { icon: '🏕️', label: '營本部（排班表／物資借用）', url: HQ_SHEET_URL },
-      { icon: '🎥', label: '週六線上訓練會議連結', url: 'https://zoom.us/j/9511418542?pwd=WmYxR0NrNUpPWHpoN0EyaEZ4WFZmZz09' },
       { icon: '🚌', label: '7/12、7/18 搭車表', url: 'https://docs.google.com/spreadsheets/d/1GVNTilv6UE-OnukkidS7bo2jzT9qksmbTk4ogr0PXqk/edit?usp=sharing' },
       { icon: '🧩', label: 'AC 活動組別分配', url: 'https://docs.google.com/spreadsheets/d/1aEuBrMDltqcnbvCAS0v6i2exIh5eIeJLF_z_0VyF_nA/htmlview' },
       { icon: '📁', label: '指南與手冊', url: 'https://drive.google.com/drive/folders/1DGsNBEndMwoYi_qrYGPMemGyoh6glpdM' },
@@ -77,7 +84,7 @@
       { icon: '🎬', label: '紋身貼紙卸除教學 YouTube', url: 'https://youtu.be/7dnVU7wlD38' },
     ] },
     { title: '第三天｜服務活動', links: [
-      { icon: '📝', label: '2026 FSY 服務活動企劃書 v7', url: 'https://docs.google.com/document/d/1xAUB3ERfX0ZBJgnUYQzseXNtGj-dmaTM/edit?usp=sharing&ouid=117250599308326951494&rtpof=true&sd=true' },
+      { icon: '📝', label: '服務活動企劃書 v7', url: 'https://docs.google.com/document/d/1xAUB3ERfX0ZBJgnUYQzseXNtGj-dmaTM/edit?usp=drive_link&ouid=108936702055106596018&rtpof=true&sd=true' },
     ] },
     { title: '第三天｜遊戲之夜', links: [
       { icon: '🎬', label: '搭橋影片', url: 'https://www.facebook.com/watch/?v=1056800085220087' },
@@ -334,7 +341,7 @@
     6: '退房清點依隊輔會議指示',
   };
 
-  // 工作人員住宿房號（來源：「2026 FSY 青少年分隊總表」的「工作人員房號」分頁；宿舍＝築夢學苑）
+  // 工作人員住宿房號（來源表的「工作人員房號」分頁；宿舍＝築夢學苑）
   var STAFF_ROOMS = [
     { floor: '5F', group: '女隊輔', room: '9517', names: ['林昉靚', '薛羽庭', '劉宜昕', '邢曜瑄'] },
     { floor: '5F', group: '女隊輔', room: '9506', names: ['劉家均', '許若凡', '葛俐妤', '黃英旻'] },
@@ -573,7 +580,7 @@
     drawNoRepeat: false, // 抽籤是否排除已抽過的人
     drawnKeys: {},       // 已抽過的人（memberKey -> 1）
     hqDay: 0,            // 營本部排班表所選日期索引
-    rollcallSquad: 1,
+    rollcallSquad: 18,
     rollcallPresent: {},  // { squad: { memberKey: true } }
     rollcallReasons: {},  // { "中隊|小隊": textarea內容 }
     rollcallAbsentKey: {}, // { "中隊|小隊": 上次未到名單的key，用於判斷是否需重建文字框 }
@@ -2136,19 +2143,24 @@
     return false;
   }
 
-  var STAFF_GROUPS = ['小隊輔', '助理協調員', '醫護組', '核心委員會', '攝影組', '其他'];
+  var STAFF_GROUPS = ['核心委員會', '助理協調員', '小隊輔', '醫護組', '攝影組', '其他'];
 
   // 把房號表＋名冊隊輔＋AC 組別＋醫護資料合成一份可搜尋的名單
   function buildStaffIndex() {
     var entries = [];
     STAFF_ROOMS.forEach(function (block) {
       block.names.forEach(function (rawName) {
+        var normalized = normalizeStaffName(rawName) || rawName;
+        if (block.group === '助理協調員' && normalized === '陳瑋竣') return;
+        var override = STAFF_ROOM_NAME_OVERRIDES[block.room];
         entries.push({
-          name: normalizeStaffName(rawName) || rawName,
+          name: override ? override.name : normalized,
           rawName: rawName,
+          position: override ? override.position : '',
           group: block.group,
           room: block.room,
           floor: block.floor,
+          gender: STAFF_ROOM_GENDER[block.room] || (/男/.test(block.group) ? '男' : /女/.test(block.group) ? '女' : ''),
         });
       });
     });
@@ -2199,7 +2211,7 @@
         e.group === '核心委員會' ? '核心委員會' :
         e.group === '攝影組' ? '攝影組' : '其他';
       e.searchText = [
-        e.name, e.rawName, e.group, e.filterGroup,
+        e.name, e.rawName, e.position, e.group, e.filterGroup,
         e.room ? e.room : '', e.floor,
         e.team ? teamLabel(e.team) : '', e.squad ? e.squad + '小隊' : '',
         (e.tags || []).join(' '), (e.roles || []).join(' '),
@@ -2226,7 +2238,7 @@
     };
   }
 
-  var STAFF_GROUP_ORDER = { '助理協調員': 1, '核心委員會': 2, '醫護組': 3, '小隊輔': 4, '攝影組': 5, '其他': 6 };
+  var STAFF_GROUP_ORDER = { '核心委員會': 1, '助理協調員': 2, '小隊輔': 3, '醫護組': 4, '攝影組': 5, '其他': 6 };
 
   function renderStaff() {
     var q = state.staffQuery.trim();
@@ -2301,6 +2313,7 @@
     detail.className = 'member-detail';
 
     detail.appendChild(makeDetailRow('組別', e.group + (e.team ? '（' + teamLabel(e.team) + ' ' + e.squad + '小隊）' : '')));
+    if (e.position) detail.appendChild(makeDetailRow('職稱', e.position));
     detail.appendChild(makeDetailRow('住宿', e.room ? '築夢學苑 ' + e.room + '（' + e.floor + '）' : '未列於房號表'));
     if (e.phone) {
       detail.appendChild(makeDetailRow('電話', e.phone));
@@ -2372,30 +2385,158 @@
     return 0;
   }
 
+  function cleanMealTime(time) {
+    return (time || '').replace(/--/g, '-').replace(/\((\d+)mins\)/g, ' ($1\u5206)').trim();
+  }
+
+  function collectServingRows(date, mealName) {
+    var rows = [];
+    Object.keys(MEAL_SERVING).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (s) {
+      var hit = (MEAL_SERVING[s] || []).find(function (x) { return x.date === date && x.meal === mealName; });
+      if (hit) rows.push({ squad: s, route: hit.route, half: hit.half, advisor: hit.advisor });
+    });
+    return rows;
+  }
+
+  function buildServingBlock(date, mealName) {
+    var rows = collectServingRows(date, mealName);
+    if (!rows.length) return null;
+    var block = document.createElement('div');
+    block.className = 'meal-serving-block';
+    var title = document.createElement('div');
+    title.className = 'meal-serving-title';
+    title.textContent = '\u968a\u8f14\u6253\u83dc\u63d0\u9192';
+    block.appendChild(title);
+    var chips = document.createElement('div');
+    chips.className = 'meal-serving-grid';
+    rows.forEach(function (hit) {
+      var chip = document.createElement('span');
+      chip.className = 'meal-serving-chip';
+      chip.textContent = hit.squad + '\u5c0f\u968a \u8def\u7dda' + hit.route + ' ' + hit.half + (hit.advisor ? ' \u00b7 ' + hit.advisor : '');
+      chips.appendChild(chip);
+    });
+    block.appendChild(chips);
+    return block;
+  }
+
+  function groupMealsByName(meals) {
+    var groups = [];
+    (meals || []).forEach(function (meal) {
+      var group = groups.filter(function (g) { return g.name === meal.name; })[0];
+      if (!group) {
+        group = { name: meal.name, icon: meal.icon, meals: [] };
+        groups.push(group);
+      }
+      group.meals.push(meal);
+    });
+    return groups;
+  }
+
+  function buildDiningRoutes(meal) {
+    var routes = document.createElement('div');
+    routes.className = 'meal-route-grid';
+    (meal.routes || []).forEach(function (route) {
+      var card = document.createElement('div');
+      card.className = 'meal-route-card route-' + route.route;
+      var title = document.createElement('div');
+      title.className = 'meal-route-title';
+      title.textContent = '\u8def\u7dda ' + route.route;
+      card.appendChild(title);
+      var line = document.createElement('div');
+      line.className = 'meal-route-line';
+      var squadText = route.squads && route.squads.length
+        ? route.squads.map(function (s) { return s + '\u5c0f\u968a'; }).join(' / ')
+        : (route.staff || '');
+      line.textContent = (route.ready ? route.ready + ' \u00b7 ' : '') + (route.half ? route.half + '\uff1a' : '') + squadText;
+      card.appendChild(line);
+      routes.appendChild(card);
+    });
+    return routes;
+  }
+
+  function buildMealSession(meal) {
+    var card = document.createElement('div');
+    card.className = 'meal-session ' + (meal.type === 'offsite' ? 'offsite' : 'dining');
+
+    var head = document.createElement('div');
+    head.className = 'meal-session-head';
+    var tier = document.createElement('span');
+    tier.className = 'meal-tier-pill ' + (meal.tier === 'B' ? 'tier-b' : 'tier-a');
+    tier.textContent = meal.type === 'offsite' ? '\u4e0d\u5728\u9910\u5ef3' : (meal.tier + '\u68af\u6b21');
+    head.appendChild(tier);
+    var title = document.createElement('span');
+    title.className = 'meal-session-title';
+    title.textContent = meal.type === 'offsite'
+      ? ((meal.place || '') + (meal.place ? ' \u00b7 ' : '') + cleanMealTime(meal.time))
+      : ((meal.squadRange || '') + '\u5c0f\u968a \u00b7 ' + cleanMealTime(meal.time));
+    head.appendChild(title);
+    card.appendChild(head);
+
+    var meta = document.createElement('div');
+    meta.className = 'meal-session-meta';
+    if (meal.type === 'offsite') {
+      meta.textContent = (meal.prepTime ? '\u5099\u9910 ' + meal.prepTime + ' \u00b7 ' : '') + (meal.prep || '');
+      card.appendChild(meta);
+      var detail = document.createElement('div');
+      detail.className = 'meal-offsite-detail';
+      if (meal.control) detail.appendChild(buildMealInfoLine('\u5834\u63a7', meal.control));
+      if (meal.delivery && meal.delivery.length) detail.appendChild(buildMealInfoLine('\u904b\u9001/\u767c\u653e', meal.delivery.join(' \u00b7 ')));
+      if (meal.cleanup && meal.cleanup.length) detail.appendChild(buildMealInfoLine('\u6536\u5c3e', meal.cleanup.join(' \u00b7 ')));
+      if (detail.childNodes.length) card.appendChild(detail);
+    } else {
+      meta.textContent = '\u958b\u59cb\u96c6\u5408 ' + (meal.ready || '-') + (meal.control ? ' \u00b7 \u5834\u63a7 ' + meal.control : '');
+      card.appendChild(meta);
+      card.appendChild(buildDiningRoutes(meal));
+      if (meal.guides && meal.guides.length) {
+        var staff = document.createElement('div');
+        staff.className = 'meal-session-staff';
+        staff.textContent = '\u5f15\u5c0e\u4eba\u54e1\uff1a' + meal.guides.join(' \u00b7 ');
+        card.appendChild(staff);
+      }
+    }
+    return card;
+  }
+
+  function buildMealInfoLine(label, value) {
+    var row = document.createElement('div');
+    row.className = 'meal-info-line';
+    var lab = document.createElement('span');
+    lab.textContent = label;
+    row.appendChild(lab);
+    var val = document.createElement('strong');
+    val.textContent = value;
+    row.appendChild(val);
+    return row;
+  }
+
   function appendMealOverview() {
     var overview = document.createElement('div');
     overview.className = 'meal-overview';
+
+    var title = document.createElement('div');
+    title.className = 'meal-overview-title';
+    title.textContent = '\u9910\u5ef3\u8def\u7dda\u5716\u8207\u73fe\u5834\u63d0\u9192';
+    overview.appendChild(title);
 
     var map = document.createElement('div');
     map.className = 'meal-map';
     var img = document.createElement('img');
     img.className = 'meal-map-img';
     img.src = MEAL_ROUTE_MAP_IMAGE;
-    img.alt = '膳食組餐廳供餐路線圖';
+    img.alt = '\u9910\u5ef3\u4f9b\u9910\u8def\u7dda\u5716';
     map.appendChild(img);
-
     var caption = document.createElement('div');
     caption.className = 'meal-map-caption';
-    caption.innerHTML = '<strong>餐廳動線：</strong>從大門進入領取髮帽、口罩，依路線 1、2、3 取餐；離場一律走左側出口。';
+    caption.textContent = '\u5148\u5c0d\u7167\u4e0a\u65b9\u68af\u6b21\u8207\u8def\u7dda\uff0c\u518d\u5230\u73fe\u5834\u4f9d\u5730\u5716\u5f15\u5c0e\u3002';
     map.appendChild(caption);
     overview.appendChild(map);
 
     var guide = document.createElement('div');
     guide.className = 'meal-duty-guide';
-    var title = document.createElement('div');
-    title.className = 'meal-duty-title';
-    title.textContent = '現場重點提醒';
-    guide.appendChild(title);
+    var guideTitle = document.createElement('div');
+    guideTitle.className = 'meal-duty-title';
+    guideTitle.textContent = '\u91cd\u9ede\u8077\u8cac';
+    guide.appendChild(guideTitle);
     MEAL_STAFF_NOTES.forEach(function (item) {
       var note = document.createElement('div');
       note.className = 'meal-duty-note';
@@ -2408,6 +2549,8 @@
   }
 
   function renderMeals() {
+    if (!MEALS_GUIDE.length) return;
+    if (state.mealsDay >= MEALS_GUIDE.length) state.mealsDay = detectMealsDayIndex();
     mealsDayFiltersEl.innerHTML = '';
     MEALS_GUIDE.forEach(function (d, idx) {
       var btn = makeDayPill('D-' + (idx + 1), d.day, idx === state.mealsDay);
@@ -2415,61 +2558,52 @@
       mealsDayFiltersEl.appendChild(btn);
     });
 
-    var dayData = MEALS_GUIDE[state.mealsDay];
+    var dayData = MEALS_GUIDE[state.mealsDay] || MEALS_GUIDE[0];
     mealsBodyEl.innerHTML = '';
-    appendMealOverview();
-    dayData.meals.forEach(function (meal, i) {
-      var card = document.createElement('div');
-      card.className = 'meal-card';
-      card.style.animationDelay = (i * 0.04) + 's';
 
+    var summary = document.createElement('div');
+    summary.className = 'meal-day-summary';
+    var summaryTitle = document.createElement('div');
+    summaryTitle.className = 'meal-day-title';
+    summaryTitle.textContent = 'D-' + (state.mealsDay + 1) + ' \u00b7 ' + dayData.day;
+    summary.appendChild(summaryTitle);
+    var summarySub = document.createElement('div');
+    summarySub.className = 'meal-day-subtitle';
+    summarySub.textContent = '\u9910\u5ef3\u7528\u9910\u6703\u5206 A/B \u68af\u6b21\uff1b\u975e\u9910\u5ef3\u7528\u9910\u6703\u986f\u793a\u53d6\u9910\u6216\u767c\u653e\u5730\u9ede\u3002';
+    summary.appendChild(summarySub);
+    mealsBodyEl.appendChild(summary);
+
+    var groups = groupMealsByName(dayData.meals);
+    if (!groups.length) {
+      mealsBodyEl.appendChild(emptyNote('\u76ee\u524d\u6c92\u6709\u9019\u4e00\u5929\u7684\u7528\u9910\u8cc7\u6599'));
+    }
+    groups.forEach(function (group, idx) {
+      var block = document.createElement('section');
+      block.className = 'meal-group';
+      block.style.animationDelay = (idx * 0.04) + 's';
       var head = document.createElement('div');
-      head.className = 'meal-head';
-      head.innerHTML =
-        '<span class="meal-icon">' + meal.icon + '</span>' +
-        '<span class="meal-name">' + escapeHtml(meal.name) + ' · ' + escapeHtml(meal.tier) + '梯次</span>' +
-        '<span class="meal-time">' + escapeHtml(meal.time) + '</span>';
-      card.appendChild(head);
+      head.className = 'meal-group-head';
+      var icon = document.createElement('span');
+      icon.className = 'meal-group-icon';
+      icon.textContent = group.icon || '\u2022';
+      head.appendChild(icon);
+      var name = document.createElement('span');
+      name.className = 'meal-group-name';
+      name.textContent = group.name;
+      head.appendChild(name);
+      block.appendChild(head);
 
-      var place = document.createElement('div');
-      place.className = 'meal-place';
-      place.textContent = meal.squadRange + '小隊 · 就緒 ' + meal.ready + (meal.control ? ' · 場控 ' + meal.control : '');
-      card.appendChild(place);
-
-      meal.routes.forEach(function (route) {
-        var rowEl = document.createElement('div');
-        rowEl.className = 'meal-squad-row';
-        var squads = (route.squads || []).map(function (s) { return s + '小隊'; }).join(' / ');
-        rowEl.innerHTML =
-          '<div class="meal-row"><span class="meal-squads">路線 ' + escapeHtml(route.route) + '</span>' +
-          '<span class="meal-detail">' + escapeHtml(route.half || '') + ' ' + escapeHtml(squads || route.staff || '') + '</span></div>';
-        card.appendChild(rowEl);
+      group.meals.forEach(function (meal) {
+        block.appendChild(buildMealSession(meal));
       });
-
-      var servingRows = Object.keys(MEAL_SERVING).map(function (s) {
-        var hit = (MEAL_SERVING[s] || []).find(function (x) { return x.date === dayData.day && x.meal === meal.name; });
-        if (!hit) return '';
-        return '<span class="meal-serving-chip">' + s + '小隊：路線' + escapeHtml(hit.route) + ' · ' + escapeHtml(hit.half) + '</span>';
-      }).filter(Boolean);
-      if (servingRows.length) {
-        var serve = document.createElement('div');
-        serve.className = 'meal-serve meal-serving-grid';
-        serve.innerHTML = servingRows.join('');
-        card.appendChild(serve);
-      }
-
-      if (meal.guides && meal.guides.length) {
-        var note = document.createElement('div');
-        note.className = 'meal-note';
-        note.textContent = '引導人員：' + meal.guides.join('、');
-        card.appendChild(note);
-      }
-      mealsBodyEl.appendChild(card);
+      var serving = buildServingBlock(dayData.day, group.name);
+      if (serving) block.appendChild(serving);
+      mealsBodyEl.appendChild(block);
     });
+
+    appendMealOverview();
   }
 
-
-  // ---- 歌詞 ----  // ---- 歌詞 ----  // ---- 歌詞 ----  // ---- 歌詞 ----
   function renderLyrics() {
     lyricsBodyEl.innerHTML = '';
     LYRICS.forEach(function (song, idx) {
@@ -2812,12 +2946,13 @@
   // ---- 點名（1–31 小隊）----
   function rollcallScopeKey(t, s) { return t + '|' + s; }
   function currentRollcallScope() {
-    var pair = state.members.find(function (m) { return m.s === state.rollcallSquad; });
-    return { team: pair ? pair.t : 1, squad: state.rollcallSquad, key: rollcallScopeKey(pair ? pair.t : 1, state.rollcallSquad) };
+    var pair = state.members.find(function (m) { return m.s === state.rollcallSquad && m.s >= 18 && m.s <= 22; });
+    return { team: pair ? pair.t : 5, squad: state.rollcallSquad, key: rollcallScopeKey(pair ? pair.t : 5, state.rollcallSquad) };
   }
   function allRollcallScopes() {
     var seen = {};
     return state.members.reduce(function (out, m) {
+      if (m.s < 18 || m.s > 22) return out;
       var key = rollcallScopeKey(m.t, m.s);
       if (!seen[key]) {
         seen[key] = 1;
