@@ -1880,7 +1880,7 @@
     });
     if (q) {
       list = list
-        .map(function (m) { return { m: m, score: fuzzyScore(q, memberSearchText(m)) }; })
+        .map(function (m) { return { m: m, score: fuzzyScore(q, memberSearchText(m) + ' ' + (m.dorm || '') + ' room ' + (m.dorm || '')) }; })
         .filter(function (x) { return x.score > -1; })
         .sort(function (a, b) { return b.score - a.score; })
         .map(function (x) { return x.m; });
@@ -2817,8 +2817,6 @@
       group.meals.forEach(function (meal) {
         block.appendChild(buildMealSession(meal, dayData.day));
       });
-      var serving = buildServingBlock(dayData.day, group.name);
-      if (serving) block.appendChild(serving);
       mealsBodyEl.appendChild(block);
     });
 
