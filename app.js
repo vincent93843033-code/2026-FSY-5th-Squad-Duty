@@ -593,6 +593,7 @@
     rollcallAbsentKey: {}, // { "中隊|小隊": 上次未到名單的key，用於判斷是否需重建文字框 }
     squadAdvisors: {},    // "t|s" -> { 男: name, 女: name }
     currentTool: null,
+    lyricsSongIndex: null,
     medicalDay: 0,        // 醫護組值班表所選日期索引
     unlocked: false,      // 是否已用密碼解鎖個資
     medicalPhones: {},    // 解密後的醫護電話
@@ -602,6 +603,8 @@
   };
 
   var didInitialScroll = false;
+  var suppressHistory = false;
+  var appHistoryDepth = 0;
 
   // ---- 觸覺回饋（Android 支援 vibrate；iOS 會靜默忽略，仍保留 CSS 按壓回饋）----
   function buzz(pattern) {
@@ -1344,6 +1347,104 @@
     el.classList.add('fade-in');
   }
 
+  function currentTabName() {
+    var active = document.querySelector('.tab-btn.active');
+    return active ? active.dataset.tab : 'me';
+  }
+
+  function isUnlockOpen() {
+    return unlockOverlayEl && unlockOverlayEl.classList.contains('open');
+  }
+
+  function isSearchOpen() {
+    return searchOverlayEl && searchOverlayEl.classList.contains('open');
+  }
+
+  function isLyricsSongOpen() {
+    return lyricsSongPaneEl && !lyricsSongPaneEl.hidden;
+  }
+
+  function appRouteState() {
+    return {
+      fsyApp: 1,
+      tab: currentTabName(),
+      tool: state.currentTool || '',
+      unlock: isUnlockOpen() ? 1 : 0,
+      search: isSearchOpen() ? 1 : 0,
+      lyricsIndex: isLyricsSongOpen() ? state.lyricsSongIndex : null,
+    };
+  }
+
+  function sameRoute(a, b) {
+    return !!a && !!b &&
+      a.fsyApp === b.fsyApp &&
+      a.tab === b.tab &&
+      (a.tool || '') === (b.tool || '') &&
+      !!a.unlock === !!b.unlock &&
+      !!a.search === !!b.search &&
+      (a.lyricsIndex == null ? null : a.lyricsIndex) === (b.lyricsIndex == null ? null : b.lyricsIndex);
+  }
+
+  function rememberRoute(replace) {
+    if (suppressHistory || !window.history || !history.pushState) return;
+    var route = appRouteState();
+    if (sameRoute(history.state, route)) return;
+    try {
+      if (replace) history.replaceState(route, '', location.href);
+      else {
+        history.pushState(route, '', location.href);
+        appHistoryDepth += 1;
+      }
+    } catch (e) {}
+  }
+
+  function goBackOr(fallback) {
+    if (appHistoryDepth > 0 && window.history && history.state && history.state.fsyApp) {
+      history.back();
+      return;
+    }
+    fallback();
+  }
+
+  function activateTab(name, options) {
+    options = options || {};
+    var btn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
+    var panel = document.getElementById('tab-' + name);
+    if (!btn || !panel) return;
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    panel.classList.add('active');
+    playFadeIn(panel);
+    searchFabEl.hidden = name !== 'overview';
+    if (name !== 'overview') closeSearch({ skipHistory: true });
+    if (name === 'tools') {
+      if (!options.keepTool) backToToolsMenu({ skipHistory: true });
+    } else {
+      if (state.currentTool) backToToolsMenu({ skipHistory: true });
+      scrollToCurrent(panel);
+    }
+    if (!options.skipHistory) rememberRoute(false);
+  }
+
+  function applyRoute(route) {
+    suppressHistory = true;
+    try {
+      route = route && route.fsyApp ? route : { tab: 'me' };
+      activateTab(route.tab || 'me', { skipHistory: true, keepTool: !!route.tool });
+      if ((route.tab || 'me') === 'tools' && route.tool) openTool(route.tool, { skipHistory: true });
+      else if (state.currentTool) backToToolsMenu({ skipHistory: true });
+      if (route.lyricsIndex != null && state.currentTool === 'lyrics') openLyricsSong(route.lyricsIndex, { skipHistory: true });
+      else if (isLyricsSongOpen()) closeLyricsSong({ skipHistory: true });
+      if (route.search) openSearch({ skipHistory: true });
+      else closeSearch({ skipHistory: true });
+      if (route.unlock) showUnlock({ skipHistory: true });
+      else hideUnlock({ skipHistory: true });
+    } finally {
+      suppressHistory = false;
+    }
+  }
+
   function shrinkToFit(el, minPx) {
     var size = parseFloat(getComputedStyle(el).fontSize);
     while (el.scrollWidth > el.clientWidth + 1 && size > minPx) {
@@ -1560,16 +1661,20 @@
     card.classList.add('search-highlight');
   }
 
-  function openSearch() {
+  function openSearch(options) {
+    options = options || {};
     searchOverlayEl.classList.add('open');
     runSearch(searchInputEl.value);
     syncSearchViewport();
     setTimeout(function () { searchInputEl.focus(); }, 250);
+    if (!options.skipHistory) rememberRoute(false);
   }
 
-  function closeSearch() {
+  function closeSearch(options) {
+    options = options || {};
     searchOverlayEl.classList.remove('open');
     searchInputEl.blur();
+    if (!options.skipHistory) rememberRoute(false);
   }
 
   // ---- Tab 3: 小工具（含個資的工具需密碼解鎖）----
@@ -1581,6 +1686,7 @@
   var unlockOverlayEl = document.getElementById('unlock-overlay');
   var unlockInputEl = document.getElementById('unlock-input');
   var unlockSubmitEl = document.getElementById('unlock-submit');
+  var unlockCancelEl = document.getElementById('unlock-cancel');
   var unlockErrorEl = document.getElementById('unlock-error');
 
   function b64ToBytes(s) {
@@ -1684,15 +1790,23 @@
     }).catch(function () { /* 密碼／網路問題：維持現有名冊，不中斷行程更新 */ });
   }
 
-  function showUnlock() {
+  function showUnlock(options) {
+    options = options || {};
     unlockErrorEl.textContent = '';
     unlockInputEl.value = '';
     unlockOverlayEl.classList.add('open');
     setTimeout(function () { unlockInputEl.focus(); }, 250);
+    if (!options.skipHistory) rememberRoute(false);
   }
-  function hideUnlock() {
+  function hideUnlock(options) {
+    options = options || {};
     unlockOverlayEl.classList.remove('open');
     unlockInputEl.blur();
+    if (!options.skipHistory) rememberRoute(false);
+  }
+  function cancelUnlock(options) {
+    state.pendingTool = null;
+    hideUnlock(options);
   }
   function submitUnlock() {
     var pass = unlockInputEl.value;
@@ -1704,7 +1818,7 @@
       saveUnlock(pass);
       unlockSubmitEl.disabled = false;
       unlockErrorEl.textContent = '';
-      hideUnlock();
+      hideUnlock({ skipHistory: true });
       var pending = state.pendingTool;
       state.pendingTool = null;
       if (pending) openTool(pending);
@@ -1748,8 +1862,10 @@
   function teamLabel(t) { return '第' + (TEAM_CN[t] || t) + '中隊'; }
 
   // ---- tool navigation ----
-  function openTool(name) {
+  function openTool(name, options) {
+    options = options || {};
     state.currentTool = name;
+    state.lyricsSongIndex = null;
     toolsMenuEl.hidden = true;
     toolViewEl.hidden = false;
     toolBackEl.hidden = false;
@@ -1767,14 +1883,19 @@
     if (name === 'links') renderLinks();
     if (name === 'info') { renderInfo(); state.hqDay = detectHqDayIndex(); renderHqSchedule(); }
     window.scrollTo(0, 0);
+    if (!options.skipHistory) rememberRoute(false);
   }
 
-  function backToToolsMenu() {
+  function backToToolsMenu(options) {
+    options = options || {};
     state.currentTool = null;
+    state.lyricsSongIndex = null;
+    if (lyricsSongPaneEl) lyricsSongPaneEl.hidden = true;
     toolViewEl.hidden = true;
     toolsMenuEl.hidden = false;
     playFadeIn(toolsMenuEl);
     window.scrollTo(0, 0);
+    if (!options.skipHistory) rememberRoute(false);
   }
 
   // ---- multi-select chip helpers ----
@@ -2870,22 +2991,28 @@
     });
   }
 
-  function openLyricsSong(index) {
+  function openLyricsSong(index, options) {
+    options = options || {};
+    state.lyricsSongIndex = index;
     document.getElementById('pane-lyrics').hidden = true;
     toolBackEl.hidden = true;
     renderLyricsSong(index);
     lyricsSongPaneEl.hidden = false;
     playFadeIn(lyricsSongPaneEl);
     window.scrollTo(0, 0);
+    if (!options.skipHistory) rememberRoute(false);
   }
 
-  function closeLyricsSong() {
+  function closeLyricsSong(options) {
+    options = options || {};
+    state.lyricsSongIndex = null;
     lyricsSongPaneEl.hidden = true;
     toolBackEl.hidden = false;
     var pane = document.getElementById('pane-lyrics');
     pane.hidden = false;
     playFadeIn(pane);
     window.scrollTo(0, 0);
+    if (!options.skipHistory) rememberRoute(false);
   }
 
   // ---- 醫護組資訊 ----
@@ -3360,18 +3487,28 @@
     var card = e.target.closest('.tool-menu-card');
     if (card) requestTool(card.dataset.tool);
   });
-  toolBackEl.addEventListener('click', backToToolsMenu);
+  toolBackEl.addEventListener('click', function () {
+    goBackOr(function () { backToToolsMenu(); });
+  });
 
   // 解鎖視窗事件
   unlockSubmitEl.addEventListener('click', submitUnlock);
+  if (unlockCancelEl) {
+    unlockCancelEl.addEventListener('click', function () {
+      goBackOr(function () { cancelUnlock(); });
+    });
+  }
   unlockInputEl.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); submitUnlock(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancelUnlock(); }
   });
   lyricsBodyEl.addEventListener('click', function (e) {
     var card = e.target.closest('.lyrics-song-card');
     if (card) openLyricsSong(parseInt(card.dataset.index, 10));
   });
-  lyricsSongBackEl.addEventListener('click', closeLyricsSong);
+  lyricsSongBackEl.addEventListener('click', function () {
+    goBackOr(function () { closeLyricsSong(); });
+  });
 
   // medical events
   medicalDayFiltersEl.addEventListener('click', function (e) {
@@ -3486,19 +3623,7 @@
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
-      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
-      btn.classList.add('active');
-      var panel = document.getElementById('tab-' + btn.dataset.tab);
-      panel.classList.add('active');
-      playFadeIn(panel);
-      searchFabEl.hidden = btn.dataset.tab !== 'overview';
-      closeSearch();
-      if (btn.dataset.tab === 'tools') {
-        backToToolsMenu();
-      } else {
-        scrollToCurrent(panel);
-      }
+      activateTab(btn.dataset.tab);
     });
   });
 
@@ -3526,18 +3651,28 @@
       lock();
       if (state.currentTool && PROTECTED_TOOLS[state.currentTool]) {
         state.pendingTool = state.currentTool;
-        backToToolsMenu();
-        showUnlock();
+        backToToolsMenu({ skipHistory: true });
+        showUnlock({ skipHistory: true });
       }
     } else if (!state.unlocked) {
       trySilentUnlock();
     }
   });
 
-  searchFabEl.addEventListener('click', openSearch);
-  searchCloseEl.addEventListener('click', closeSearch);
-  searchBackdropEl.addEventListener('click', closeSearch);
+  searchFabEl.addEventListener('click', function () { openSearch(); });
+  searchCloseEl.addEventListener('click', function () {
+    goBackOr(function () { closeSearch(); });
+  });
+  searchBackdropEl.addEventListener('click', function () {
+    goBackOr(function () { closeSearch(); });
+  });
   searchInputEl.addEventListener('input', function () { runSearch(searchInputEl.value); });
+
+  window.addEventListener('popstate', function (e) {
+    if (appHistoryDepth > 0) appHistoryDepth -= 1;
+    applyRoute(e.state);
+  });
+  rememberRoute(true);
 
   updateTopbarHeight();
   window.addEventListener('resize', updateTopbarHeight);
