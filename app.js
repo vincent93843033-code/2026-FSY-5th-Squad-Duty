@@ -2635,7 +2635,27 @@
     return groups;
   }
 
-  function buildDiningRoutes(meal) {
+  function findServingAdvisor(date, mealName, squad, route, half) {
+    var rows = MEAL_SERVING[String(squad)] || MEAL_SERVING[squad] || [];
+    var hit = rows.find(function (x) {
+      return x.date === date &&
+        x.meal === mealName &&
+        String(x.route) === String(route) &&
+        (!half || !x.half || x.half === half);
+    });
+    return hit && hit.advisor ? hit.advisor : '';
+  }
+
+  function routePersonText(date, meal, route) {
+    if (route.squads && route.squads.length) {
+      return route.squads.map(function (s) {
+        return findServingAdvisor(date, meal.name, s, route.route, route.half) || '\u672a\u586b\u59d3\u540d';
+      }).join(' / ');
+    }
+    return route.staff || '';
+  }
+
+  function buildDiningRoutes(meal, date) {
     var routes = document.createElement('div');
     routes.className = 'meal-route-grid';
     (meal.routes || []).forEach(function (route) {
@@ -2647,9 +2667,7 @@
       card.appendChild(title);
       var line = document.createElement('div');
       line.className = 'meal-route-line';
-      var squadText = route.squads && route.squads.length
-        ? route.squads.map(function (s) { return s + '\u5c0f\u968a'; }).join(' / ')
-        : (route.staff || '');
+      var squadText = routePersonText(date, meal, route);
       line.textContent = (route.ready ? route.ready + ' \u00b7 ' : '') + (route.half ? route.half + '\uff1a' : '') + squadText;
       card.appendChild(line);
       routes.appendChild(card);
@@ -2657,7 +2675,7 @@
     return routes;
   }
 
-  function buildMealSession(meal) {
+  function buildMealSession(meal, date) {
     var card = document.createElement('div');
     card.className = 'meal-session ' + (meal.type === 'offsite' ? 'offsite' : 'dining');
 
@@ -2689,7 +2707,7 @@
     } else {
       meta.textContent = '\u958b\u59cb\u96c6\u5408 ' + (meal.ready || '-') + (meal.control ? ' \u00b7 \u5834\u63a7 ' + meal.control : '');
       card.appendChild(meta);
-      card.appendChild(buildDiningRoutes(meal));
+      card.appendChild(buildDiningRoutes(meal, date));
       if (meal.guides && meal.guides.length) {
         var staff = document.createElement('div');
         staff.className = 'meal-session-staff';
@@ -2797,7 +2815,7 @@
       block.appendChild(head);
 
       group.meals.forEach(function (meal) {
-        block.appendChild(buildMealSession(meal));
+        block.appendChild(buildMealSession(meal, dayData.day));
       });
       var serving = buildServingBlock(dayData.day, group.name);
       if (serving) block.appendChild(serving);
