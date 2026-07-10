@@ -2092,6 +2092,64 @@ body {
   gap: 10px;
 }
 
+.meal-overview {
+  display: grid;
+  gap: 12px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.meal-map-img {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.meal-map-caption {
+  margin-top: 8px;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.meal-duty-guide {
+  display: grid;
+  gap: 8px;
+}
+
+.meal-duty-title {
+  font-size: 0.95rem;
+  font-weight: 850;
+  color: var(--color-primary);
+}
+
+.meal-duty-note {
+  display: grid;
+  gap: 3px;
+  padding: 9px 10px;
+  background: var(--color-primary-light);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.meal-duty-note strong {
+  color: var(--color-primary);
+  font-size: 0.86rem;
+}
+
+.meal-duty-note span {
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 .meal-card {
   background: var(--color-card);
   border: 1px solid var(--color-border);

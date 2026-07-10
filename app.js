@@ -26,6 +26,13 @@
   var HQ_SHEET_URL = 'https://docs.google.com/spreadsheets/d/11PdofNUdrroU9KKVWMBl1etw7F3pPE-BK6b_OayOGVs/edit';
   // 工作人員房號（「2026 FSY 青少年分隊總表」的「工作人員房號」分頁；權限由 Google 試算表共用設定控管）
   var STAFF_ROOMS_URL = 'https://docs.google.com/spreadsheets/d/1gf87SbL_jbF1XxgcsodxDMgUqioGSTE23YJj9t3d0CU/edit';
+  var MEAL_ROUTE_MAP_IMAGE = 'meal-route-map.jpg?v=1';
+  var MEAL_STAFF_NOTES = [
+    { title: '場控人員', text: '在餐廳門口觀察路線 1、2、3 的人潮，主動把小隊引導到較空的路線。' },
+    { title: '引導人員', text: '協助各小隊到被分配的取餐路線排隊，提醒大家坐緊密一些，不要太分散。' },
+    { title: '打菜人員', text: '準時到負責路線，戴口罩與髮帽、先洗手，確實交接後再離開崗位。' },
+    { title: '用餐收尾', text: '用餐完單時提醒隊輔預備離場，讓後續抵達的人有位置用餐。' },
+  ];
   // 常用連結：小隊輔會用到的細流／總表／名單，集中一處秒找
   var LINKS_SECTIONS = [
     { title: '📋 全程常用', links: [
@@ -2365,6 +2372,41 @@
     return 0;
   }
 
+  function appendMealOverview() {
+    var overview = document.createElement('div');
+    overview.className = 'meal-overview';
+
+    var map = document.createElement('div');
+    map.className = 'meal-map';
+    var img = document.createElement('img');
+    img.className = 'meal-map-img';
+    img.src = MEAL_ROUTE_MAP_IMAGE;
+    img.alt = '膳食組餐廳供餐路線圖';
+    map.appendChild(img);
+
+    var caption = document.createElement('div');
+    caption.className = 'meal-map-caption';
+    caption.innerHTML = '<strong>餐廳動線：</strong>從大門進入領取髮帽、口罩，依路線 1、2、3 取餐；離場一律走左側出口。';
+    map.appendChild(caption);
+    overview.appendChild(map);
+
+    var guide = document.createElement('div');
+    guide.className = 'meal-duty-guide';
+    var title = document.createElement('div');
+    title.className = 'meal-duty-title';
+    title.textContent = '現場重點提醒';
+    guide.appendChild(title);
+    MEAL_STAFF_NOTES.forEach(function (item) {
+      var note = document.createElement('div');
+      note.className = 'meal-duty-note';
+      note.innerHTML = '<strong>' + escapeHtml(item.title) + '</strong><span>' + escapeHtml(item.text) + '</span>';
+      guide.appendChild(note);
+    });
+    overview.appendChild(guide);
+
+    mealsBodyEl.appendChild(overview);
+  }
+
   function renderMeals() {
     mealsDayFiltersEl.innerHTML = '';
     MEALS_GUIDE.forEach(function (d, idx) {
@@ -2375,6 +2417,7 @@
 
     var dayData = MEALS_GUIDE[state.mealsDay];
     mealsBodyEl.innerHTML = '';
+    appendMealOverview();
     dayData.meals.forEach(function (meal, i) {
       var card = document.createElement('div');
       card.className = 'meal-card';
