@@ -28,25 +28,69 @@
   var STAFF_ROOMS_URL = 'https://docs.google.com/spreadsheets/d/1gf87SbL_jbF1XxgcsodxDMgUqioGSTE23YJj9t3d0CU/edit';
   // 常用連結：小隊輔會用到的細流／總表／名單，集中一處秒找
   var LINKS_SECTIONS = [
-    { title: '📋 總表與名冊', links: [
+    { title: '📋 全程常用', links: [
+      { icon: '🔗', label: '2026 FSY 連結總表', url: 'https://docs.google.com/spreadsheets/d/1aNrP8o3k9004O-ZAyjZ-_T3W7VBJ6GB5DpZp7MyZmu0/edit?gid=924062872#gid=924062872' },
       { icon: '🗓️', label: '2026 細流（大會總行程）', url: 'https://docs.google.com/spreadsheets/d/' + XILIU_ID + '/edit' },
       { icon: '🧭', label: '2026 FSY 第五中隊（職責總表）', url: 'https://docs.google.com/spreadsheets/d/' + ZHIZE_ID + '/edit' },
       { icon: '🛏️', label: '工作人員房號（分隊總表「工作人員房號」分頁）', url: STAFF_ROOMS_URL },
+      { icon: '📋', label: '2026 FSY 青少年分隊總表', url: 'https://docs.google.com/spreadsheets/d/1gf87SbL_jbF1XxgcsodxDMgUqioGSTE23YJj9t3d0CU/edit?gid=682326953#gid=682326953' },
       { icon: '🏕️', label: '營本部（排班表／物資借用）', url: HQ_SHEET_URL },
+      { icon: '🎥', label: '週六線上訓練會議連結', url: 'https://zoom.us/j/9511418542?pwd=WmYxR0NrNUpPWHpoN0EyaEZ4WFZmZz09' },
+      { icon: '🚌', label: '7/12、7/18 搭車表', url: 'https://docs.google.com/spreadsheets/d/1GVNTilv6UE-OnukkidS7bo2jzT9qksmbTk4ogr0PXqk/edit?usp=sharing' },
+      { icon: '🧩', label: 'AC 活動組別分配', url: 'https://docs.google.com/spreadsheets/d/1aEuBrMDltqcnbvCAS0v6i2exIh5eIeJLF_z_0VyF_nA/htmlview' },
+      { icon: '📁', label: '指南與手冊', url: 'https://drive.google.com/drive/folders/1DGsNBEndMwoYi_qrYGPMemGyoh6glpdM' },
     ] },
-    { title: '🎯 活動細流', links: [
+    { title: '🔁 重複發生活動｜膳食、課程、見證聚會', links: [
       { icon: '🍚', label: '膳食組細流（用餐）', url: MEAL_LINK_URL },
-      { icon: '📚', label: '課程&見證聚會總表', url: XILIU_LINKS['課程&見證聚會總表'] },
-      { icon: '✅', label: '2026 FSY 各教室點名表', url: 'https://docs.google.com/spreadsheets/d/12BHka4KuQQwGJWVF29PCJ8kWZ29-x-g6/edit' },
-      { icon: '🎵', label: '音樂節目細流', url: XILIU_LINKS['音樂節目細流'] },
-      { icon: '🚩', label: '隊呼與隊旗細流', url: XILIU_LINKS['隊呼與隊旗細流'] },
-      { icon: '🎮', label: '遊戲之夜與家庭晚會遊戲', url: XILIU_LINKS['遊戲之夜與家庭晚會遊戲'] },
-      { icon: '🎤', label: '2026 FSY 才藝表演', url: XILIU_LINKS['2026 FSY才藝表演.xlsx」複本'] },
-      { icon: '🤝', label: '2026 FSY 服務活動企劃書（v7 最新）', url: 'https://docs.google.com/document/d/1xAUB3ERfX0ZBJgnUYQzseXNtGj-dmaTM/edit' },
-      { icon: '🕊️', label: '七十週年活動', url: 'https://reurl.cc/YDa8OD' },
-      { icon: '🙏', label: '男女青年活動（時間安排與證據分組）', url: XILIU_LINKS['時間安排與證據分組'] },
-      { icon: '💌', label: '把它帶回家（發家長的一封信時間）', url: XILIU_LINKS['發家長的一封信時間'] },
-      { icon: '🧳', label: '報到與離場活動細流', url: 'https://docs.google.com/spreadsheets/d/1wWjlm3MwRGtfVn1wrXPX_a8T5n-oopDmWwi8Oq2ieLM/edit' },
+      { icon: '🍱', label: '2026 隊輔打菜班表', url: 'https://docs.google.com/spreadsheets/d/1i5ZTiXrTF344ZS0mKV0gJwh8Ql7QZAkHrtPFkSf1WOU/edit?gid=0#gid=0' },
+      { icon: '📚', label: '課程&見證聚會總表', url: 'https://docs.google.com/spreadsheets/d/1nLQgjyNKCW_J-S9AyOZ9bualG_Nohi95qWM8_3SBUQg/edit' },
+      { icon: '✅', label: '2026 FSY 各教室點名表', url: 'https://docs.google.com/spreadsheets/d/12BHka4KuQQwGJWVF29PCJ8kWZ29-x-g6/edit?gid=657522279#gid=657522279' },
+    ] },
+    { title: '第零天｜行前通知', links: [
+      { icon: '📝', label: '行前通知－工作人員', url: 'https://docs.google.com/document/d/1qZ0Ghpfbq0XmgqF2poRUZ0VI4GhtoDujL0WB4mpWpRY/edit' },
+      { icon: '📝', label: '行前通知－青少年', url: 'https://docs.google.com/document/d/1QBL-xrowdXu5Quz8CQ08164MccSqXAkXcHwVqswwnu4/edit?tab=t.0' },
+      { icon: '📝', label: '行前通知－青少年英文', url: 'https://docs.google.com/document/d/1Pn8INldqfvKtf0AFyJSP8NSL9R6JJo52Ptl8WOAPVXA/edit?usp=sharing' },
+    ] },
+    { title: '第零天｜才藝表演、音樂節目', links: [
+      { icon: '🧾', label: '才藝表演報名表單（第一天截止）', url: 'https://forms.gle/iqPUXano2YLwKoGX6' },
+      { icon: '🧾', label: '音樂節目報名表單', url: 'https://docs.google.com/forms/d/1n7HS0puJh5y8tGgTlNZ1WOibGlZ-czd2UDbhmYt4IE8/preview?edit_requested=true' },
+    ] },
+    { title: '第一天｜開場舞、家庭晚會', links: [
+      { icon: '🎵', label: '開場舞 music4.wav', url: 'https://drive.google.com/file/d/1OFRHvKLRvnstyXd2ISNZJ5NAONuJbob9/view?usp=drive_link' },
+      { icon: '📊', label: 'FHE 遊戲參考', url: 'https://docs.google.com/spreadsheets/d/1Zvk37wxEQ6lzC5XYDIVjJAfNiUpB9NUnJ8A3jiP7WRM/edit?usp=sharing' },
+    ] },
+    { title: '第二天｜七十周年', links: [
+      { icon: '🧩', label: '謎題解說版', url: 'https://reurl.cc/9WGv5O' },
+      { icon: '🎨', label: '純題卡（練習用）', url: 'https://canva.link/7ft8bv0ncywi7ft' },
+    ] },
+    { title: '第二天｜舞會', links: [
+      { icon: '🎨', label: '第一場舞會 PPT', url: 'https://canva.link/gjyn474gf1dtvot' },
+      { icon: '📊', label: '舞會站崗', url: 'https://docs.google.com/spreadsheets/d/1FazpecatO0SJiZKvVOFOtLMsgAcRPaTAaLkmUiCuY-M/edit?usp=sharing' },
+      { icon: '🎬', label: '紋身貼紙教學影片', url: 'https://drive.google.com/file/d/1QPhxK1eseEzi6eKcMpRV04GdOECR---K/view?usp=sharing' },
+      { icon: '🎬', label: '紋身貼紙卸除教學 YouTube', url: 'https://youtu.be/7dnVU7wlD38' },
+    ] },
+    { title: '第三天｜服務活動', links: [
+      { icon: '📝', label: '2026 FSY 服務活動企劃書 v7', url: 'https://docs.google.com/document/d/1xAUB3ERfX0ZBJgnUYQzseXNtGj-dmaTM/edit?usp=sharing&ouid=117250599308326951494&rtpof=true&sd=true' },
+    ] },
+    { title: '第三天｜遊戲之夜', links: [
+      { icon: '🎬', label: '搭橋影片', url: 'https://www.facebook.com/watch/?v=1056800085220087' },
+      { icon: '📊', label: '跑關路線', url: 'https://docs.google.com/spreadsheets/d/1FEzgmfI9WYJqnFq94q53e4YKb_rkGCZWd35TVVlGOrI/edit?usp=sharing' },
+      { icon: '🎬', label: '秩序之家影片', url: 'https://drive.google.com/file/d/19Upq7CwpsZVMU7NM72Z2GDoSLj_KQOtV/view?usp=drive_link' },
+      { icon: '🎬', label: '動物的聲音影片', url: 'https://drive.google.com/file/d/1WWN-JI88wpKb-Pm7zdMMq5jH9uZK-mA1/view?usp=drive_link' },
+      { icon: '🎬', label: '進出隧道影片', url: 'https://drive.google.com/file/d/10axa2Aw4-P0F4AzWp_z3TjupsHEgKSbM/view?usp=drive_link' },
+    ] },
+    { title: '第四天｜男女青年活動', links: [
+      { icon: '📝', label: '證據', url: 'https://docs.google.com/document/d/1VF1Rsuq8nAeLhfQmUCyIta8WiA0-Tsf7ngH9HiFYkpo/edit?usp=sharing' },
+      { icon: '📊', label: '時間安排與證據分組', url: 'https://docs.google.com/spreadsheets/d/1hiKERqbLXLUBoSfcUj6A0GCYKVDR1C6vSOkgF5RK4g8/edit?gid=0#gid=0' },
+      { icon: '📽️', label: 'Presentation', url: 'https://docs.google.com/presentation/d/1Eghc27GQVGOLdceZzEy-PYTgryKsvXppSyBXl7Z3Dv4/edit?slide=id.g3da0c62a2ce_2_0#slide=id.g3da0c62a2ce_2_0' },
+    ] },
+    { title: '第五天｜鞏固青年', links: [
+      { icon: '🎨', label: '場次用 PPT', url: 'https://canva.link/qhj9uxgwlflcy39' },
+    ] },
+    { title: '第五天｜奉行福音', links: [
+      { icon: '📊', label: '2026 FSY 奉行福音', url: 'https://docs.google.com/spreadsheets/d/1zE8ZN4bSWG-I-LkeFxbbzowcVsporz_0e17p5lSYCoo/edit?gid=1455950552#gid=1455950552' },
+      { icon: '🎨', label: '奉行福音 PPT', url: 'https://canva.link/b08pxdqmjkv9ns5' },
+      { icon: '📽️', label: '碎片收集遊戲隊輔訓練.pptx', url: 'https://docs.google.com/presentation/d/1rIiHWEnG4maKRG8Y7fC18PW1dGhL6ZUp/edit?usp=sharing&ouid=117250599308326951494&rtpof=true&sd=true' },
     ] },
   ];
   // 第五中隊「男女青年活動」證據分配（隊內資料，不在共用試算表內）
@@ -78,7 +122,7 @@
     ] },
   ];
   // 用餐指南（來源：「2026 FSY 膳食」試算表的「在餐廳用餐」「不在餐廳用餐」「打菜班表」三個分頁）
-  // 第五中隊 18–22 小隊皆為 B 梯次（16–31 小隊場）
+  // app-data.js 會以全 FSY 膳食資料覆蓋此內建備援資料。
   // squads：各小隊的進場路線／前後半／就緒時間；serve：該小隊隊輔的打菜任務（打菜路線可能與走的路線不同）
   var MEALS_GUIDE = [
     { day: '7/13', dow: '一', meals: [
@@ -424,6 +468,13 @@
     '目前可以怎麼做？';
   var MEDICAL_REPORT_NOTE = '記得留下聯絡方式、交接地點，並記得領回小隊員';
   // 醫護組接送車輛車牌：改由加密檔 data.enc.json 解密後提供（state.medicalVehicles），不再寫在公開程式中
+  var MEAL_SERVING = {};
+  if (window.FSY_APP_DATA) {
+    if (Array.isArray(window.FSY_APP_DATA.staffRooms)) STAFF_ROOMS = window.FSY_APP_DATA.staffRooms;
+    if (Array.isArray(window.FSY_APP_DATA.mealsGuide)) MEALS_GUIDE = window.FSY_APP_DATA.mealsGuide;
+    if (window.FSY_APP_DATA.mealServing) MEAL_SERVING = window.FSY_APP_DATA.mealServing;
+  }
+
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
   var overviewContentEl = document.getElementById('overview-content');
@@ -515,10 +566,10 @@
     drawNoRepeat: false, // 抽籤是否排除已抽過的人
     drawnKeys: {},       // 已抽過的人（memberKey -> 1）
     hqDay: 0,            // 營本部排班表所選日期索引
-    rollcallSquad: 18,    // 點名小隊（第五中隊 18-22）
+    rollcallSquad: 1,
     rollcallPresent: {},  // { squad: { memberKey: true } }
-    rollcallReasons: {},  // { squad: textarea內容 }
-    rollcallAbsentKey: {}, // { squad: 上次未到名單的key，用於判斷是否需重建文字框 }
+    rollcallReasons: {},  // { "中隊|小隊": textarea內容 }
+    rollcallAbsentKey: {}, // { "中隊|小隊": 上次未到名單的key，用於判斷是否需重建文字框 }
     squadAdvisors: {},    // "t|s" -> { 男: name, 女: name }
     currentTool: null,
     medicalDay: 0,        // 醫護組值班表所選日期索引
@@ -2304,7 +2355,7 @@
     return card;
   }
 
-  // ---- 用餐指南（第五中隊 18–22 小隊）----
+  // ---- 用餐指南（A/B 梯次與 1–31 小隊）----
   function detectMealsDayIndex() {
     var now = getNow();
     var key = (now.getMonth() + 1) + '/' + now.getDate();
@@ -2317,75 +2368,65 @@
   function renderMeals() {
     mealsDayFiltersEl.innerHTML = '';
     MEALS_GUIDE.forEach(function (d, idx) {
-      var btn = makeDayPill('D-' + (idx + 1), d.day + ' ' + d.dow, idx === state.mealsDay);
+      var btn = makeDayPill('D-' + (idx + 1), d.day, idx === state.mealsDay);
       btn.dataset.idx = idx;
       mealsDayFiltersEl.appendChild(btn);
     });
 
     var dayData = MEALS_GUIDE[state.mealsDay];
     mealsBodyEl.innerHTML = '';
-    var now = getNow();
-    var isToday = ((now.getMonth() + 1) + '/' + now.getDate()) === dayData.day;
     dayData.meals.forEach(function (meal, i) {
       var card = document.createElement('div');
       card.className = 'meal-card';
-      if (isToday) {
-        var range = parseTimeRange(meal.time);
-        var nowMin = now.getHours() * 60 + now.getMinutes();
-        if (range.start !== null && range.end !== null && nowMin >= range.start && nowMin < range.end) {
-          card.classList.add('current');
-        }
-      }
       card.style.animationDelay = (i * 0.04) + 's';
 
       var head = document.createElement('div');
       head.className = 'meal-head';
       head.innerHTML =
         '<span class="meal-icon">' + meal.icon + '</span>' +
-        '<span class="meal-name">' + escapeHtml(meal.name) + '</span>' +
+        '<span class="meal-name">' + escapeHtml(meal.name) + ' · ' + escapeHtml(meal.tier) + '梯次</span>' +
         '<span class="meal-time">' + escapeHtml(meal.time) + '</span>';
       card.appendChild(head);
 
       var place = document.createElement('div');
       place.className = 'meal-place';
-      place.textContent = meal.place + (meal.how ? '・' + meal.how : '');
+      place.textContent = meal.squadRange + '小隊 · 就緒 ' + meal.ready + (meal.control ? ' · 場控 ' + meal.control : '');
       card.appendChild(place);
 
-      (meal.squads || []).forEach(function (sq) {
+      meal.routes.forEach(function (route) {
         var rowEl = document.createElement('div');
         rowEl.className = 'meal-squad-row';
-        var head2 = document.createElement('div');
-        head2.className = 'meal-row';
-        head2.innerHTML =
-          '<span class="meal-squads">' + sq.s + ' 小隊</span>' +
-          '<span class="meal-detail">' + escapeHtml(sq.walk) + '</span>';
-        rowEl.appendChild(head2);
-        if (sq.serve) {
-          var serveEl = document.createElement('div');
-          serveEl.className = 'meal-serve';
-          serveEl.textContent = '🥄 打菜：' + sq.serve;
-          rowEl.appendChild(serveEl);
-        }
+        var squads = (route.squads || []).map(function (s) { return s + '小隊'; }).join(' / ');
+        rowEl.innerHTML =
+          '<div class="meal-row"><span class="meal-squads">路線 ' + escapeHtml(route.route) + '</span>' +
+          '<span class="meal-detail">' + escapeHtml(route.half || '') + ' ' + escapeHtml(squads || route.staff || '') + '</span></div>';
         card.appendChild(rowEl);
       });
 
-      if (meal.food) {
-        var food = document.createElement('div');
-        food.className = 'meal-food';
-        food.textContent = '🍽 ' + meal.food;
-        card.appendChild(food);
+      var servingRows = Object.keys(MEAL_SERVING).map(function (s) {
+        var hit = (MEAL_SERVING[s] || []).find(function (x) { return x.date === dayData.day && x.meal === meal.name; });
+        if (!hit) return '';
+        return '<span class="meal-serving-chip">' + s + '小隊：路線' + escapeHtml(hit.route) + ' · ' + escapeHtml(hit.half) + '</span>';
+      }).filter(Boolean);
+      if (servingRows.length) {
+        var serve = document.createElement('div');
+        serve.className = 'meal-serve meal-serving-grid';
+        serve.innerHTML = servingRows.join('');
+        card.appendChild(serve);
       }
-      if (meal.note) {
+
+      if (meal.guides && meal.guides.length) {
         var note = document.createElement('div');
         note.className = 'meal-note';
-        note.textContent = meal.note;
+        note.textContent = '引導人員：' + meal.guides.join('、');
         card.appendChild(note);
       }
       mealsBodyEl.appendChild(card);
     });
   }
 
-  // ---- 歌詞 ----
+
+  // ---- 歌詞 ----  // ---- 歌詞 ----  // ---- 歌詞 ----  // ---- 歌詞 ----
   function renderLyrics() {
     lyricsBodyEl.innerHTML = '';
     LYRICS.forEach(function (song, idx) {
@@ -2725,15 +2766,36 @@
     });
   }
 
-  // ---- 點名（第五中隊 18-22 小隊）----
+  // ---- 點名（1–31 小隊）----
+  function rollcallScopeKey(t, s) { return t + '|' + s; }
+  function currentRollcallScope() {
+    var pair = state.members.find(function (m) { return m.s === state.rollcallSquad; });
+    return { team: pair ? pair.t : 1, squad: state.rollcallSquad, key: rollcallScopeKey(pair ? pair.t : 1, state.rollcallSquad) };
+  }
+  function allRollcallScopes() {
+    var seen = {};
+    return state.members.reduce(function (out, m) {
+      var key = rollcallScopeKey(m.t, m.s);
+      if (!seen[key]) {
+        seen[key] = 1;
+        out.push({ team: m.t, squad: m.s, key: key });
+      }
+      return out;
+    }, []).sort(function (a, b) { return a.team - b.team || a.squad - b.squad; });
+  }
+
   function renderRollcallFilters() {
-    var squads = squadsForTeams([FIFTH]);
+    var scopes = allRollcallScopes();
+    if (!scopes.some(function (x) { return x.squad === state.rollcallSquad; }) && scopes.length) {
+      state.rollcallSquad = scopes[0].squad;
+    }
     rollcallSquadFiltersEl.innerHTML = '';
-    squads.forEach(function (s) {
+    scopes.forEach(function (x) {
       var chip = document.createElement('button');
       chip.className = 'roster-chip';
-      chip.textContent = s + '小隊';
-      chip.dataset.val = String(s);
+      chip.textContent = x.squad + '小隊';
+      chip.dataset.team = String(x.team);
+      chip.dataset.val = String(x.squad);
       rollcallSquadFiltersEl.appendChild(chip);
     });
     rollcallSquadFiltersEl.onclick = function (e) {
@@ -2748,46 +2810,47 @@
 
   function renderRollcall() {
     if (!state.membersLoaded) { rollcallCountEl.textContent = '載入中…'; return; }
-    var s = state.rollcallSquad;
+    var scope = currentRollcallScope();
+    var t = scope.team;
+    var s = scope.squad;
+    var scopeKey = scope.key;
     rollcallSquadFiltersEl.querySelectorAll('.roster-chip').forEach(function (chip) {
       chip.classList.toggle('active', parseInt(chip.dataset.val, 10) === s);
     });
-    if (!state.rollcallPresent[s]) {
-      // 預設全部到齊，由小隊輔取消缺席者
-      state.rollcallPresent[s] = {};
-      state.members.filter(function (m) { return m.t === FIFTH && m.s === s; })
-        .forEach(function (m) { state.rollcallPresent[s][memberKey(m)] = true; });
+    if (!state.rollcallPresent[scopeKey]) {
+      state.rollcallPresent[scopeKey] = {};
+      state.members.filter(function (m) { return m.t === t && m.s === s; })
+        .forEach(function (m) { state.rollcallPresent[scopeKey][memberKey(m)] = true; });
     }
-    var present = state.rollcallPresent[s];
+    var present = state.rollcallPresent[scopeKey];
 
-    var boys = state.members.filter(function (m) { return m.t === FIFTH && m.s === s && m.g === '男'; });
-    var girls = state.members.filter(function (m) { return m.t === FIFTH && m.s === s && m.g === '女'; });
+    var boys = state.members.filter(function (m) { return m.t === t && m.s === s && m.g === '男'; });
+    var girls = state.members.filter(function (m) { return m.t === t && m.s === s && m.g === '女'; });
     var total = boys.length + girls.length;
     var presentCount = Object.keys(present).filter(function (k) { return present[k]; }).length;
 
-    var advisors = state.squadAdvisors[FIFTH + '|' + s] || {};
+    var advisors = state.squadAdvisors[t + '|' + s] || {};
     rollcallCountEl.textContent = '到 ' + presentCount + ' / ' + total;
 
-    // 今日清點人數時間提示（會前顯示 D-1 的時間）
     if (rollcallTimesEl) {
       var todayIdx = detectTodayDayIndex();
       var d = todayIdx || 1;
-      rollcallTimesEl.textContent = '🕐 ' + (todayIdx ? '今日' : 'D-1') + '清點人數時間：' + (ROLLCALL_TIMES[d] || '—');
+      rollcallTimesEl.textContent = '每日清點人數時間：' + (ROLLCALL_TIMES[d] || '依現場指示');
     }
 
     rollcallBoardEl.innerHTML = '';
     var header = document.createElement('div');
     header.className = 'rollcall-header';
-    header.textContent = teamLabel(FIFTH) + ' ' + s + '小隊　點名表';
+    header.textContent = teamLabel(t) + ' ' + s + '小隊點名';
     rollcallBoardEl.appendChild(header);
 
     var grid = document.createElement('div');
     grid.className = 'rollcall-grid';
-    grid.appendChild(buildRollcallCol('男　隊輔：' + (advisors['男'] || '—'), boys, present, 'male'));
-    grid.appendChild(buildRollcallCol('女　隊輔：' + (advisors['女'] || '—'), girls, present, 'female'));
+    grid.appendChild(buildRollcallCol('男生　隊輔：' + (advisors['男'] || '未列'), boys, present, 'male'));
+    grid.appendChild(buildRollcallCol('女生　隊輔：' + (advisors['女'] || '未列'), girls, present, 'female'));
     rollcallBoardEl.appendChild(grid);
 
-    renderRollcallSummary(s, boys.concat(girls), present, total, presentCount);
+    renderRollcallSummary(scopeKey, boys.concat(girls), present, total, presentCount);
   }
 
   function renderRollcallSummary(s, all, present, total, presentCount) {
@@ -2807,13 +2870,15 @@
   }
 
   function buildRollcallReport() {
-    var s = state.rollcallSquad;
+    var scope = currentRollcallScope();
+    var s = scope.squad;
+    var t = scope.team;
     var total = parseInt(rollcallExpectedEl.textContent, 10) || 0;
     var presentCount = parseInt(rollcallPresentCountEl.textContent, 10) || 0;
     var absentCount = parseInt(rollcallAbsentCountEl.textContent, 10) || 0;
 
     var lines = [];
-    lines.push(teamLabel(FIFTH) + ' ' + s + '小隊　點名回報');
+    lines.push(teamLabel(t) + ' ' + s + '小隊　點名回報');
     lines.push('應到 ' + total + '｜實到 ' + presentCount + '｜未到 ' + absentCount);
     if (absentCount > 0) {
       lines.push('');
@@ -2881,11 +2946,14 @@
   }
 
   function setAllRollcall(val) {
-    var s = state.rollcallSquad;
-    state.rollcallPresent[s] = {};
+    var scope = currentRollcallScope();
+    var s = scope.squad;
+    var t = scope.team;
+    var scopeKey = scope.key;
+    state.rollcallPresent[scopeKey] = {};
     if (val) {
-      state.members.filter(function (m) { return m.t === FIFTH && m.s === s; })
-        .forEach(function (m) { state.rollcallPresent[s][memberKey(m)] = true; });
+      state.members.filter(function (m) { return m.t === t && m.s === s; })
+        .forEach(function (m) { state.rollcallPresent[scopeKey][memberKey(m)] = true; });
     }
     renderRollcall();
   }
@@ -3014,7 +3082,7 @@
   rollcallAllEl.addEventListener('click', function () { setAllRollcall(true); });
   rollcallNoneEl.addEventListener('click', function () { setAllRollcall(false); });
   rollcallReasonEl.addEventListener('input', function () {
-    state.rollcallReasons[state.rollcallSquad] = rollcallReasonEl.value;
+    state.rollcallReasons[currentRollcallScope().key] = rollcallReasonEl.value;
   });
   rollcallCopyEl.addEventListener('click', copyRollcallReport);
 

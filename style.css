@@ -2538,3 +2538,21 @@ html.dark .member-card.female { --mc: #e07ca0; }
 html.dark .search-fab {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
+
+
+.meal-serving-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meal-serving-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(47, 111, 79, 0.1);
+  color: var(--color-text);
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
