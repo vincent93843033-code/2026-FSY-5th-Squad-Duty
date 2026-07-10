@@ -22,6 +22,11 @@
   };
   // 膳食組細流（用餐時段自動附上連結）
   var MEAL_LINK_URL = 'https://docs.google.com/spreadsheets/d/1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE/edit';
+  var MEAL_SHEET_ID = '1FoOzytm7_enx8ul0ycB5vPdIsHTIjzjPVtU46XG3kjE';
+  var MEAL_DINING_SHEET = '\u5728\u9910\u5ef3\u7528\u9910 (\u52ff\u7de8\u8f2f)';
+  var MEAL_OFFSITE_SHEET = '\u4e0d\u5728\u9910\u5ef3\u7528\u9910';
+  var MEAL_SERVING_SHEET = '\u6253\u83dc\u73ed\u8868 (\u52ff\u7de8\u8f2f)';
+  var MEAL_CACHE_KEY = 'fsy_meal_live_cache_v1';
   // 營本部試算表（值班表、無線電／翻譯器材／物資借用表）
   var HQ_SHEET_URL = 'https://docs.google.com/spreadsheets/d/11PdofNUdrroU9KKVWMBl1etw7F3pPE-BK6b_OayOGVs/edit';
   // 工作人員房號（來源表的「工作人員房號」分頁；權限由 Google 試算表共用設定控管）
@@ -40,10 +45,12 @@
     '9104': '女', '9105': '女', '9129': '女', '9131': '男',
   };
   var STAFF_ROOM_NAME_OVERRIDES = {
-    '9129': { name: '李心潔', position: '女協調員' },
-    '9131': { name: '陳瑋竣', position: '男協調員' },
+    '9129': { name: '\u674e\u5fc3\u6f54', position: '\u5973\u5354\u8abf\u54e1' },
   };
-  // 常用連結：小隊輔會用到的細流／總表／名單，集中一處秒找
+  var STAFF_CORE_OVERRIDES = [
+    { name: '\u9673\u744b\u7ae3', position: '\u7537\u5354\u8abf\u54e1', room: '9132', floor: '1F' },
+  ];
+
   var LINKS_SECTIONS = [
     { title: '📋 全程常用', links: [
       { icon: '🗓️', label: '2026 細流（大會總行程）', url: 'https://docs.google.com/spreadsheets/d/' + XILIU_ID + '/edit' },
@@ -1756,7 +1763,7 @@
     if (name === 'lyrics') renderLyrics();
     if (name === 'medical') renderMedical();
     if (name === 'rollcall') { renderRollcallFilters(); renderRollcall(); }
-    if (name === 'meals') { state.mealsDay = detectMealsDayIndex(); renderMeals(); }
+    if (name === 'meals') { state.mealsDay = detectMealsDayIndex(); renderMeals(); loadMealData(); }
     if (name === 'links') renderLinks();
     if (name === 'info') { renderInfo(); state.hqDay = detectHqDayIndex(); renderHqSchedule(); }
     window.scrollTo(0, 0);
@@ -2152,6 +2159,7 @@
       block.names.forEach(function (rawName) {
         var normalized = normalizeStaffName(rawName) || rawName;
         if (block.group === '助理協調員' && normalized === '陳瑋竣') return;
+        if (block.group === '核心委員會' && normalized === '男協調員') return;
         var override = STAFF_ROOM_NAME_OVERRIDES[block.room];
         entries.push({
           name: override ? override.name : normalized,
@@ -2163,6 +2171,20 @@
           gender: STAFF_ROOM_GENDER[block.room] || (/男/.test(block.group) ? '男' : /女/.test(block.group) ? '女' : ''),
         });
       });
+    });
+    STAFF_CORE_OVERRIDES.forEach(function (core) {
+      var hit = null;
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].group === '核心委員會' && staffNameMatch(entries[i].name, core.name)) { hit = entries[i]; break; }
+      }
+      if (hit) {
+        hit.room = core.room;
+        hit.floor = core.floor;
+        hit.position = core.position;
+        hit.gender = STAFF_ROOM_GENDER[core.room] || hit.gender;
+      } else {
+        entries.push({ name: core.name, rawName: core.name, position: core.position, group: '核心委員會', room: core.room, floor: core.floor, gender: STAFF_ROOM_GENDER[core.room] || '' });
+      }
     });
     STAFF_EXTRA.forEach(function (x) {
       entries.push({ name: x.name, rawName: x.name, group: x.group, room: '', floor: '' });
@@ -2376,6 +2398,187 @@
   }
 
   // ---- 用餐指南（A/B 梯次與 1–31 小隊）----
+  function cleanCell(v) {
+    return (v === null || v === undefined ? '' : String(v)).trim();
+  }
+
+  function numberFromCell(v) {
+    var m = cleanCell(v).match(/\d+/);
+    return m ? parseInt(m[0], 10) : 0;
+  }
+
+  function liveMealIcon(name) {
+    if (/\u65e9\u9910|\u65e9\u5348\u9910/.test(name)) return '\ud83c\udf73';
+    if (/\u5348\u9910|\u98df\u7269\u4e4b\u591c/.test(name)) return '\ud83c\udf71';
+    if (/\u665a\u9910|\u5bb5\u591c/.test(name)) return '\ud83c\udf5b';
+    return '\ud83c\udf7d\ufe0f';
+  }
+
+  function liveMealRouteCells(row) {
+    return [[8, '1'], [10, '2'], [12, '3']].map(function (item) {
+      var col = item[0], route = item[1];
+      return { route: route, text: [cleanCell(row[col]), cleanCell(row[col + 1])].filter(Boolean).join(' / ') };
+    }).filter(function (x) { return x.text; });
+  }
+
+  function inferLiveSquadRange(rawRange, date, meal, time, routeText) {
+    if (/1\s*-\s*15/.test(rawRange)) return '1-15';
+    if (/16\s*-\s*31/.test(rawRange)) return '16-31';
+    var nums = Array.from(routeText.matchAll(/\d+/g)).map(function (m) { return Number(m[0]); });
+    if (nums.some(function (n) { return n >= 16; })) return '16-31';
+    if (nums.some(function (n) { return n > 0 && n <= 15; })) return '1-15';
+    if (date === '7/14' && meal === '\u65e9\u9910' && /^7:45/.test(time)) return '16-31';
+    if (date === '7/17' && meal === '\u65e9\u9910' && /^7:15/.test(time)) return '16-31';
+    return '1-15';
+  }
+
+  function addLiveMealRoutes(entry, row) {
+    var ready = cleanCell(row[7]);
+    liveMealRouteCells(row).forEach(function (cell) {
+      var text = cell.text;
+      var half = text.indexOf('\u524d\u534a') !== -1 ? '\u524d\u534a' : text.indexOf('\u5f8c\u534a') !== -1 ? '\u5f8c\u534a' : '';
+      var squads = Array.from(text.matchAll(/\d+/g)).map(function (m) { return Number(m[0]); });
+      var routeEntry = { route: cell.route, ready: ready };
+      if (half) routeEntry.half = half;
+      if (squads.length) routeEntry.squads = squads;
+      else routeEntry.staff = text;
+      entry.routes.push(routeEntry);
+    });
+  }
+
+  function parseLiveDining(rows) {
+    var byDay = new Map();
+    var day = '', mealName = '', current = null;
+    (rows || []).slice(1).forEach(function (row) {
+      if (cleanCell(row[0])) day = cleanCell(row[0]);
+      if (cleanCell(row[1])) mealName = cleanCell(row[1]);
+      var time = cleanCell(row[2]);
+      var ready = cleanCell(row[7]);
+      if (!day || !mealName || !ready) return;
+      if (!byDay.has(day)) byDay.set(day, { day: day, dow: '', meals: [] });
+      if (time) {
+        var routeText = liveMealRouteCells(row).map(function (x) { return x.text; }).join(' ');
+        var squadRange = inferLiveSquadRange(cleanCell(row[3]), day, mealName, time, routeText);
+        current = { type: 'dining', name: mealName, icon: liveMealIcon(mealName), time: time, tier: squadRange === '16-31' ? 'B' : 'A', squadRange: squadRange, ready: ready, control: cleanCell(row[4]), guides: [cleanCell(row[5]), cleanCell(row[6])].filter(Boolean), routes: [] };
+        byDay.get(day).meals.push(current);
+      }
+      if (current) addLiveMealRoutes(current, row);
+    });
+    return Array.from(byDay.values());
+  }
+
+  function parseLiveOffsite(rows) {
+    var byDay = new Map();
+    var day = '', mealName = '';
+    (rows || []).slice(1).forEach(function (row) {
+      if (cleanCell(row[0])) day = cleanCell(row[0]);
+      if (cleanCell(row[1])) mealName = cleanCell(row[1]);
+      var pickup = cleanCell(row[2]);
+      var place = cleanCell(row[3]);
+      if (!day || !mealName || !pickup || !place) return;
+      if (!byDay.has(day)) byDay.set(day, { day: day, dow: '', meals: [] });
+      byDay.get(day).meals.push({ type: 'offsite', name: mealName, icon: liveMealIcon(mealName), time: pickup, place: place, prepTime: cleanCell(row[4]), prep: cleanCell(row[5]).replace(/\n+/g, ' '), control: cleanCell(row[6]), delivery: [cleanCell(row[7]), cleanCell(row[8]), cleanCell(row[9]), cleanCell(row[10]), cleanCell(row[11]), cleanCell(row[12])].filter(Boolean).map(function (x) { return x.replace(/\n+/g, ' '); }), cleanup: [cleanCell(row[13]), cleanCell(row[14])].filter(Boolean).map(function (x) { return x.replace(/\n+/g, ' '); }) });
+    });
+    return Array.from(byDay.values());
+  }
+
+  function liveMealSortValue(name) {
+    if (/\u65e9\u9910|\u65e9\u5348\u9910/.test(name)) return 1;
+    if (/\u5348\u9910/.test(name)) return 2;
+    if (/\u98df\u7269\u4e4b\u591c/.test(name)) return 3;
+    if (/\u665a\u9910/.test(name)) return 4;
+    if (/\u5bb5\u591c/.test(name)) return 5;
+    return 9;
+  }
+
+  function parseHMForSort(s) {
+    var m = cleanCell(s).match(/(\d{1,2}):(\d{2})/);
+    return m ? Number(m[1]) * 60 + Number(m[2]) : 9999;
+  }
+
+  function mergeLiveMealGuides(dining, offsite) {
+    var byDay = new Map();
+    function ensure(day) {
+      if (!byDay.has(day.day)) byDay.set(day.day, { day: day.day, dow: day.dow || '', meals: [] });
+      return byDay.get(day.day);
+    }
+    dining.forEach(function (day) { ensure(day).meals.push.apply(ensure(day).meals, day.meals); });
+    offsite.forEach(function (day) { ensure(day).meals.push.apply(ensure(day).meals, day.meals); });
+    return Array.from(byDay.values()).sort(function (a, b) {
+      var ad = a.day.split('/').map(Number), bd = b.day.split('/').map(Number);
+      return ad[0] - bd[0] || ad[1] - bd[1];
+    }).map(function (day) {
+      day.meals.sort(function (a, b) { return parseHMForSort(a.time) - parseHMForSort(b.time) || liveMealSortValue(a.name) - liveMealSortValue(b.name) || (a.tier || '').localeCompare(b.tier || ''); });
+      return day;
+    });
+  }
+
+  function parseLiveServing(rows) {
+    var serving = {};
+    var currentSquads = [];
+    var lastDate = {};
+    (rows || []).forEach(function (row) {
+      var first = cleanCell(row[0]);
+      if (/\u4e2d\u968a/.test(first)) {
+        currentSquads = [];
+        for (var c = 1; c < row.length; c += 7) currentSquads.push({ start: c, squad: numberFromCell(row[c]) || null });
+        lastDate = {};
+        return;
+      }
+      if (!currentSquads.length) return;
+      currentSquads.forEach(function (block) {
+        var c = block.start;
+        var squad = numberFromCell(row[c]) || block.squad;
+        if (!squad) return;
+        block.squad = squad;
+        var rawDate = cleanCell(row[c + 1]);
+        if (rawDate) lastDate[squad] = rawDate;
+        var date = rawDate || lastDate[squad];
+        var meal = cleanCell(row[c + 2]);
+        var half = cleanCell(row[c + 3]);
+        var route = cleanCell(row[c + 4]);
+        var advisor = cleanCell(row[c + 5]);
+        if (!date || !meal || !route) return;
+        if (!serving[squad]) serving[squad] = [];
+        serving[squad].push({ date: date, meal: meal, half: half, route: route, advisor: advisor });
+      });
+    });
+    return serving;
+  }
+
+  function applyMealData(mealsGuide, mealServing) {
+    if (Array.isArray(mealsGuide) && mealsGuide.length) MEALS_GUIDE = mealsGuide;
+    if (mealServing && Object.keys(mealServing).length) MEAL_SERVING = mealServing;
+    if (state.currentTool === 'meals') renderMeals();
+  }
+
+  function loadMealCache() {
+    try {
+      var raw = localStorage.getItem(MEAL_CACHE_KEY);
+      if (!raw) return false;
+      var obj = JSON.parse(raw);
+      if (!obj || !Array.isArray(obj.mealsGuide) || !obj.mealServing) return false;
+      applyMealData(obj.mealsGuide, obj.mealServing);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function loadMealData() {
+    return Promise.all([
+      fetchCsvText(buildCsvUrl(MEAL_SHEET_ID, MEAL_DINING_SHEET)),
+      fetchCsvText(buildCsvUrl(MEAL_SHEET_ID, MEAL_OFFSITE_SHEET)),
+      fetchCsvText(buildCsvUrl(MEAL_SHEET_ID, MEAL_SERVING_SHEET)),
+    ]).then(function (texts) {
+      var diningRows = Papa.parse(texts[0], { skipEmptyLines: true }).data;
+      var offsiteRows = Papa.parse(texts[1], { skipEmptyLines: true }).data;
+      var servingRows = Papa.parse(texts[2], { skipEmptyLines: true }).data;
+      var mealsGuide = mergeLiveMealGuides(parseLiveDining(diningRows), parseLiveOffsite(offsiteRows));
+      var mealServing = parseLiveServing(servingRows);
+      applyMealData(mealsGuide, mealServing);
+      try { localStorage.setItem(MEAL_CACHE_KEY, JSON.stringify({ ts: Date.now(), mealsGuide: mealsGuide, mealServing: mealServing })); } catch (e) { /* storage unavailable */ }
+    }).catch(function (err) { console.warn('Meal data refresh failed', err); });
+  }
+
   function detectMealsDayIndex() {
     var now = getNow();
     var key = (now.getMonth() + 1) + '/' + now.getDate();
@@ -2405,14 +2608,14 @@
     block.className = 'meal-serving-block';
     var title = document.createElement('div');
     title.className = 'meal-serving-title';
-    title.textContent = '\u968a\u8f14\u6253\u83dc\u63d0\u9192';
+    title.textContent = '\u6253\u83dc\u8ca0\u8cac\u4eba';
     block.appendChild(title);
     var chips = document.createElement('div');
     chips.className = 'meal-serving-grid';
     rows.forEach(function (hit) {
       var chip = document.createElement('span');
       chip.className = 'meal-serving-chip';
-      chip.textContent = hit.squad + '\u5c0f\u968a \u8def\u7dda' + hit.route + ' ' + hit.half + (hit.advisor ? ' \u00b7 ' + hit.advisor : '');
+      chip.textContent = hit.squad + '\u5c0f\u968a\uff1a' + (hit.advisor || '\u672a\u586b\u59d3\u540d') + '\uff08\u8def\u7dda' + hit.route + (hit.half ? ' ' + hit.half : '') + '\uff09';
       chips.appendChild(chip);
     });
     block.appendChild(chips);
@@ -3293,7 +3496,7 @@
     renderOverviewTab();
   });
 
-  refreshBtnEl.addEventListener('click', function () { loadData(true); });
+  refreshBtnEl.addEventListener('click', function () { loadMealData(); loadData(true); });
 
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {

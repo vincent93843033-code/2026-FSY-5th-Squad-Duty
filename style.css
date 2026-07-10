@@ -516,6 +516,35 @@ body {
   margin-bottom: 4px;
 }
 
+.detail-row-block {
+  display: block;
+}
+
+.detail-row-block .schedule-note-editor {
+  width: 100%;
+}
+
+.schedule-note-input {
+  display: block;
+  width: 100%;
+  min-height: 132px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font: inherit;
+  line-height: 1.55;
+  color: var(--color-text);
+  background: #fff;
+  outline: none;
+}
+
+.schedule-note-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(47, 111, 79, 0.14);
+}
+
 .evidence-list {
   white-space: normal;
 }
@@ -2707,22 +2736,4 @@ html.dark .member-card.female { --mc: #e07ca0; }
 
 html.dark .search-fab {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-}
-
-
-.meal-serving-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.meal-serving-chip {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  background: rgba(47, 111, 79, 0.1);
-  color: var(--color-text);
-  padding: 4px 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
 }
