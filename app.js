@@ -12,6 +12,8 @@
   // 這裡用顯示文字補回實際網址。
   var XILIU_LINKS = {
     '課程&見證聚會總表': 'https://docs.google.com/spreadsheets/d/1nLQgjyNKCW_J-S9AyOZ9bualG_Nohi95qWM8_3SBUQg/edit',
+    '第一場舞會--細流': 'https://docs.google.com/spreadsheets/d/121c6bsapumk5pSqDY7gXxmYnQC8EpDJdY7HnjStggdQ/edit',
+    '第二場舞會--細流': 'https://docs.google.com/spreadsheets/d/1kqyAksXtwzLs8_i9aVIoCwtSJZ1VmXlEHEAM00iXjco/edit',
     '音樂節目細流': 'https://docs.google.com/spreadsheets/d/1jVM_zlY1UdiE93lWAdk9Pe5bKsvXN4q1cTHEC_Q0hqQ/edit',
     '隊呼與隊旗細流': 'https://docs.google.com/spreadsheets/d/1RNfCiwYePMPmVvD1ebRU_iAEvQvJKLCoUcJWBbDqlVg/edit',
     '遊戲之夜與家庭晚會遊戲': 'https://docs.google.com/spreadsheets/d/1WSGDsZg_KE9f9Pj-8Sx3x_XAlUWRIP1Jy4GelxzlQIg/edit',
@@ -85,6 +87,7 @@
       { icon: '🎨', label: '純題卡（練習用）', url: 'https://canva.link/7ft8bv0ncywi7ft' },
     ] },
     { title: '第二天｜舞會', links: [
+      { icon: '📋', label: '第一場舞會細流', url: 'https://docs.google.com/spreadsheets/d/121c6bsapumk5pSqDY7gXxmYnQC8EpDJdY7HnjStggdQ/edit' },
       { icon: '🎨', label: '第一場舞會 PPT', url: 'https://canva.link/gjyn474gf1dtvot' },
       { icon: '📊', label: '舞會站崗', url: 'https://docs.google.com/spreadsheets/d/1FazpecatO0SJiZKvVOFOtLMsgAcRPaTAaLkmUiCuY-M/edit?usp=sharing' },
       { icon: '🎬', label: '紋身貼紙教學影片', url: 'https://drive.google.com/file/d/1QPhxK1eseEzi6eKcMpRV04GdOECR---K/view?usp=sharing' },
@@ -104,6 +107,9 @@
       { icon: '📝', label: '證據', url: 'https://docs.google.com/document/d/1VF1Rsuq8nAeLhfQmUCyIta8WiA0-Tsf7ngH9HiFYkpo/edit?usp=sharing' },
       { icon: '📊', label: '時間安排與證據分組', url: 'https://docs.google.com/spreadsheets/d/1hiKERqbLXLUBoSfcUj6A0GCYKVDR1C6vSOkgF5RK4g8/edit?gid=0#gid=0' },
       { icon: '📽️', label: 'Presentation', url: 'https://docs.google.com/presentation/d/1Eghc27GQVGOLdceZzEy-PYTgryKsvXppSyBXl7Z3Dv4/edit?slide=id.g3da0c62a2ce_2_0#slide=id.g3da0c62a2ce_2_0' },
+    ] },
+    { title: '第五天｜舞會', links: [
+      { icon: '📋', label: '第二場舞會細流', url: 'https://docs.google.com/spreadsheets/d/1kqyAksXtwzLs8_i9aVIoCwtSJZ1VmXlEHEAM00iXjco/edit' },
     ] },
     { title: '第五天｜鞏固青年', links: [
       { icon: '🎨', label: '場次用 PPT', url: 'https://canva.link/qhj9uxgwlflcy39' },
@@ -387,8 +393,8 @@
   ];
   // 醫護組未列房號者（仍可搜尋到，電話解鎖後顯示）
   var STAFF_EXTRA = [
-    { name: '蔡連凱', group: '醫護組' },
-    { name: '綉娟', group: '醫護組' },
+    { name: '蔡連凱', group: '醫護組', gender: '男' },
+    { name: '綉娟', group: '醫護組', gender: '女' },
   ];
   // 助理協調員的活動組別（來源：「AC活動組別分配」試算表；★＝該活動組長）
   // 全體 AC 另有共同輪值：營本部排班、入場就座／抄寫員、損壞報告、失物招領
@@ -689,11 +695,17 @@
   }
 
   function parseTimeRange(timeStr) {
-    var parts = (timeStr || '').split('-');
+    var parts = (timeStr || '').match(/\d{1,2}:\d{2}/g) || [];
     return {
       start: parseHM(parts[0]),
       end: parts.length > 1 ? parseHM(parts[1]) : null,
     };
+  }
+
+  function scheduleSortMinutes(timeStr) {
+    var start = parseHM(timeStr);
+    if (start === null) return 9999;
+    return start < 4 * 60 ? start + 24 * 60 : start;
   }
 
   function isRowCurrent(dayLabel, row, now) {
@@ -809,6 +821,11 @@
           people: zr.people,
         });
       });
+      joined = joined.map(function (row, order) {
+        return { row: row, order: order };
+      }).sort(function (a, b) {
+        return scheduleSortMinutes(a.row.time) - scheduleSortMinutes(b.row.time) || a.order - b.order;
+      }).map(function (item) { return item.row; });
       var label =
         (xiliu.days[d] && xiliu.days[d].label) ||
         (zhize.days[d] && zhize.days[d].label) ||
@@ -1032,7 +1049,11 @@
     var m = (text || '').match(/https?:\/\/\S+/);
     if (m) return m[0];
     var key = (text || '').trim();
-    return XILIU_LINKS[key] || null;
+    if (XILIU_LINKS[key]) return XILIU_LINKS[key];
+    for (var label in XILIU_LINKS) {
+      if (key.indexOf(label) !== -1) return XILIU_LINKS[label];
+    }
+    return null;
   }
 
   function splitActivityTitle(activity) {
@@ -1821,7 +1842,10 @@
       hideUnlock({ skipHistory: true });
       var pending = state.pendingTool;
       state.pendingTool = null;
-      if (pending) openTool(pending);
+      if (pending) {
+        openTool(pending, { skipHistory: true });
+        rememberRoute(true);
+      }
     }).catch(function () {
       unlockSubmitEl.disabled = false;
       unlockErrorEl.textContent = '密碼錯誤，請再試一次';
@@ -2279,6 +2303,7 @@
     STAFF_ROOMS.forEach(function (block) {
       block.names.forEach(function (rawName) {
         var normalized = normalizeStaffName(rawName) || rawName;
+        var normalizedGroup = block.group === '保健組' ? '醫護組' : block.group;
         if (block.group === '助理協調員' && normalized === '陳瑋竣') return;
         if (block.group === '核心委員會' && normalized === '男協調員') return;
         var override = STAFF_ROOM_NAME_OVERRIDES[block.room];
@@ -2286,10 +2311,10 @@
           name: override ? override.name : normalized,
           rawName: rawName,
           position: override ? override.position : '',
-          group: block.group,
+          group: normalizedGroup,
           room: block.room,
           floor: block.floor,
-          gender: STAFF_ROOM_GENDER[block.room] || (/男/.test(block.group) ? '男' : /女/.test(block.group) ? '女' : ''),
+          gender: STAFF_ROOM_GENDER[block.room] || (/男/.test(normalizedGroup) ? '男' : /女/.test(normalizedGroup) ? '女' : ''),
         });
       });
     });
@@ -2308,7 +2333,7 @@
       }
     });
     STAFF_EXTRA.forEach(function (x) {
-      entries.push({ name: x.name, rawName: x.name, group: x.group, room: '', floor: '' });
+      entries.push({ name: x.name, rawName: x.name, group: x.group, room: '', floor: '', gender: x.gender || '' });
     });
 
     // 名冊隊輔 → 補上中隊／小隊／性別；名冊上有但房號表沒有的隊輔也補進名單
@@ -2590,15 +2615,25 @@
 
   function parseLiveOffsite(rows) {
     var byDay = new Map();
-    var day = '', mealName = '';
+    var day = '', mealName = '', current = null;
     (rows || []).slice(1).forEach(function (row) {
-      if (cleanCell(row[0])) day = cleanCell(row[0]);
-      if (cleanCell(row[1])) mealName = cleanCell(row[1]);
+      var startsDay = !!cleanCell(row[0]);
+      var startsMeal = !!cleanCell(row[1]);
+      if (startsDay) day = cleanCell(row[0]);
+      if (startsMeal) mealName = cleanCell(row[1]);
       var pickup = cleanCell(row[2]);
       var place = cleanCell(row[3]);
-      if (!day || !mealName || !pickup || !place) return;
+      if (!day || !mealName || !place) return;
+      if (!startsDay && !startsMeal && pickup && current) {
+        var extraPrep = cleanCell(row[5]).replace(/\n+/g, ' ');
+        if (extraPrep) current.prep = [current.prep, pickup + '：' + extraPrep].filter(Boolean).join('；');
+        return;
+      }
+      if (!pickup && day === '7/13' && mealName === '午餐') pickup = '11:00-13:00';
+      if (!pickup) return;
       if (!byDay.has(day)) byDay.set(day, { day: day, dow: '', meals: [] });
-      byDay.get(day).meals.push({ type: 'offsite', name: mealName, icon: liveMealIcon(mealName), time: pickup, place: place, prepTime: cleanCell(row[4]), prep: cleanCell(row[5]).replace(/\n+/g, ' '), control: cleanCell(row[6]), delivery: [cleanCell(row[7]), cleanCell(row[8]), cleanCell(row[9]), cleanCell(row[10]), cleanCell(row[11]), cleanCell(row[12])].filter(Boolean).map(function (x) { return x.replace(/\n+/g, ' '); }), cleanup: [cleanCell(row[13]), cleanCell(row[14])].filter(Boolean).map(function (x) { return x.replace(/\n+/g, ' '); }) });
+      current = { type: 'offsite', name: mealName, icon: liveMealIcon(mealName), time: pickup, place: place, prepTime: cleanCell(row[4]), prep: cleanCell(row[5]).replace(/\n+/g, ' '), control: cleanCell(row[6]), delivery: [cleanCell(row[7]), cleanCell(row[8]), cleanCell(row[9]), cleanCell(row[10]), cleanCell(row[11]), cleanCell(row[12])].filter(Boolean).map(function (x) { return x.replace(/\n+/g, ' '); }), cleanup: [cleanCell(row[13]), cleanCell(row[14])].filter(Boolean).map(function (x) { return x.replace(/\n+/g, ' '); }) };
+      byDay.get(day).meals.push(current);
     });
     return Array.from(byDay.values());
   }
@@ -2770,7 +2805,7 @@
   function routePersonText(date, meal, route) {
     if (route.squads && route.squads.length) {
       return route.squads.map(function (s) {
-        return findServingAdvisor(date, meal.name, s, route.route, route.half) || '\u672a\u586b\u59d3\u540d';
+        return findServingAdvisor(date, meal.name, s, route.route, route.half) || '\u7e3d\u8868\u672a\u5206\u6d3e';
       }).join(' / ');
     }
     return route.staff || '';
