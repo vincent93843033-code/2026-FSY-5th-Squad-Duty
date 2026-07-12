@@ -2286,6 +2286,19 @@ body {
   overflow-wrap: anywhere;
 }
 
+.meal-route-support {
+  width: fit-content;
+  max-width: 100%;
+  border-radius: 999px;
+  padding: 3px 7px;
+  background: rgba(255, 221, 87, 0.72);
+  color: #5f4b00;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
 .meal-session-staff {
   margin-top: 8px;
 }

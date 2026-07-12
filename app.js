@@ -2587,6 +2587,20 @@
     }).filter(function (x) { return x.text; });
   }
 
+  function splitLiveRouteSupport(text) {
+    var support = [];
+    var routeParts = String(text || '').split(/\n+|\s+\/\s+/).map(function (x) { return cleanCell(x); }).filter(Boolean);
+    var kept = routeParts.filter(function (part) {
+      var match = part.match(/^\u652f\u63f4[:\uff1a]\s*(.+)$/);
+      if (match) {
+        support.push(cleanCell(match[1]));
+        return false;
+      }
+      return true;
+    });
+    return { routeText: kept.join(' / '), support: support.join(' / ') };
+  }
+
   function inferLiveSquadRange(rawRange, date, meal, time, routeText) {
     if (/1\s*-\s*15/.test(rawRange)) return '1-15';
     if (/16\s*-\s*31/.test(rawRange)) return '16-31';
@@ -2601,11 +2615,13 @@
   function addLiveMealRoutes(entry, row) {
     var ready = cleanCell(row[7]);
     liveMealRouteCells(row).forEach(function (cell) {
-      var text = cell.text;
+      var split = splitLiveRouteSupport(cell.text);
+      var text = split.routeText || cell.text;
       var half = text.indexOf('\u524d\u534a') !== -1 ? '\u524d\u534a' : text.indexOf('\u5f8c\u534a') !== -1 ? '\u5f8c\u534a' : '';
       var squads = Array.from(text.matchAll(/\d+/g)).map(function (m) { return Number(m[0]); });
       var routeEntry = { route: cell.route, ready: ready };
       if (half) routeEntry.half = half;
+      if (split.support) routeEntry.support = split.support;
       if (squads.length) routeEntry.squads = squads;
       else routeEntry.staff = text;
       entry.routes.push(routeEntry);
@@ -2846,6 +2862,12 @@
       var squadText = routePersonText(date, meal, route);
       line.textContent = (route.ready ? route.ready + ' \u00b7 ' : '') + (route.half ? route.half + '\uff1a' : '') + squadText;
       card.appendChild(line);
+      if (route.support) {
+        var support = document.createElement('div');
+        support.className = 'meal-route-support';
+        support.textContent = '\u8def\u7dda' + route.route + '\u6253\u83dc\u652f\u63f4\uff1a' + route.support;
+        card.appendChild(support);
+      }
       routes.appendChild(card);
     });
     return routes;
