@@ -2014,6 +2014,26 @@
       m.early ? '早退' : '', m.r1, m.r2].filter(Boolean).join(' ');
   }
 
+  function memberRoomNumber(m) {
+    var room = (m.dorm || '').toString();
+    var match = room.match(/\d{3,4}/);
+    return match ? match[0] : '';
+  }
+
+  function isRoomQuery(q) {
+    return /^\d{3,4}$/.test(normalizeForSearch(q));
+  }
+
+  function memberRosterSearchScore(query, m) {
+    var q = normalizeForSearch(query);
+    var room = memberRoomNumber(m);
+    if (isRoomQuery(q)) {
+      if (room === q) return 3000;
+      if (room.indexOf(q) !== -1) return 2500;
+    }
+    return fuzzyScore(q, memberSearchText(m) + ' ' + room + ' room ' + room);
+  }
+
   function filteredMembers() {
     var q = state.rosterQuery.trim();
     var list = state.members.filter(function (m) {
@@ -2025,7 +2045,7 @@
     });
     if (q) {
       list = list
-        .map(function (m) { return { m: m, score: fuzzyScore(q, memberSearchText(m) + ' ' + (m.dorm || '') + ' room ' + (m.dorm || '')) }; })
+        .map(function (m) { return { m: m, score: memberRosterSearchScore(q, m) }; })
         .filter(function (x) { return x.score > -1; })
         .sort(function (a, b) { return b.score - a.score; })
         .map(function (x) { return x.m; });
