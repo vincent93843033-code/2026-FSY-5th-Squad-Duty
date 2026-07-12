@@ -2029,7 +2029,7 @@
     var room = memberRoomNumber(m);
     if (isRoomQuery(q)) {
       if (room === q) return 3000;
-      if (room.indexOf(q) !== -1) return 2500;
+      return -1;
     }
     return fuzzyScore(q, memberSearchText(m) + ' ' + room + ' room ' + room);
   }
