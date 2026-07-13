@@ -2965,19 +2965,76 @@
     var rows = [];
     Object.keys(MEAL_SERVING).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (squad) {
       (MEAL_SERVING[squad] || []).forEach(function (item) {
-        var score = mealServingAdvisorSearchScore(q, item.advisor);
-        if (score < 0) return;
         var session = findMealSessionForServing(item.date, item.meal, squad);
-        rows.push({
+        pushMealServingSearchRow(rows, q, {
           squad: squad,
           date: item.date,
           meal: item.meal,
           time: session ? cleanMealTime(session.time) : '',
           tier: session ? session.tier : '',
+          role: '\u6253\u83dc\u8ca0\u8cac\u4eba',
+          person: item.advisor,
           route: item.route,
           half: item.half,
-          advisor: item.advisor,
-          score: score
+          detail: squad + '\u5c0f\u968a \u00b7 \u8def\u7dda' + item.route + (item.half ? ' ' + item.half : '')
+        });
+      });
+    });
+    MEALS_GUIDE.forEach(function (day) {
+      (day.meals || []).forEach(function (meal) {
+        var base = {
+          date: day.day,
+          meal: meal.name,
+          time: cleanMealTime(meal.time || ''),
+          tier: meal.tier || '',
+          squadRange: meal.squadRange || ''
+        };
+        if (meal.control) pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+          role: '\u5834\u63a7',
+          person: meal.control,
+          detail: meal.type === 'offsite' ? (meal.place || '\u4e0d\u5728\u9910\u5ef3') : ((meal.squadRange || '') + '\u5c0f\u968a')
+        }));
+        (meal.guides || []).forEach(function (guide) {
+          pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+            role: '\u5f15\u5c0e\u4eba\u54e1',
+            person: guide,
+            detail: meal.type === 'offsite' ? (meal.place || '\u4e0d\u5728\u9910\u5ef3') : ((meal.squadRange || '') + '\u5c0f\u968a')
+          }));
+        });
+        (meal.routes || []).forEach(function (route) {
+          if (route.support) pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+            role: '\u8def\u7dda\u6253\u83dc\u652f\u63f4',
+            person: route.support,
+            route: route.route,
+            half: route.half || '',
+            detail: '\u8def\u7dda' + route.route + (route.half ? ' ' + route.half : '')
+          }));
+          if (route.staff) pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+            role: '\u8def\u7dda\u4eba\u54e1',
+            person: route.staff,
+            route: route.route,
+            half: route.half || '',
+            detail: '\u8def\u7dda' + route.route + (route.half ? ' ' + route.half : '')
+          }));
+        });
+        if (meal.prep) pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+          role: '\u5099\u9910/\u524d\u7f6e',
+          person: meal.prep,
+          detail: meal.place || ''
+        }));
+        (meal.delivery || []).forEach(function (item) {
+          pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+            role: '\u904b\u9001/\u767c\u653e',
+            person: item,
+            detail: meal.place || ''
+          }));
+        });
+        (meal.cleanup || []).forEach(function (item) {
+          pushMealServingSearchRow(rows, q, Object.assign({}, base, {
+            role: '\u6536\u5c3e',
+            person: item,
+            detail: meal.place || ''
+          }));
         });
       });
     });
@@ -2985,26 +3042,59 @@
       return b.score - a.score ||
         parseMealDateValue(a.date) - parseMealDateValue(b.date) ||
         parseHMForSort(a.time) - parseHMForSort(b.time) ||
-        Number(a.squad) - Number(b.squad);
+        Number(a.squad || 999) - Number(b.squad || 999);
     });
     return rows;
   }
 
-  function mealServingAdvisorSearchText(advisor) {
-    var base = normalizeStaffName(advisor);
-    var values = [advisor, base];
-    var aliases = MEAL_SERVING_NAME_ALIASES[base] || [];
-    values.push.apply(values, aliases);
+  function pushMealServingSearchRow(rows, query, entry) {
+    var personScore = mealServingAdvisorSearchScore(query, entry.person || '');
+    var textScore = mealServingTextSearchScore(query, [entry.person, entry.detail, entry.role].filter(Boolean).join(' '));
+    var score = Math.max(personScore, textScore);
+    if (score < 0) return;
+    entry.score = score;
+    rows.push(entry);
+  }
+
+  function mealServingNameVariants(name) {
+    var base = normalizeStaffName(name);
+    var values = [name, base];
+    var normalizedBase = normalizeForSearch(base);
+    if (/^[\u4e00-\u9fff]{3,4}$/.test(base)) values.push(base.slice(1));
+    Object.keys(MEAL_SERVING_NAME_ALIASES).forEach(function (key) {
+      var all = [key].concat(MEAL_SERVING_NAME_ALIASES[key] || []);
+      var normalizedAll = all.map(function (x) { return normalizeForSearch(normalizeStaffName(x)); });
+      if (normalizedAll.indexOf(normalizedBase) !== -1) values = values.concat(all);
+    });
     STAFF_ROOMS.forEach(function (block) {
       (block.names || []).forEach(function (rawName) {
         var normalized = normalizeStaffName(rawName);
         if (!normalized || !base) return;
         if (normalized === base || normalized.indexOf(base) !== -1 || base.indexOf(normalized) !== -1) {
           values.push(rawName, normalized);
+          if (/^[\u4e00-\u9fff]{3,4}$/.test(normalized)) values.push(normalized.slice(1));
         }
       });
     });
-    return values.filter(Boolean).join(' ');
+    return values.filter(Boolean).filter(function (value, index, arr) {
+      return arr.indexOf(value) === index;
+    });
+  }
+
+  function mealServingAdvisorSearchText(advisor) {
+    return mealServingNameVariants(advisor).join(' ');
+  }
+
+  function mealServingTextSearchScore(query, text) {
+    var target = normalizeForSearch(text);
+    if (!target) return -1;
+    var best = -1;
+    mealServingNameVariants(query).map(normalizeForSearch).forEach(function (term) {
+      if (!term || term.length < 2) return;
+      var idx = target.indexOf(term);
+      if (idx !== -1) best = Math.max(best, 1800 - idx);
+    });
+    return best;
   }
 
   function mealServingAdvisorSearchScore(query, advisor) {
@@ -3029,7 +3119,7 @@
     var rows = collectMealServingSearchRows(q);
     var title = document.createElement('div');
     title.className = 'meal-serving-search-title';
-    title.textContent = rows.length ? '找到 ' + rows.length + ' 筆打菜班表' : '找不到這個名字的打菜班表';
+    title.textContent = rows.length ? '\u627e\u5230 ' + rows.length + ' \u7b46\u7528\u9910\u4efb\u52d9' : '\u6c92\u6709\u627e\u5230\u76f8\u95dc\u7528\u9910\u4efb\u52d9';
     mealServingResultsEl.appendChild(title);
     if (!rows.length) return;
     var grid = document.createElement('div');
@@ -3043,9 +3133,12 @@
       card.appendChild(main);
       var sub = document.createElement('div');
       sub.className = 'meal-serving-result-sub';
-      var detailParts = [row.advisor, row.squad + '\u5c0f\u968a', '\u8def\u7dda' + row.route + (row.half ? ' ' + row.half : '')];
+      var detailParts = [row.role, row.person || row.advisor];
+      if (row.detail) detailParts.push(row.detail);
+      else if (row.squad) detailParts.push(row.squad + '\u5c0f\u968a');
+      if (row.route && !row.detail) detailParts.push('\u8def\u7dda' + row.route + (row.half ? ' ' + row.half : ''));
       if (row.tier) detailParts.push(row.tier + '\u68af\u6b21');
-      sub.textContent = detailParts.join(' - ');
+      sub.textContent = detailParts.filter(Boolean).join(' - ');
       card.appendChild(sub);
       grid.appendChild(card);
     });
