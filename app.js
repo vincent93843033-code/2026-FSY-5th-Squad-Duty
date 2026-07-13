@@ -544,6 +544,9 @@
   var staffListEl = document.getElementById('staff-list');
   var staffCountEl = document.getElementById('staff-count');
   var mealsDayFiltersEl = document.getElementById('meals-day-filters');
+  var mealServingInputEl = document.getElementById('meal-serving-input');
+  var mealServingClearEl = document.getElementById('meal-serving-clear');
+  var mealServingResultsEl = document.getElementById('meal-serving-results');
   var mealsBodyEl = document.getElementById('meals-body');
   var lyricsBodyEl = document.getElementById('lyrics-body');
   var lyricsSongPaneEl = document.getElementById('pane-lyrics-song');
@@ -586,6 +589,7 @@
     staffGroup: 'all',    // 尋找工作人員：組別篩選
     staffQuery: '',
     mealsDay: 0,          // 用餐指南所選日期索引
+    mealServingQuery: '',
     drawTeams: [],        // 抽籤範圍（中隊；空 = 全FSY）
     drawSquads: [],       // 抽籤範圍（小隊；空 = 所選中隊全部）
     drawMale: 1,
@@ -2784,6 +2788,11 @@
     return (time || '').replace(/--/g, '-').replace(/\((\d+)mins\)/g, ' ($1\u5206)').trim();
   }
 
+  function parseMealDateValue(date) {
+    var parts = String(date || '').split('/').map(Number);
+    return (parts[0] || 0) * 100 + (parts[1] || 0);
+  }
+
   function collectServingRows(date, mealName) {
     var rows = [];
     Object.keys(MEAL_SERVING).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (s) {
@@ -2928,6 +2937,78 @@
     return row;
   }
 
+
+  function findMealSessionForServing(date, mealName, squad) {
+    var day = MEALS_GUIDE.find(function (d) { return d.day === date; });
+    if (!day) return null;
+    return (day.meals || []).find(function (meal) {
+      if (meal.name !== mealName || meal.type !== 'dining') return false;
+      if (meal.squadRange === '1-15') return Number(squad) <= 15;
+      if (meal.squadRange === '16-31') return Number(squad) >= 16;
+      return true;
+    }) || null;
+  }
+
+  function collectMealServingSearchRows(query) {
+    var q = normalizeForSearch(query);
+    if (!q) return [];
+    var rows = [];
+    Object.keys(MEAL_SERVING).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (squad) {
+      (MEAL_SERVING[squad] || []).forEach(function (item) {
+        if (normalizeForSearch(item.advisor).indexOf(q) === -1) return;
+        var session = findMealSessionForServing(item.date, item.meal, squad);
+        rows.push({
+          squad: squad,
+          date: item.date,
+          meal: item.meal,
+          time: session ? cleanMealTime(session.time) : '',
+          tier: session ? session.tier : '',
+          route: item.route,
+          half: item.half,
+          advisor: item.advisor
+        });
+      });
+    });
+    rows.sort(function (a, b) {
+      return parseMealDateValue(a.date) - parseMealDateValue(b.date) ||
+        parseHMForSort(a.time) - parseHMForSort(b.time) ||
+        Number(a.squad) - Number(b.squad);
+    });
+    return rows;
+  }
+
+  function renderMealServingSearchResults() {
+    if (!mealServingResultsEl) return;
+    var q = state.mealServingQuery.trim();
+    mealServingResultsEl.innerHTML = '';
+    mealServingResultsEl.hidden = !q;
+    if (!q) return;
+    var rows = collectMealServingSearchRows(q);
+    var title = document.createElement('div');
+    title.className = 'meal-serving-search-title';
+    title.textContent = rows.length ? '找到 ' + rows.length + ' 筆打菜班表' : '找不到這個名字的打菜班表';
+    mealServingResultsEl.appendChild(title);
+    if (!rows.length) return;
+    var grid = document.createElement('div');
+    grid.className = 'meal-serving-result-grid';
+    rows.forEach(function (row) {
+      var card = document.createElement('div');
+      card.className = 'meal-serving-result-card';
+      var main = document.createElement('div');
+      main.className = 'meal-serving-result-main';
+      main.textContent = row.date + ' ' + row.meal + (row.time ? ' - ' + row.time : '');
+      card.appendChild(main);
+      var sub = document.createElement('div');
+      sub.className = 'meal-serving-result-sub';
+      var detailParts = [row.advisor, row.squad + '\u5c0f\u968a', '\u8def\u7dda' + row.route + (row.half ? ' ' + row.half : '')];
+      if (row.tier) detailParts.push(row.tier + '\u68af\u6b21');
+      sub.textContent = detailParts.join(' - ');
+      card.appendChild(sub);
+      grid.appendChild(card);
+    });
+    mealServingResultsEl.appendChild(grid);
+  }
+
   function appendMealOverview() {
     var overview = document.createElement('div');
     overview.className = 'meal-overview';
@@ -2976,6 +3057,7 @@
       btn.dataset.idx = idx;
       mealsDayFiltersEl.appendChild(btn);
     });
+    renderMealServingSearchResults();
 
     var dayData = MEALS_GUIDE[state.mealsDay] || MEALS_GUIDE[0];
     mealsBodyEl.innerHTML = '';
@@ -3656,6 +3738,18 @@
     if (!chip) return;
     state.mealsDay = parseInt(chip.dataset.idx, 10);
     renderMeals();
+  });
+  mealServingInputEl.addEventListener('input', function () {
+    state.mealServingQuery = mealServingInputEl.value;
+    mealServingInputEl.closest('.roster-search').classList.toggle('has-text', !!mealServingInputEl.value);
+    renderMealServingSearchResults();
+  });
+  mealServingClearEl.addEventListener('click', function () {
+    mealServingInputEl.value = '';
+    state.mealServingQuery = '';
+    mealServingInputEl.closest('.roster-search').classList.remove('has-text');
+    renderMealServingSearchResults();
+    mealServingInputEl.focus();
   });
 
   // draw events

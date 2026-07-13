@@ -2371,6 +2371,52 @@ body {
   font-weight: 750;
 }
 
+.meal-serving-search {
+  margin: 8px 0 10px;
+}
+
+.meal-serving-results {
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+  display: grid;
+  gap: 8px;
+}
+
+.meal-serving-search-title {
+  font-size: 0.86rem;
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+.meal-serving-result-grid {
+  display: grid;
+  gap: 7px;
+}
+
+.meal-serving-result-card {
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--color-card);
+  border: 1px solid rgba(47, 111, 79, 0.12);
+}
+
+.meal-serving-result-main {
+  color: var(--color-text);
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.meal-serving-result-sub {
+  margin-top: 3px;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .meal-overview {
   display: grid;
   gap: 12px;

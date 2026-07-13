@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="中隊職責">
-<link rel="stylesheet" href="style.css?v=43">
+<link rel="stylesheet" href="style.css?v=44">
 </head>
 <body>
 <div class="app">
@@ -263,6 +263,15 @@
             <span class="tool-count">A/B 梯次與 1–31 小隊</span>
           </div>
           <div class="day-pills" id="meals-day-filters"></div>
+          <div class="roster-search meal-serving-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="roster-search-icon" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="meal-serving-input" type="text" placeholder="&#x641C;&#x5C0B;&#x6253;&#x83DC;&#x59D3;&#x540D;..." autocomplete="off">
+            <button id="meal-serving-clear" class="roster-clear" aria-label="&#x6E05;&#x9664;">&times;</button>
+          </div>
+          <div id="meal-serving-results" class="meal-serving-results" hidden></div>
           <div id="meals-body" class="meals-body"></div>
           <p class="tool-hint">資料來源：「2026 FSY 膳食」試算表（在餐廳用餐／不在餐廳用餐／打菜班表）。</p>
         </div>
@@ -414,6 +423,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="app-data.js?v=6"></script>
-<script src="app.js?v=61"></script>
+<script src="app.js?v=62"></script>
 </body>
 </html>
