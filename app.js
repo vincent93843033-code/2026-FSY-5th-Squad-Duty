@@ -40,6 +40,16 @@
     { title: '打菜人員', text: '準時到負責路線，戴口罩與髮帽、先洗手，確實交接後再離開崗位。' },
     { title: '用餐收尾', text: '用餐完單時提醒隊輔預備離場，讓後續抵達的人有位置用餐。' },
   ];
+  var MEAL_SERVING_NAME_ALIASES = {
+    '\u5ead\u5b87': ['\u674e\u5ead\u5b87', 'Ting Yu', 'Ting Yu Li'],
+    '\u767e\u52a0': ['\u8a31\u767e\u52a0', 'Becca'],
+    '\u90c1\u7fce': ['\u91d1\u90c1\u7fce', 'Lily'],
+    '\u5b50\u7401': ['\u8d99\u5b50\u7401'],
+    '\u4e16\u7444': ['\u838a\u4e16\u7444'],
+    '\u6e58\u5100': ['\u674e\u6e58\u5100', 'Evelyn', 'Evelyn Li'],
+    '\u858f\u74cf': ['\u6797\u858f\u74cf', 'Ashley'],
+    '\u6210\u79be': ['\u5468\u6210\u79be']
+  };
   var STAFF_ROOM_GENDER = {
     '9125': '女', '9126': '女', '9127': '女', '9128': '女',
     '9132': '男', '9133': '男', '9134': '男', '9135': '男',
@@ -2955,7 +2965,8 @@
     var rows = [];
     Object.keys(MEAL_SERVING).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (squad) {
       (MEAL_SERVING[squad] || []).forEach(function (item) {
-        if (normalizeForSearch(item.advisor).indexOf(q) === -1) return;
+        var score = mealServingAdvisorSearchScore(q, item.advisor);
+        if (score < 0) return;
         var session = findMealSessionForServing(item.date, item.meal, squad);
         rows.push({
           squad: squad,
@@ -2965,16 +2976,47 @@
           tier: session ? session.tier : '',
           route: item.route,
           half: item.half,
-          advisor: item.advisor
+          advisor: item.advisor,
+          score: score
         });
       });
     });
     rows.sort(function (a, b) {
-      return parseMealDateValue(a.date) - parseMealDateValue(b.date) ||
+      return b.score - a.score ||
+        parseMealDateValue(a.date) - parseMealDateValue(b.date) ||
         parseHMForSort(a.time) - parseHMForSort(b.time) ||
         Number(a.squad) - Number(b.squad);
     });
     return rows;
+  }
+
+  function mealServingAdvisorSearchText(advisor) {
+    var base = normalizeStaffName(advisor);
+    var values = [advisor, base];
+    var aliases = MEAL_SERVING_NAME_ALIASES[base] || [];
+    values.push.apply(values, aliases);
+    STAFF_ROOMS.forEach(function (block) {
+      (block.names || []).forEach(function (rawName) {
+        var normalized = normalizeStaffName(rawName);
+        if (!normalized || !base) return;
+        if (normalized === base || normalized.indexOf(base) !== -1 || base.indexOf(normalized) !== -1) {
+          values.push(rawName, normalized);
+        }
+      });
+    });
+    return values.filter(Boolean).join(' ');
+  }
+
+  function mealServingAdvisorSearchScore(query, advisor) {
+    var q = normalizeForSearch(query);
+    var advisorText = normalizeForSearch(advisor);
+    var searchText = normalizeForSearch(mealServingAdvisorSearchText(advisor));
+    if (!q || !searchText) return -1;
+    if (advisorText === q) return 4000;
+    if (searchText === q) return 3500;
+    var idx = searchText.indexOf(q);
+    if (idx !== -1) return 3000 - idx;
+    return fuzzyScore(q, searchText);
   }
 
   function renderMealServingSearchResults() {
@@ -2982,6 +3024,7 @@
     var q = state.mealServingQuery.trim();
     mealServingResultsEl.innerHTML = '';
     mealServingResultsEl.hidden = !q;
+    mealsBodyEl.hidden = !!q;
     if (!q) return;
     var rows = collectMealServingSearchRows(q);
     var title = document.createElement('div');
