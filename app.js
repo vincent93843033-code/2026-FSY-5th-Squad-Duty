@@ -511,6 +511,8 @@
     if (Array.isArray(window.FSY_APP_DATA.mealsGuide)) MEALS_GUIDE = window.FSY_APP_DATA.mealsGuide;
     if (window.FSY_APP_DATA.mealServing) MEAL_SERVING = window.FSY_APP_DATA.mealServing;
   }
+  MEALS_GUIDE = normalizeMealGuideRules(MEALS_GUIDE);
+  MEAL_SERVING = normalizeMealServingRules(MEAL_SERVING);
 
   var dayPillsEl = document.getElementById('day-pills');
   var meContentEl = document.getElementById('me-content');
@@ -2752,9 +2754,55 @@
     return serving;
   }
 
+  function isBackHalf(value) {
+    return /\u5f8c\u534a/.test(String(value || ''));
+  }
+
+  function shiftMealReadyTime(value, deltaMinutes) {
+    return String(value || '').replace(/(\d{1,2}):(\d{2})/g, function (match, hourText, minuteText) {
+      var total = Number(hourText) * 60 + Number(minuteText) + deltaMinutes;
+      total = ((total % 1440) + 1440) % 1440;
+      var hour = Math.floor(total / 60);
+      var minute = total % 60;
+      return String(hour) + ':' + String(minute).padStart(2, '0');
+    });
+  }
+
+  function normalizeMealGuideRules(mealsGuide) {
+    return (mealsGuide || []).map(function (day) {
+      var dayCopy = Object.assign({}, day);
+      dayCopy.meals = (day.meals || []).map(function (meal) {
+        var mealCopy = Object.assign({}, meal);
+        if (mealCopy.type === 'dining') {
+          mealCopy.ready = shiftMealReadyTime(mealCopy.ready, -5);
+          mealCopy.routes = (meal.routes || [])
+            .filter(function (route) { return !isBackHalf(route.half) && !isBackHalf(route.staff); })
+            .map(function (route) {
+              var routeCopy = Object.assign({}, route);
+              routeCopy.ready = shiftMealReadyTime(routeCopy.ready, -5);
+              return routeCopy;
+            });
+        }
+        return mealCopy;
+      });
+      return dayCopy;
+    });
+  }
+
+  function normalizeMealServingRules(mealServing) {
+    var normalized = {};
+    Object.keys(mealServing || {}).forEach(function (squad) {
+      var kept = (mealServing[squad] || []).filter(function (item) {
+        return !isBackHalf(item.half);
+      });
+      if (kept.length) normalized[squad] = kept;
+    });
+    return normalized;
+  }
+
   function applyMealData(mealsGuide, mealServing) {
-    if (Array.isArray(mealsGuide) && mealsGuide.length) MEALS_GUIDE = mealsGuide;
-    if (mealServing && Object.keys(mealServing).length) MEAL_SERVING = mealServing;
+    if (Array.isArray(mealsGuide) && mealsGuide.length) MEALS_GUIDE = normalizeMealGuideRules(mealsGuide);
+    if (mealServing && Object.keys(mealServing).length) MEAL_SERVING = normalizeMealServingRules(mealServing);
     if (state.currentTool === 'meals') renderMeals();
   }
 
