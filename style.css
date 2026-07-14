@@ -2251,46 +2251,49 @@ body {
 .meal-route-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 9px;
+  gap: 6px;
+  margin-top: 7px;
 }
 
 .meal-route-card {
   border-radius: 8px;
-  padding: 8px;
-  min-height: 76px;
+  padding: 6px 7px;
+  min-height: 58px;
   display: grid;
-  gap: 4px;
+  gap: 2px;
   align-content: start;
   border: 1px solid rgba(47, 111, 79, 0.16);
   background: var(--color-primary-light);
+  box-shadow: 0 1px 2px rgba(24, 64, 48, 0.06);
+  position: relative;
+  overflow: hidden;
 }
 
 .meal-route-card.route-1 {
-  background: #fff0ec;
+  background: linear-gradient(180deg, #fff8f5 0%, #fff0ec 100%);
   border-color: #f0b4a8;
 }
 
 .meal-route-card.route-2 {
-  background: #edf8ee;
+  background: linear-gradient(180deg, #f7fcf7 0%, #edf8ee 100%);
   border-color: #a9d9b3;
 }
 
 .meal-route-card.route-3 {
-  background: #eaf2fb;
+  background: linear-gradient(180deg, #f7fbff 0%, #eaf2fb 100%);
   border-color: #a9c8ec;
 }
 
 .meal-route-title {
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 900;
   color: var(--color-primary);
 }
 
 .meal-route-line {
-  font-size: 0.78rem;
-  line-height: 1.45;
-  font-weight: 700;
+  font-size: 0.74rem;
+  line-height: 1.34;
+  font-weight: 760;
   color: var(--color-text);
   overflow-wrap: anywhere;
 }
